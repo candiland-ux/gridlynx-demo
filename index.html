@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRIDLYNX — Hybrid Mode</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;1,200&display=swap');
+:root{--bg:#0a0a0f;--bg2:#0f0f18;--bg3:#141422;--panel:#12121e;--panel2:#1a1a2e;--border:#2a2a45;--border-bright:#3d3d6b;--amber:#f59e0b;--amber-dim:#92600a;--amber-glow:rgba(245,158,11,0.15);--cyan:#06b6d4;--cyan-dim:#0e5f6e;--cyan-glow:rgba(6,182,212,0.12);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--red:#ef4444;--red-glow:rgba(239,68,68,0.12);--purple:#8b5cf6;--purple-glow:rgba(139,92,246,0.12);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#475569;--fd:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--fb:'Exo 2',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;animation:fi .3s ease;}
+.screen.active{display:flex;flex-direction:column;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.scroll{overflow-y:auto;flex:1;}
+
+/* TOP BAR */
+.tb{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-shrink:0;}
+.tbl{font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:3px;}.tbl span{color:var(--amber);}
+.tbm{font-family:var(--fm);font-size:10px;color:var(--amber);letter-spacing:2px;border:1px solid var(--amber-dim);padding:3px 10px;}
+.bk{font-family:var(--fm);font-size:10px;color:var(--text-muted);background:none;border:1px solid var(--border);padding:4px 10px;cursor:pointer;letter-spacing:1px;transition:all .15s;}
+.bk:hover{color:var(--amber);border-color:var(--amber-dim);}
+.vm{display:flex;align-items:center;gap:6px;}
+.vml{font-family:var(--fm);font-size:9px;color:var(--text-muted);}
+.vmb{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.vmf{height:100%;width:73%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:2px;}
+
+/* NAV TABS */
+.nt{display:flex;border-top:1px solid var(--border);background:var(--panel);flex-shrink:0;}
+.ntb{flex:1;padding:11px 4px;text-align:center;cursor:pointer;transition:all .15s;border:none;background:none;position:relative;}
+.ntb.act::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);}
+.nti{font-size:17px;display:block;}
+.ntl{font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:2px;letter-spacing:1px;}
+.ntb.act .ntl{color:var(--amber);}
+
+/* BUTTONS */
+.btn{flex:1;padding:12px;font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.btn-p{background:var(--amber-glow);color:var(--amber);border-color:var(--amber);}
+.btn-p:hover{background:rgba(245,158,11,.22);}
+.btn-s{background:transparent;color:var(--text-dim);border-color:var(--border);}
+.btn-s:hover{border-color:var(--border-bright);color:var(--text);}
+.btn-c{background:var(--cyan-glow);color:var(--cyan);border-color:var(--cyan);}
+.btn-c:hover{background:rgba(6,182,212,.22);}
+.btn-pu{background:var(--purple-glow);color:var(--purple);border-color:var(--purple);}
+.btn-r{background:var(--red-glow);color:var(--red);border-color:var(--red);}
+.ab{padding:14px 20px;border-top:1px solid var(--border);background:var(--panel);display:flex;gap:10px;flex-shrink:0;}
+
+/* PILLS */
+.pill{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:3px 10px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
+.pg{background:var(--green-glow);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+.pa{background:var(--amber-glow);color:var(--amber);border:1px solid rgba(245,158,11,.3);}
+.pr{background:var(--red-glow);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.pc{background:var(--cyan-glow);color:var(--cyan);border:1px solid rgba(6,182,212,.3);}
+.pp{background:var(--purple-glow);color:var(--purple);border:1px solid rgba(139,92,246,.3);}
+
+/* SECTION LABEL */
+.sl{font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;padding:14px 20px 10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--border-bright);padding:10px 20px;font-family:var(--fm);font-size:11px;color:var(--text);letter-spacing:1px;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── SPLASH ── */
+#ss{background:radial-gradient(ellipse at 50% 40%,#1a1a35 0%,#0a0a0f 70%);align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden;}
+#ss::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 60%,rgba(245,158,11,.06) 0%,transparent 50%),radial-gradient(circle at 70% 30%,rgba(6,182,212,.05) 0%,transparent 50%);}
+.sg{position:absolute;inset:0;background-image:linear-gradient(rgba(42,42,69,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(42,42,69,.3) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);}
+.sc{position:relative;text-align:center;z-index:2;}
+.se{font-family:var(--fm);font-size:11px;letter-spacing:4px;color:var(--amber);text-transform:uppercase;margin-bottom:20px;opacity:.8;}
+.slo{font-family:var(--fd);font-size:clamp(64px,12vw,108px);font-weight:700;letter-spacing:8px;color:var(--text);text-shadow:0 0 60px rgba(245,158,11,.3),0 0 120px rgba(245,158,11,.1);line-height:1;}
+.slo span{color:var(--amber);}
+.stg{font-family:var(--fb);font-size:14px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-top:16px;font-weight:200;font-style:italic;}
+.sdiv{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:36px auto;}
+.sbtn{display:inline-block;background:transparent;border:1px solid var(--amber);color:var(--amber);font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;padding:14px 48px;cursor:pointer;transition:all .2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.sbtn:hover{background:var(--amber-glow);box-shadow:0 0 30px rgba(245,158,11,.25);}
+.hca{width:80px;height:80px;margin:0 auto 36px;position:relative;}
+.hca .ring{position:absolute;border-radius:50%;border:1px solid rgba(245,158,11,.4);animation:pr 2s ease-out infinite;}
+.hca .ring:nth-child(1){inset:30px;animation-delay:0s;}
+.hca .ring:nth-child(2){inset:20px;animation-delay:.4s;border-color:rgba(245,158,11,.25);}
+.hca .ring:nth-child(3){inset:8px;animation-delay:.8s;border-color:rgba(245,158,11,.15);}
+.hca .core{position:absolute;inset:34px;border-radius:50%;background:radial-gradient(circle,#fcd34d,#d97706,#92400e);box-shadow:0 0 20px rgba(245,158,11,.8),0 0 40px rgba(245,158,11,.4);}
+@keyframes pr{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.08);opacity:.4}}
+
+/* ── SETUP ── */
+#sq{background:var(--bg2);}
+.pc{background:var(--panel);border:1px solid var(--border);padding:16px;margin:0 20px 10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+.pc:hover{border-color:var(--border-bright);}
+.pc.sel{border-color:var(--amber);background:var(--amber-glow);}
+.pav{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);}
+.pn{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);}
+.pd{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.prl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:1px;margin-top:4px;}
+.psr{width:20px;height:20px;border-radius:50%;border:1px solid var(--border-bright);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pc.sel .psr{border-color:var(--amber);background:var(--amber);}
+.pc.sel .psr::after{content:'';width:7px;height:7px;border-radius:50%;background:white;}
+.mrow{display:flex;gap:10px;margin:16px 20px 0;}
+.mo{flex:1;background:var(--panel);border:1px solid var(--border);padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;}
+.mo:hover{border-color:var(--border-bright);}
+.mo.sel{border-color:var(--cyan);background:var(--cyan-glow);}
+.moi{font-size:22px;margin-bottom:6px;}
+.mon{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);}
+.mos{font-size:10px;color:var(--text-muted);margin-top:3px;}
+
+/* ── OVERVIEW ── */
+#so{background:var(--bg2);}
+.ovh{padding:20px 20px 14px;border-bottom:1px solid var(--border);}
+.ove{font-family:var(--fd);font-size:12px;font-weight:500;letter-spacing:4px;color:var(--text-muted);text-transform:uppercase;}
+.ovc{font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);margin-top:2px;}
+.sps{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.hcp{margin:16px 20px;padding:18px;background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden;}
+.hcp::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(245,158,11,.06),transparent 70%);pointer-events:none;}
+.hcr{display:flex;align-items:center;gap:18px;}
+.hcorb{width:60px;height:60px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3);animation:hpa 2.2s ease-in-out infinite;cursor:pointer;}
+@keyframes hpa{0%,100%{box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3)}50%{box-shadow:0 0 32px rgba(245,158,11,.9),0 0 64px rgba(245,158,11,.4)}}
+.hci{flex:1;}
+.hcl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;}
+.hcv{font-family:var(--fd);font-size:34px;font-weight:700;color:var(--text);line-height:1.1;}
+.hcs{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.ti{font-family:var(--fm);font-size:10px;color:var(--text-muted);text-align:right;flex-shrink:0;}
+.tn{font-size:22px;color:var(--cyan);display:block;}
+.hcbw{margin-top:12px;}
+.hcbl{display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-bottom:4px;}
+.hcb{height:6px;background:var(--bg3);}
+.hcbf{height:100%;width:73%;background:linear-gradient(90deg,var(--red),var(--amber) 50%,var(--green));}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 20px;}
+.dc{background:var(--panel);border:1px solid var(--border);padding:13px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.dc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.dc.g::after{background:var(--green);}
+.dc.a::after{background:var(--amber);}
+.dc.r::after{background:var(--red);}
+.dc.c::after{background:var(--cyan);}
+.dc:hover{border-color:var(--border-bright);transform:translateY(-1px);}
+.dc.g:hover{background:rgba(16,185,129,.04);}
+.dc.a:hover{background:rgba(245,158,11,.04);}
+.dc.r:hover{background:rgba(239,68,68,.04);}
+.dc.c:hover{background:rgba(6,182,212,.04);}
+.dci{font-size:19px;margin-bottom:7px;}
+.dcn{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);}
+.dcs{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.3;}
+.dcm{margin-top:9px;}
+.dcml{display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);}
+.dcmb{height:3px;background:var(--bg3);margin-top:3px;}
+.dcmf{height:100%;}
+.dc.g .dcmf{background:var(--green);}
+.dc.a .dcmf{background:var(--amber);}
+.dc.r .dcmf{background:var(--red);}
+.dc.c .dcmf{background:var(--cyan);}
+.dcw{font-family:var(--fm);font-size:8px;color:var(--red);margin-top:5px;}
+
+/* ── DOMAIN DETAIL ── */
+#sd{background:var(--bg2);}
+.ddh{padding:20px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.ddbg{position:absolute;inset:0;opacity:.04;font-family:var(--fd);font-size:120px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;pointer-events:none;}
+.ddi{font-size:30px;margin-bottom:8px;}
+.ddn{font-family:var(--fd);font-size:24px;font-weight:700;color:var(--text);}
+.ddd{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.5;max-width:300px;}
+.ddr{display:flex;align-items:center;gap:16px;margin-top:14px;}
+.gauge{flex:1;}
+.gb{height:8px;background:var(--bg3);}
+.gf{height:100%;transition:width .4s;}
+.gn{display:flex;justify-content:space-between;font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:4px;}
+.sbadge{font-family:var(--fm);font-size:10px;letter-spacing:1px;padding:4px 12px;border:1px solid;flex-shrink:0;}
+.as{padding:0 20px 20px;}
+.asl{font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;padding:16px 0 10px;border-top:1px solid var(--border);}
+.dcard{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:12px;}
+.dcard:hover{border-color:var(--border-bright);background:rgba(255,255,255,.02);}
+.dcard.sel{border-color:var(--cyan);background:var(--cyan-glow);}
+.drad{width:16px;height:16px;border-radius:50%;border:1px solid var(--border-bright);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.dcard.sel .drad{border-color:var(--cyan);background:var(--cyan);}
+.dcard.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+.dinf{flex:1;}
+.dname{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);}
+.deff{font-size:11px;color:var(--text-dim);margin-top:3px;line-height:1.4;}
+.dtags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.dt{font-family:var(--fm);font-size:8px;padding:2px 6px;border:1px solid;letter-spacing:1px;}
+.dt-p{color:var(--green);border-color:rgba(16,185,129,.3);background:var(--green-glow);}
+.dt-m{color:var(--red);border-color:rgba(239,68,68,.3);background:var(--red-glow);}
+.dt-w{color:var(--amber);border-color:rgba(245,158,11,.3);background:var(--amber-glow);}
+.dt-i{color:var(--cyan);border-color:rgba(6,182,212,.3);background:var(--cyan-glow);}
+.pcard{background:transparent;border:1px dashed var(--border);padding:12px 14px;margin-bottom:14px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:flex-start;}
+.pcard:hover{border-color:var(--red);background:var(--red-glow);}
+.pcard.sel{border-color:var(--red);background:var(--red-glow);}
+.plbl{font-family:var(--fd);font-size:13px;color:var(--text-muted);}
+.pcon{font-size:11px;color:var(--red);margin-top:2px;}
+.spp{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin-bottom:14px;}
+.spt{font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:8px;}
+.spi{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+.spd{font-size:11px;color:var(--text-dim);flex:1;}
+.spe{font-family:var(--fm);font-size:10px;}
+.spe.neg{color:var(--red);}
+.spe.pos{color:var(--green);}
+
+/* ── INFLUENCE ── */
+#si{background:var(--bg2);}
+.isb{background:var(--panel);border:1px solid var(--border);padding:18px;margin:16px 20px;display:flex;align-items:center;gap:18px;}
+.ic{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706);box-shadow:0 0 20px rgba(245,158,11,.5);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:26px;font-weight:700;color:#1a0a00;}
+.iuc{background:var(--panel);border:1px solid var(--border);padding:14px;margin:0 20px 8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+.iuc:hover{border-color:var(--amber);background:var(--amber-glow);}
+.iui{font-size:22px;flex-shrink:0;}
+.iun{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);}
+.iue{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.iuco{font-family:var(--fm);font-size:10px;color:var(--amber);margin-top:4px;}
+.ili{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.ild{font-size:11px;color:var(--text-dim);}
+.ilt{font-family:var(--fm);font-size:9px;color:var(--text-muted);}
+.ilv{font-family:var(--fm);font-size:12px;}
+.ilv.pos{color:var(--green);}
+.ilv.neg{color:var(--red);}
+
+/* ── CORRUPTION ── */
+#sc2{background:var(--bg2);}
+.coh{padding:22px 20px;text-align:center;background:linear-gradient(180deg,rgba(245,158,11,.08) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.coi{font-size:38px;margin-bottom:8px;}
+.cot{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--amber);letter-spacing:2px;}
+.cos{font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
+.cow{margin:14px 20px 0;background:rgba(245,158,11,.06);border:1px solid var(--amber-dim);padding:10px 14px;font-size:11px;color:var(--amber);line-height:1.5;}
+.ccard{background:var(--panel);border:1px solid var(--border);padding:15px;margin:0 20px 10px;cursor:pointer;transition:all .2s;}
+.ccard:hover{border-color:var(--amber);background:var(--amber-glow);}
+.ccard.sel{border-color:var(--amber);background:var(--amber-glow);}
+.ccn{font-family:var(--fd);font-size:15px;font-weight:600;color:var(--text);}
+.cce{font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
+.ccr{margin-top:7px;font-family:var(--fm);font-size:9px;color:var(--red);letter-spacing:1px;}
+.ccg{margin-top:3px;font-family:var(--fm);font-size:9px;color:var(--green);letter-spacing:1px;}
+
+/* ── AUDIT ── */
+#sa{background:var(--bg2);}
+.auh{padding:24px 20px;text-align:center;background:linear-gradient(180deg,rgba(139,92,246,.08) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.aui{font-size:48px;margin-bottom:10px;animation:ausp 1s ease-out;}
+@keyframes ausp{from{transform:rotate(-15deg) scale(.8);opacity:0}to{transform:rotate(0) scale(1);opacity:1}}
+.aut{font-family:var(--fd);font-size:26px;font-weight:700;color:var(--purple);letter-spacing:3px;}
+.aus{font-size:13px;color:var(--text-dim);margin-top:8px;line-height:1.6;}
+.augt{margin:16px 20px 0;background:var(--panel);border:1px solid var(--purple);padding:14px;}
+.augtl{font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:6px;}
+.augtn{font-family:var(--fd);font-size:18px;font-weight:700;color:var(--text);}
+.augts{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.aum{margin:16px 20px 0;background:var(--panel);border:1px solid var(--border);padding:16px;}
+.auml{font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;}
+.aurb{height:10px;background:var(--bg3);margin-bottom:6px;}
+.aurf{height:100%;width:35%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));}
+.aurv{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--amber);}
+.aurs{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.auoc{background:var(--panel);border:1px solid var(--border);padding:13px;margin:0 20px 8px;}
+.auos{font-family:var(--fd);font-size:13px;font-weight:600;}
+.auoe{font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
+.aurz{margin:0 20px 16px;padding:16px;text-align:center;border:2px solid;}
+.aurz.clean{border-color:var(--green);background:var(--green-glow);}
+.aurz.exp{border-color:var(--red);background:var(--red-glow);}
+.aurzt{font-family:var(--fd);font-size:22px;font-weight:700;letter-spacing:2px;}
+.aurz.clean .aurzt{color:var(--green);}
+.aurz.exp .aurzt{color:var(--red);}
+.aurzd{font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
+
+/* ── TURN END ── */
+#ste{background:var(--bg2);}
+.teh{padding:20px;border-bottom:1px solid var(--border);text-align:center;}
+.teb{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--cyan);margin-bottom:8px;}
+.tet{font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);}
+.tes{font-size:12px;color:var(--text-dim);margin-top:6px;}
+.tehc{margin:16px 20px;background:var(--panel);border:1px solid var(--border);padding:16px;display:flex;align-items:center;gap:16px;}
+.tehco{width:52px;height:52px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 18px rgba(245,158,11,.6);}
+.techl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;}
+.techv{font-family:var(--fd);font-size:26px;font-weight:700;}
+.techp{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.teal{margin:0 20px 10px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.3);padding:12px 14px;}
+.teall{font-family:var(--fm);font-size:9px;color:var(--red);letter-spacing:2px;margin-bottom:4px;}
+.tealt{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.tecc{margin:0 20px 12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.3);padding:12px 14px;}
+.teccl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+.tecct{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.teci{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--panel);border:1px solid var(--border);margin:0 20px 8px;}
+.teco{font-size:18px;flex-shrink:0;}
+.tecd{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);}
+.teca{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.tecd2{font-family:var(--fm);font-size:13px;flex-shrink:0;}
+.tecd2.pos{color:var(--green);}
+.tecd2.neg{color:var(--red);}
+.tecd2.nt{color:var(--text-muted);}
+
+/* ── TRUST ── */
+#str{background:var(--bg2);}
+.trb{background:var(--panel);border:1px solid var(--border);padding:18px;margin:16px 20px;display:flex;align-items:center;gap:18px;}
+.trg{width:76px;height:76px;border-radius:50%;flex-shrink:0;background:conic-gradient(var(--cyan) 0% 64%,var(--bg3) 64%);display:flex;align-items:center;justify-content:center;position:relative;}
+.trg::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--panel);}
+.trgv{position:relative;z-index:1;font-family:var(--fd);font-size:20px;font-weight:700;color:var(--cyan);}
+.trf{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin:0 20px 8px;}
+.tft{display:flex;justify-content:space-between;align-items:center;}
+.tfn{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);}
+.tfv{font-family:var(--fm);font-size:12px;}
+.tfb{height:3px;background:var(--bg3);margin-top:7px;}
+.tff{height:100%;}
+.tfd{font-size:10px;color:var(--text-muted);margin-top:5px;}
+.spp2{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin:8px 20px 20px;}
+
+/* ── EVENTS ── */
+#sev{background:var(--bg2);}
+.evc{margin:14px 20px 0;background:var(--panel);border:1px solid var(--border);overflow:hidden;}
+.evch{padding:11px 14px;display:flex;align-items:center;gap:10px;}
+.evc.cr .evch{background:rgba(239,68,68,.08);border-bottom:1px solid rgba(239,68,68,.2);}
+.evc.po .evch{background:rgba(6,182,212,.06);border-bottom:1px solid rgba(6,182,212,.15);}
+.evc.op .evch{background:rgba(16,185,129,.06);border-bottom:1px solid rgba(16,185,129,.15);}
+.evt{font-family:var(--fm);font-size:8px;letter-spacing:2px;}
+.evc.cr .evt{color:var(--red);}
+.evc.po .evt{color:var(--cyan);}
+.evc.op .evt{color:var(--green);}
+.evb{padding:13px 14px;}
+.evti{font-family:var(--fd);font-size:15px;font-weight:600;color:var(--text);}
+.evde{font-size:11px;color:var(--text-dim);margin-top:5px;line-height:1.5;}
+.evim{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;}
+.evip{font-family:var(--fm);font-size:9px;padding:2px 8px;border:1px solid;}
+.evip.neg{color:var(--red);border-color:rgba(239,68,68,.3);}
+.evip.pos{color:var(--green);border-color:rgba(16,185,129,.3);}
+.evf{padding:9px 14px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.evbtn{flex:1;padding:8px;font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .15s;background:transparent;}
+.evbtn.ac{color:var(--green);border-color:rgba(16,185,129,.4);}
+.evbtn.ac:hover{background:var(--green-glow);}
+.evbtn.de{color:var(--red);border-color:rgba(239,68,68,.4);}
+.evbtn.de:hover{background:var(--red-glow);}
+.evc.resolved{opacity:.5;pointer-events:none;}
+.evrb{background:rgba(16,185,129,.1);border-top:1px solid rgba(16,185,129,.3);padding:6px 14px;font-family:var(--fm);font-size:9px;color:var(--green);letter-spacing:2px;}
+
+/* ── COLLAPSE ── */
+#scol{background:radial-gradient(ellipse at 50% 30%,#1a0505 0%,#0a0a0f 60%);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px 20px;}
+.coli{font-size:64px;margin-bottom:20px;animation:flk .5s infinite alternate;}
+@keyframes flk{from{opacity:.7}to{opacity:1}}
+.colt{font-family:var(--fd);font-size:36px;font-weight:700;color:var(--red);letter-spacing:4px;}
+.cold{font-size:13px;color:var(--text-dim);margin-top:10px;line-height:1.6;max-width:280px;}
+.coldiv{width:80px;height:1px;background:var(--red);margin:22px auto;opacity:.4;}
+.colch{text-align:left;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);padding:14px;margin:0 auto 22px;max-width:320px;}
+.colcht{font-family:var(--fm);font-size:9px;color:var(--red);letter-spacing:2px;margin-bottom:8px;}
+.colchi{font-size:11px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(239,68,68,.1);}
+.colchi:last-child{border-bottom:none;}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="ss" class="screen active">
+  <div class="sg"></div>
+  <div class="sc">
+    <div class="se">Adaptive Civic Systems Strategy Platform</div>
+    <div class="hca"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+    <div class="slo">GRID<span>LYNX</span></div>
+    <div class="stg">Will the system survive your moves?</div>
+    <div class="sdiv"></div>
+    <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;margin-bottom:20px;">SELECT YOUR MODE TO BEGIN</div>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;">
+      <button class="sbtn" style="width:100%;padding:16px 24px;display:flex;align-items:center;gap:16px;text-align:left;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);" onclick="chooseMode('hybrid')">
+        <span style="font-size:24px;flex-shrink:0;">🎮</span>
+        <span><span style="display:block;font-size:15px;letter-spacing:3px;">HYBRID MODE</span><span style="display:block;font-size:10px;color:var(--amber-dim);font-weight:400;letter-spacing:1px;margin-top:2px;">Board + App — full experience</span></span>
+      </button>
+      <button class="sbtn" style="width:100%;padding:16px 24px;display:flex;align-items:center;gap:16px;text-align:left;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);border-color:var(--cyan);color:var(--cyan);" onclick="chooseMode('app')">
+        <span style="font-size:24px;flex-shrink:0;">📱</span>
+        <span><span style="display:block;font-size:15px;letter-spacing:3px;">APP ONLY</span><span style="display:block;font-size:10px;color:var(--cyan-dim);font-weight:400;letter-spacing:1px;margin-top:2px;">Solo or remote — no board needed</span></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="sq" class="screen">
+  <div class="tb">
+    <div class="tbl">GRID<span>LYNX</span></div>
+    <div class="tbm">PLAYER SETUP</div>
+    <button class="bk" onclick="nav('ss')">← BACK</button>
+  </div>
+  <div class="scroll">
+    <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--fd);font-size:26px;font-weight:700;color:var(--text);">Choose Your Role</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">Each player controls one civic domain. Your decisions are private — others see outcomes, not your method.</div>
+    </div>
+    <div class="sl">PLAYERS THIS SESSION</div>
+    <div class="pc sel" id="pc1" onclick="selectPlayer(1)">
+      <div class="pav" style="background:rgba(245,158,11,.1);border-color:var(--amber)">⚡</div>
+      <div><div class="pn">Player 1 — You</div><div class="pd">Energy &amp; Environment</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pc2" onclick="selectPlayer(2)">
+      <div class="pav">🚇</div>
+      <div><div class="pn">Player 2</div><div class="pd">Transportation &amp; Access</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pc3" onclick="selectPlayer(3)">
+      <div class="pav">🏘</div>
+      <div><div class="pn">Player 3</div><div class="pd">Housing &amp; Living Systems</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pc4" onclick="selectPlayer(4)">
+      <div class="pav">🏥</div>
+      <div><div class="pn">Player 4</div><div class="pd">Health, Safety &amp; Care</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pc5" onclick="selectPlayer(5)">
+      <div class="pav">📊</div>
+      <div><div class="pn">Player 5</div><div class="pd">Economy &amp; Work</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pc6" onclick="selectPlayer(6)">
+      <div class="pav">🎓</div>
+      <div><div class="pn">Player 6</div><div class="pd">Education &amp; Skills</div><div class="prl">DOMAIN CONTROLLER</div></div>
+      <div class="psr"></div>
+    </div>
+    <div style="margin:16px 20px 0;padding:12px 14px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:5px;">SHARED GLOBAL LAYERS — ALL PLAYERS</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">⚖️ <strong style="color:var(--text)">Government &amp; Coordination</strong> and 🤝 <strong style="color:var(--text)">Community &amp; Trust</strong> are not controlled by any single player. They respond to collective decisions and act as system-wide multipliers — affecting how well your moves actually land.</div>
+    </div>
+    <div class="sl">SELECT CITY START STATE</div>
+    <div class="mrow">
+      <div class="mo" id="start-stable" onclick="selectStart('stable')"><div class="moi">🟢</div><div class="mon">Stable</div><div class="mos">Heart Core 85</div></div>
+      <div class="mo sel" id="start-strained" onclick="selectStart('strained')"><div class="moi">🟡</div><div class="mon">Strained</div><div class="mos">Heart Core 65</div></div>
+      <div class="mo" id="start-critical" onclick="selectStart('critical')"><div class="moi">🔴</div><div class="mon">Critical</div><div class="mos">Heart Core 40</div></div>
+    </div>
+    <div class="sl">SELECT GAME MODE</div>
+    <div class="mrow">
+      <div class="mo sel" id="mode-hybrid" onclick="selectMode('hybrid')"><div class="moi">🎮</div><div class="mon">Hybrid</div><div class="mos">Board + App</div></div>
+      <div class="mo" id="mode-app" onclick="selectMode('app')"><div class="moi">📱</div><div class="mon">App Only</div><div class="mos">Solo / Remote</div></div>
+    </div>
+    <div style="height:20px;"></div>
+  </div>
+  <div class="ab">
+    <button class="btn btn-s" onclick="nav('ss')">CANCEL</button>
+    <button class="btn btn-p" onclick="nav('so')">START GAME →</button>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="so" class="screen">
+  <div class="tb">
+    <div class="tbl">GRID<span>LYNX</span></div>
+    <div class="tbm" id="mode-label">HYBRID MODE</div>
+    <div class="vm"><div class="vml">VITALITY</div><div class="vmb"><div class="vmf"></div></div></div>
+  </div>
+  <div class="scroll">
+    <div class="ovh">
+      <div class="ove">City Dashboard — Turn 4 of 12</div>
+      <div class="ovc">New Meridian</div>
+      <div class="sps">
+        <span class="pill pa">⚠ STRAINED</span>
+        <span class="pill pc">ROUND 4</span>
+        <span class="pill pr">2 ALERTS</span>
+        <span class="pill pp">⚡ YOUR TURN</span>
+      </div>
+    </div>
+    <div class="hcp">
+      <div class="hcr">
+        <div class="hcorb" id="hcorb" title="Hold 1s to simulate collapse"></div>
+        <div class="hci">
+          <div class="hcl">HEART CORE — CITY VITALITY</div>
+          <div class="hcv">73<span style="font-size:18px;color:var(--text-muted)">/100</span></div>
+          <div class="hcs">Moderate pressure. Two domains degrading.</div>
+        </div>
+        <div class="ti">TURN<span class="tn">4</span>of 12</div>
+      </div>
+      <div class="hcbw">
+        <div class="hcbl"><span>CRITICAL</span><span>STRAINED</span><span>STABLE</span><span>THRIVING</span></div>
+        <div class="hcb"><div class="hcbf"></div></div>
+      </div>
+    </div>
+    <div class="sl">CIVIC DOMAINS — TAP TO MANAGE</div>
+    <div class="dg">
+      <div class="dc g" onclick="openDomain('transport')"><div class="dci">🚇</div><div class="dcn">Transportation &amp; Access</div><div class="dcs">Roads, transit, EVs, drones</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>84</span></div><div class="dcmb"><div class="dcmf" style="width:84%"></div></div></div></div>
+      <div class="dc a" onclick="openDomain('housing')"><div class="dci">🏘</div><div class="dcn">Housing &amp; Living</div><div class="dcs">Shelter, density, smart homes</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>58</span></div><div class="dcmb"><div class="dcmf" style="width:58%"></div></div></div><div class="dcw">⚠ Overcrowding building</div></div>
+      <div class="dc r" onclick="openDomain('energy')"><div class="dci">⚡</div><div class="dcn">Energy &amp; Environment</div><div class="dcs">Grid, renewables, V2G</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>41</span></div><div class="dcmb"><div class="dcmf" style="width:41%"></div></div></div><div class="dcw">🔴 Cascade risk — act now</div></div>
+      <div class="dc g" onclick="openDomain('health')"><div class="dci">🏥</div><div class="dcn">Health, Safety &amp; Care</div><div class="dcs">Emergency, telehealth</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>79</span></div><div class="dcmb"><div class="dcmf" style="width:79%"></div></div></div></div>
+      <div class="dc c" onclick="openDomain('economy')"><div class="dci">📊</div><div class="dcn">Economy &amp; Work</div><div class="dcs">Labor, automation, AI biz</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>66</span></div><div class="dcmb"><div class="dcmf" style="width:66%"></div></div></div></div>
+      <div class="dc a" onclick="openDomain('education')"><div class="dci">🎓</div><div class="dcn">Education &amp; Skills</div><div class="dcs">Reskilling, AI literacy</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>61</span></div><div class="dcmb"><div class="dcmf" style="width:61%"></div></div></div><div class="dcw">⚠ Skills mismatch emerging</div></div>
+    </div>
+    <div class="sl">SHARED GLOBAL LAYERS</div>
+    <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="background:var(--panel);border:1px solid rgba(139,92,246,.3);padding:14px;cursor:pointer;" onclick="nav('str')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:22px;">⚖️</div>
+          <div style="flex:1;">
+            <div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">Government &amp; Coordination</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Shared layer — affects how well all player decisions execute</div>
+            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div style="height:100%;width:72%;background:var(--purple);"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>GOVERNANCE EFFECTIVENESS</span><span style="color:var(--purple)">72 — STRAINED</span></div>
+          </div>
+        </div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--purple);margin-top:10px;letter-spacing:1px;">Active effect: Policy impact at 88% strength · Spillovers +12% · TAP TO VIEW →</div>
+      </div>
+      <div style="background:var(--panel);border:1px solid rgba(6,182,212,.3);padding:14px;cursor:pointer;" onclick="nav('str')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:22px;">🤝</div>
+          <div style="flex:1;">
+            <div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">Community &amp; Trust</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Shared layer — affects how well city accepts and follows decisions</div>
+            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div style="height:100%;width:64%;background:var(--cyan);"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>TRUST &amp; COHESION</span><span style="color:var(--cyan)">64 — TENSE BUT FUNCTIONAL</span></div>
+          </div>
+        </div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);margin-top:10px;letter-spacing:1px;">Active effect: Volatility at baseline · Compliance mixed · TAP TO VIEW →</div>
+      </div>
+    </div>
+  </div>
+  <div class="ab">
+    <button class="btn btn-s" onclick="nav('sev')">📋 EVENTS</button>
+    <button class="btn btn-p" onclick="openDomain('energy')">⚡ URGENT: ENERGY</button>
+  </div>
+  <div class="nt">
+    <button class="ntb act" onclick="nav('so')"><span class="nti">🏙</span><div class="ntl">CITY</div></button>
+    <button class="ntb" onclick="nav('si')"><span class="nti">🪙</span><div class="ntl">INFLUENCE</div></button>
+    <button class="ntb" onclick="nav('sev')"><span class="nti">⚠️</span><div class="ntl">EVENTS</div></button>
+    <button class="ntb" onclick="nav('str')"><span class="nti">🤝</span><div class="ntl">TRUST</div></button>
+  </div>
+</div>
+
+<!-- DOMAIN DETAIL -->
+<div id="sd" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('so')">← CITY</button>
+    <div class="tbm" id="dmt">DOMAIN</div>
+    <div class="vm"><div class="vml">VITALITY</div><div class="vmb"><div class="vmf"></div></div></div>
+  </div>
+  <div class="scroll" id="dcontent"></div>
+  <div class="ab">
+    <button class="btn btn-s" onclick="openStrategic()">STRATEGIC OPTIONS</button>
+    <button class="btn btn-p" onclick="confirmDecision()">CONFIRM DECISION</button>
+  </div>
+</div>
+
+<!-- INFLUENCE -->
+<div id="si" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('so')">← CITY</button>
+    <div class="tbm">INFLUENCE</div>
+    <div></div>
+  </div>
+  <div class="scroll">
+    <div style="padding:16px 20px 0;font-size:12px;color:var(--text-dim);line-height:1.6;">Influence tokens are your private currency. Spend them to override turn order, block audits, or purchase intel on other players.</div>
+    <div class="isb">
+      <div class="ic">💰</div>
+      <div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;">INFLUENCE TOKENS — TURN 4</div>
+        <div style="font-family:var(--fd);font-size:32px;font-weight:700;color:var(--text);" id="infval">28</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:3px;">+8 earned this round · 3 spent</div>
+      </div>
+    </div>
+    <div class="sl">SPEND INFLUENCE</div>
+    <div class="iuc" onclick="spendInf(8,'Emergency override applied — Energy domain acts first this turn')">
+      <div class="iui">⚡</div>
+      <div><div class="iun">Emergency Override</div><div class="iue">Force your domain to act before other players this turn. Critical when cascade risk is imminent.</div><div class="iuco">COST: 8 tokens</div></div>
+    </div>
+    <div class="iuc" onclick="spendInf(12,'Audit shield active — you cannot be audited this round')">
+      <div class="iui">🛡</div>
+      <div><div class="iun">Audit Shield</div><div class="iue">Protect your private actions from audit this turn. Other players see no evidence of irregular activity.</div><div class="iuco">COST: 12 tokens</div></div>
+    </div>
+    <div class="iuc" onclick="spendInf(6,'Intel purchased — a hidden action partially revealed')">
+      <div class="iui">🔍</div>
+      <div><div class="iun">Purchase Intel</div><div class="iue">Reveal a partial view of another player's private action from last turn.</div><div class="iuco">COST: 6 tokens</div></div>
+    </div>
+    <div class="iuc" onclick="nav('sa')">
+      <div class="iui">🔎</div>
+      <div><div class="iun">Call Audit — Player 3</div><div class="iue">Trigger a formal audit of Housing &amp; Living. If corruption found, domain control transfers. If clean, you lose credibility.</div><div class="iuco">COST: 15 tokens · TAP TO PROCEED →</div></div>
+    </div>
+    <div class="sl">INFLUENCE LOG</div>
+    <div style="padding:0 20px 20px;">
+      <div class="ili"><div><div class="ild">Emergency Load Balancing committed</div><div class="ilt">Turn 4 · Energy</div></div><div class="ilv pos">+14</div></div>
+      <div class="ili"><div><div class="ild">Audit shield purchased</div><div class="ilt">Turn 3</div></div><div class="ilv neg">−12</div></div>
+      <div class="ili"><div><div class="ild">Domain stability bonus (health &gt;40)</div><div class="ilt">Turn 3 · End of round</div></div><div class="ilv pos">+10</div></div>
+      <div class="ili"><div><div class="ild">Deferred Maintenance Redirect (private)</div><div class="ilt">Turn 2</div></div><div class="ilv pos">+14</div></div>
+      <div class="ili"><div><div class="ild">Intel purchased on Player 2</div><div class="ilt">Turn 2</div></div><div class="ilv neg">−6</div></div>
+      <div class="ili"><div><div class="ild">Starting allocation</div><div class="ilt">Turn 1</div></div><div class="ilv pos">+8</div></div>
+    </div>
+  </div>
+  <div class="nt">
+    <button class="ntb" onclick="nav('so')"><span class="nti">🏙</span><div class="ntl">CITY</div></button>
+    <button class="ntb act"><span class="nti">🪙</span><div class="ntl">INFLUENCE</div></button>
+    <button class="ntb" onclick="nav('sev')"><span class="nti">⚠️</span><div class="ntl">EVENTS</div></button>
+    <button class="ntb" onclick="nav('str')"><span class="nti">🤝</span><div class="ntl">TRUST</div></button>
+  </div>
+</div>
+
+<!-- STRATEGIC OPTIONS (private channel — looks like normal decisions) -->
+<div id="sc2" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('sd')">← DOMAIN</button>
+    <div class="tbm">STRATEGIC OPTIONS</div>
+    <div class="vm"><div class="vml">VITALITY</div><div class="vmb"><div class="vmf"></div></div></div>
+  </div>
+  <div class="scroll">
+    <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;margin-bottom:6px;">YOUR DOMAIN — TURN 4</div>
+      <div id="sc2-title" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Strategic Options</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">These options are available to you privately this turn. Other players will see the system outcome — not how you produced it.</div>
+    </div>
+    <div class="sl">AVAILABLE THIS TURN</div>
+    <div id="sc2-options" style="padding:0 20px 20px;"></div>
+  </div>
+  <div class="ab">
+    <button class="btn btn-s" onclick="nav('sd')">← GO BACK</button>
+    <button class="btn btn-p" onclick="commitStrategic()">COMMIT ACTION</button>
+  </div>
+</div>
+
+<!-- AUDIT -->
+<div id="sa" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('si')">← INFLUENCE</button>
+    <div class="tbm" style="color:var(--purple);border-color:rgba(139,92,246,.4)">AUDIT INITIATED</div>
+    <div></div>
+  </div>
+  <div class="scroll">
+    <div class="auh"><div class="aui">🔎</div><div class="aut">AUDIT CALLED</div><div class="aus">You have formally challenged Player 3's Housing &amp; Living decisions. The city sees the audit — not the result until it resolves.</div></div>
+    <div class="augt"><div class="augtl">AUDIT TARGET</div><div class="augtn">Player 3 — Housing &amp; Living Systems</div><div class="augts">Last action: Density Adjustment Program · Turn 3</div></div>
+    <div class="aum"><div class="auml">ESTIMATED CORRUPTION RISK</div><div class="aurb"><div class="aurf"></div></div><div class="aurv">35%</div><div class="aurs">Based on intel purchased Turn 2. Actual risk may differ.</div></div>
+    <div style="padding:14px 20px 0;">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">POSSIBLE OUTCOMES</div>
+      <div class="auoc"><div class="auos" style="color:var(--green)">✓ CLEAN — Corruption not found</div><div class="auoe">Player 3 retains domain control. You lose 8 credibility points and 15 influence tokens. Trust unchanged.</div></div>
+      <div class="auoc"><div class="auos" style="color:var(--red)">✗ EXPOSED — Corruption confirmed</div><div class="auoe">Player 3 loses domain control for 2 turns. Trust −15. You gain 20 influence tokens and take temporary oversight of Housing.</div></div>
+    </div>
+    <div id="auditresult"></div>
+    <div style="height:16px;"></div>
+  </div>
+  <div class="ab" id="auditbar">
+    <button class="btn btn-s" onclick="nav('si')">← CANCEL</button>
+    <button class="btn btn-pu" onclick="runAudit()">RUN AUDIT →</button>
+  </div>
+</div>
+
+<!-- TURN END -->
+<div id="ste" class="screen">
+  <div class="tb">
+    <div class="tbl">GRID<span>LYNX</span></div>
+    <div class="tbm">TURN RESOLVED</div>
+    <div></div>
+  </div>
+  <div class="scroll">
+    <div class="teh"><div class="teb">END OF TURN 4</div><div class="tet">Consequences Revealed</div><div class="tes">All domain decisions are now public. Review what happened this round.</div></div>
+    <div class="tehc">
+      <div class="tehco"></div>
+      <div><div class="techl">HEART CORE THIS TURN</div><div class="techv" style="color:var(--amber)">73 → 68</div><div class="techp">−5 pts · Energy cascade partially contained</div></div>
+    </div>
+    <div class="teal"><div class="teall">🔴 CASCADE WARNING</div><div class="tealt">Energy strain spilled into Housing. Power continuity in smart homes degraded. Health sector backup systems activated. If Energy falls below 35 next turn, full cascade initiates.</div></div>
+    <div class="tecc"><div class="teccl">⚠ SPILLOVER CHAIN ACTIVE</div><div class="tecct">Player 2 (Housing) passed this turn. Combined with Energy degradation, overcrowding pressure accelerated. Education skills mismatch compounding Economy slowdown.</div></div>
+    <div class="sl">WHAT EACH PLAYER DID</div>
+    <div style="padding:0 20px 20px;">
+      <div class="teci"><div class="teco">⚡</div><div><div class="tecd">Energy &amp; Environment — You</div><div class="teca">Emergency Load Balancing committed</div></div><div class="tecd2 pos">+18</div></div>
+      <div class="teci"><div class="teco">🚇</div><div><div class="tecd">Transportation &amp; Access</div><div class="teca">Expand EV Charging Network</div></div><div class="tecd2 pos">+12</div></div>
+      <div class="teci"><div class="teco">🏘</div><div><div class="tecd">Housing &amp; Living</div><div class="teca">Passed — no action taken</div></div><div class="tecd2 neg">−6</div></div>
+      <div class="teci"><div class="teco">🏥</div><div><div class="tecd">Health, Safety &amp; Care</div><div class="teca">Crisis Mental Health Response</div></div><div class="tecd2 pos">+8</div></div>
+      <div class="teci"><div class="teco">📊</div><div><div class="tecd">Economy &amp; Work</div><div class="teca">Gig Economy Protections enacted</div></div><div class="tecd2 pos">+6</div></div>
+      <div class="teci"><div class="teco">⚖️</div><div><div class="tecd">Government &amp; Coordination</div><div class="teca">Airspace Governance Framework started</div></div><div class="tecd2 nt">+8 (slow)</div></div>
+      <div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim)">
+        <div class="teco">🕵️</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">❓</div>
+      </div>
+    </div>
+  </div>
+  <div class="ab">
+    <button class="btn btn-s" onclick="nav('sa')">🔎 CALL AUDIT</button>
+    <button class="btn btn-p" onclick="nav('so')">BEGIN TURN 5 →</button>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div id="str" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('so')">← CITY</button>
+    <div class="tbm">TRUST INDEX</div>
+    <div></div>
+  </div>
+  <div class="scroll">
+    <div class="trb">
+      <div class="trg"><div class="trgv">64</div></div>
+      <div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:2px;">COMMUNITY &amp; TRUST</div>
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Fragile Stability</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;">Cohesion holding, but equity tensions mounting. Surveillance raised mistrust.</div>
+      </div>
+    </div>
+    <div class="sl" style="padding-top:0;">TRUST FACTORS</div>
+    <div class="trf"><div class="tft"><div class="tfn">Social Cohesion</div><div class="tfv" style="color:var(--cyan)">71</div></div><div class="tfb"><div class="tff" style="width:71%;background:var(--cyan)"></div></div><div class="tfd">Mutual aid networks active. No major protests this round.</div></div>
+    <div class="trf"><div class="tft"><div class="tfn">Equity &amp; Fairness Perception</div><div class="tfv" style="color:var(--amber)">52</div></div><div class="tfb"><div class="tff" style="width:52%;background:var(--amber)"></div></div><div class="tfd">Zoning decisions perceived as benefiting wealthy districts.</div></div>
+    <div class="trf"><div class="tft"><div class="tfn">Information Integrity</div><div class="tfv" style="color:var(--red)">44</div></div><div class="tfb"><div class="tff" style="width:44%;background:var(--red)"></div></div><div class="tfd">Misinformation spreading about energy failures. Gov comms lagging.</div></div>
+    <div class="trf"><div class="tft"><div class="tfn">Compliance &amp; Rule Legitimacy</div><div class="tfv" style="color:var(--green)">78</div></div><div class="tfb"><div class="tff" style="width:78%;background:var(--green)"></div></div><div class="tfd">Citizens broadly following emergency protocols.</div></div>
+    <div class="spp2">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:8px;">SURVEILLANCE SPILLOVER (Gov → Trust)</div>
+      <div class="spi"><div class="spd">Crime visibility</div><div class="spe pos">↑ +12</div></div>
+      <div class="spi"><div class="spd">Perceived freedom</div><div class="spe neg">↓ −8</div></div>
+      <div class="spi"><div class="spd">Equity concerns</div><div class="spe neg">↓ −11</div></div>
+    </div>
+  </div>
+  <div class="nt">
+    <button class="ntb" onclick="nav('so')"><span class="nti">🏙</span><div class="ntl">CITY</div></button>
+    <button class="ntb" onclick="nav('si')"><span class="nti">🪙</span><div class="ntl">INFLUENCE</div></button>
+    <button class="ntb" onclick="nav('sev')"><span class="nti">⚠️</span><div class="ntl">EVENTS</div></button>
+    <button class="ntb act"><span class="nti">🤝</span><div class="ntl">TRUST</div></button>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div id="sev" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('so')">← CITY</button>
+    <div class="tbm">CITY EVENTS</div>
+    <div></div>
+  </div>
+  <div class="scroll" style="padding-bottom:20px;">
+    <div class="sl">ACTIVE THIS TURN — RESPOND BEFORE END OF ROUND</div>
+    <div class="evc cr" id="ev1">
+      <div class="evch"><div class="evt">🔴 CRISIS EVENT</div></div>
+      <div class="evb"><div class="evti">Rolling Brownouts — Eastside Grid</div><div class="evde">Eastern energy microgrid is failing. Data center loads from Turn 3 exceeded capacity. Cascading outages beginning in housing and health sectors.</div>
+      <div class="evim"><div class="evip neg">Energy −18</div><div class="evip neg">Housing −9</div><div class="evip neg">Health −6</div><div class="evip neg">Trust −4</div></div></div>
+      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev1','Emergency power allocation committed')">EMERGENCY RESPONSE</button><button class="evbtn de" onclick="resolveEv('ev1','Deferred — strain compounds next turn','d')">DEFER</button></div>
+    </div>
+    <div class="evc po" id="ev2">
+      <div class="evch"><div class="evt">🔵 POLICY WINDOW</div></div>
+      <div class="evb"><div class="evti">Federal Reskilling Grant — AI Workforce</div><div class="evde">A federal grant opened a window for workforce reskilling. Accepting reallocates 12 influence tokens but boosts Education and Economy over 3 turns.</div>
+      <div class="evim"><div class="evip pos">Education +16</div><div class="evip pos">Economy +8</div><div class="evip neg">Influence −12</div></div></div>
+      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev2','Grant accepted — Education +16 queued')">ACCEPT GRANT</button><button class="evbtn de" onclick="resolveEv('ev2','Grant window closed — opportunity lost','d')">DECLINE</button></div>
+    </div>
+    <div class="evc op" id="ev3">
+      <div class="evch"><div class="evt">🟢 OPPORTUNITY</div></div>
+      <div class="evb"><div class="evti">eVTOL Corridor License</div><div class="evde">An aerial mobility company has approached about licensing airspace corridors for flying taxis. Boosts Transport and Economy but creates Gov friction.</div>
+      <div class="evim"><div class="evip pos">Transport +14</div><div class="evip pos">Economy +10</div><div class="evip neg">Gov friction −7</div></div></div>
+      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev3','eVTOL corridor approved — airspace licensed')">APPROVE LICENSE</button><button class="evbtn de" onclick="resolveEv('ev3','License declined','d')">DECLINE</button></div>
+    </div>
+    <div style="margin:16px 20px 0;padding:12px 14px;background:var(--panel);border:1px solid var(--border);">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">WHEN ALL EVENTS ARE RESOLVED</div>
+      <button class="btn btn-c" style="width:100%;clip-path:none;" onclick="nav('ste')">→ END TURN &amp; SEE CONSEQUENCES</button>
+    </div>
+  </div>
+  <div class="nt">
+    <button class="ntb" onclick="nav('so')"><span class="nti">🏙</span><div class="ntl">CITY</div></button>
+    <button class="ntb" onclick="nav('si')"><span class="nti">🪙</span><div class="ntl">INFLUENCE</div></button>
+    <button class="ntb act"><span class="nti">⚠️</span><div class="ntl">EVENTS</div></button>
+    <button class="ntb" onclick="nav('str')"><span class="nti">🤝</span><div class="ntl">TRUST</div></button>
+  </div>
+</div>
+
+<!-- COLLAPSE -->
+<div id="scol" class="screen" style="flex-direction:column;">
+  <div class="coli">💀</div>
+  <div class="colt">CITY COLLAPSE</div>
+  <div style="font-family:var(--fm);font-size:11px;color:var(--red);margin-top:6px;">Heart Core reached 0 — Turn 7</div>
+  <div class="cold">New Meridian's systems failed. The cascade began in Energy and spread faster than governance could respond.</div>
+  <div class="coldiv"></div>
+  <div class="colch">
+    <div class="colcht">FAILURE CASCADE SEQUENCE</div>
+    <div class="colchi">⚡ Energy grid destabilized → Turn 5</div>
+    <div class="colchi">🏘 Housing lost power continuity → Turn 6</div>
+    <div class="colchi">🏥 Emergency services overwhelmed → Turn 6</div>
+    <div class="colchi">🤝 Community trust collapsed → Turn 7</div>
+    <div class="colchi">💀 Heart Core: 0 → COLLAPSE</div>
+  </div>
+  <button class="btn btn-p" style="max-width:240px;margin:0 auto;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);" onclick="nav('sq')">↩ NEW GAME</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const domains={
+  transport:{name:'Transportation & Access',icon:'🚇',color:'g',cv:'var(--green)',health:84,status:'STABLE',
+    win:'Achieve city-wide mobility score ≥ 90 with at least one aerial corridor licensed and operational.',
+    desc:'Roads, transit networks, EV infrastructure, aerial corridors, drones, and tele-services that reduce travel demand.',
+    decisions:[{name:'Expand EV Charging Network',effect:'Deploy 200 new EV charging stations across underserved districts. Supports V2G integration with Energy domain.',tags:[{l:'Transport +12',c:'p'},{l:'Energy synergy',c:'i'},{l:'Equity +6',c:'p'}]},{name:'Fast-Track eVTOL Corridors',effect:'Approve aerial mobility licensing for flying taxi routes. Accelerates economy but creates airspace governance friction.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}]},{name:'Drone Delivery Infrastructure',effect:'Build out drone delivery infrastructure to reduce freight congestion on surface roads.',tags:[{l:'Transport +8',c:'p'},{l:'Economy +5',c:'p'},{l:'Airspace rules needed',c:'w'}]},{name:'Maintain Current Systems',effect:'No new investment. System holds at current capacity.',tags:[{l:'Stable',c:'i'},{l:'No cost',c:'p'}]}],
+    pass:'Delay transit decisions. Congestion compounds — access inequality increases.',
+    strategic:[
+      {name:'Sole-Source Contract Award',effect:'Accelerate EV charging buildout by directing contract to a preferred vendor without competitive bidding. Deployment timeline cuts by 40%.',gain:'Transport +10, Timeline −2 turns',city:'City maintenance budget absorbs 6pts of hidden strain'},
+      {name:'Toll Revenue Redirect',effect:'Quietly reclassify toll revenue as a discretionary budget line. Funds a private mobility pilot ahead of public approval.',gain:'+12 influence tokens',city:'Equity score drops as access costs shift to lower-income riders'},
+      {name:'Freight Corridor Favoritism',effect:'Approve a freight operator preferred corridor routing over the community route. Faster permitting, cleaner numbers.',gain:'Transport +8, Economy +5',city:'Residential noise and congestion pressure increases — Community Trust −5 next turn'}
+    ],
+    sp:[{d:'Economy & Work',e:'Access inequality reduces labor mobility',dir:'neg'},{d:'Housing & Living',e:'Commute burden on distant residents increases',dir:'neg'}]},
+  housing:{name:'Housing & Living Systems',icon:'🏘',color:'a',cv:'var(--amber)',health:58,status:'STRAINED',
+    win:'Reach housing health ≥ 85 with zero active overcrowding alerts and at least one smart home energy program deployed.',
+    desc:'Residential systems, affordable housing, smart home energy nodes, in-home care, and shelter-in-place survivability.',
+    decisions:[{name:'Density Adjustment Program',effect:'Upzone targeted districts to increase housing capacity. Short-term displacement pressure, long-term supply relief.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}]},{name:'Affordable Housing Investment',effect:'Commit funds to below-market-rate units. Reduces overcrowding and improves equity perception.',tags:[{l:'Housing +9',c:'p'},{l:'Equity +11',c:'p'},{l:'Budget −14',c:'m'}]},{name:'Smart Home Energy Nodes',effect:'Subsidize V2H (vehicle-to-home) installations. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'},{l:'Expensive',c:'w'}]},{name:'Maintain Housing Stock',effect:'Prevent further deterioration. Holds current score.',tags:[{l:'Prevents strain',c:'i'}]}],
+    pass:'Avoid housing decisions. Overcrowding increases — survivability in next crisis drops.',
+    strategic:[
+      {name:'Zoning Variance — Fast Track',effect:'Approve a high-density development project outside normal public review. Units come online two turns early.',gain:'Housing +14, Developer influence +10',city:'Community consultation skipped — Trust −8 if surfaced; displaced residents increase healthcare load'},
+      {name:'Building Code Flexibility',effect:'Waive select fire and air quality standards for one development to accelerate permitting. Looks like deregulation, not a shortcut.',gain:'Housing +9, Budget savings +8',city:'Shelter-in-place survivability rating drops — surfaces as Health domain vulnerability in crisis events'},
+      {name:'Inspection Deferral',effect:'Defer mandatory inspections on three buildings until next quarter. Frees up staffing capacity to accelerate other projects.',gain:'+8 influence tokens, Unblocks 2 stalled permits',city:'Hidden structural risk accumulates — 20% chance of triggering crisis event next turn'}
+    ],
+    sp:[{d:'Health, Safety & Care',e:'Overcrowded households increase disease spread risk',dir:'neg'},{d:'Energy & Environment',e:'V2H capacity reduces grid pressure when deployed',dir:'pos'}]},
+  energy:{name:'Energy & Environment',icon:'⚡',color:'r',cv:'var(--red)',health:41,status:'CRITICAL',
+    win:'Stabilize the grid at ≥ 80 health with at least 2 neighborhood microgrids operational and no active cascade warnings.',
+    desc:'Power grid, renewables, V2G systems, microgrids, water treatment, stormwater, and climate resilience programs.',
+    decisions:[{name:'Emergency Load Balancing',effect:'Stabilize the eastern microgrid through emergency load redistribution. Prevents cascade this turn — buys two rounds.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget −10',c:'m'}]},{name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar + battery storage in three priority districts. Long-term resilience investment.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}]},{name:'Temporary Power Purchase',effect:'Buy power from regional grid to cover shortfall. Fast, expensive, prevents immediate crisis.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget −18',c:'m'}]},{name:'Maintain Grid Integrity Only',effect:'Minimal intervention — patch known failure points without structural improvement.',tags:[{l:'Energy +4',c:'p'},{l:'Cascade risk remains',c:'m'}]}],
+    pass:'Delay energy decisions. System volatility increases — cascade failure likely next turn.',
+    strategic:[
+      {name:'Environmental Monitoring Pause',effect:'Temporarily suspend automated air and water quality reporting to free up grid capacity for priority load. Presented as routine maintenance.',gain:'Energy +12, Grid headroom recovered',city:'Environmental backlash risk if surfaced — Community Trust −10; Health domain loses early warning data'},
+      {name:'Off-Book Load Agreement',effect:'Arrange informal load-sharing agreement with a neighboring utility outside standard procurement. Solves the shortfall this turn without budget approval.',gain:'Energy +10, No budget hit',city:'Creates governance exposure — unregistered agreement surfaces as audit risk next turn'},
+      {name:'Emission Credit Reallocation',effect:'Quietly reclassify emissions credits from a retired plant to offset current output. Buys two more turns before compliance review.',gain:'+14 influence tokens, Regulatory clock reset',city:'If discovered, triggers federal review — Energy domain takes −20 and all other players see the finding'}
+    ],
+    sp:[{d:'Housing & Living',e:'Power outages compromise smart homes and in-home care',dir:'neg'},{d:'Health, Safety & Care',e:'Hospital backup power strained — response time increases',dir:'neg'},{d:'Economy & Work',e:'Data center outages disrupt digital economy operations',dir:'neg'}]},
+  health:{name:'Health, Safety & Care',icon:'🏥',color:'g',cv:'var(--green)',health:79,status:'STABLE',
+    win:'Sustain health score ≥ 85 with telehealth covering 60%+ of districts and no burnout alerts active.',
+    desc:'Hospitals, emergency services, fire, police, public health, mental health, remote care, and caregiver workforce.',
+    decisions:[{name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person hospital load. Shifts care from institutions to homes.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}]},{name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to high-stress districts following energy brownouts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}]},{name:'Maintain Emergency Readiness',effect:'Maintain current staffing and equipment. System holds.',tags:[{l:'Stable',c:'i'}]}],
+    pass:'Delay care decisions. Burnout accelerates — response time degrades next crisis.',
+    strategic:[
+      {name:'Triage Prioritization Adjustment',effect:'Quietly reprioritize emergency response protocols to favor districts with higher property values. Response times improve in your metrics while coverage gaps widen elsewhere.',gain:'Health score +10, Response metric improves',city:'Care access inequality increases — equity factor in Trust drops 8pts if surfaced'},
+      {name:'Staffing Data Smoothing',effect:'Adjust how burnout and vacancy data is reported. Numbers look stable this turn — buys time to recruit without triggering a crisis flag.',gain:'+8 influence tokens, Burnout alert suppressed',city:'Underlying staffing fragility persists — 30% chance next crisis event hits at double severity'},
+      {name:'Procurement Redirect',effect:'Reroute a supply contract to a vendor with faster delivery, bypassing standard approval. Equipment arrives this turn instead of next.',gain:'Health +7, Equipment 1 turn early',city:'Off-contract procurement creates audit exposure — surfaces in Turn End if another player calls review'}
+    ],
+    sp:[{d:'Community & Trust',e:'Visible care investment increases perceived government legitimacy',dir:'pos'}]},
+  economy:{name:'Economy & Work',icon:'📊',color:'c',cv:'var(--cyan)',health:66,status:'MODERATE',
+    win:'Grow economy score to ≥ 80 with a full workforce transition program active and no capital flight warnings.',
+    desc:'Businesses, labor markets, automation, AI-managed businesses, gig economy, and digital asset streams.',
+    decisions:[{name:'Workforce Automation Transition',effect:'Support businesses automating mid-skill roles. Boosts productivity but displaces workers.',tags:[{l:'Economy +14',c:'p'},{l:'Jobs displaced',c:'m'},{l:'Education dependency',c:'w'}]},{name:'Gig Economy Protections',effect:'Establish minimum protections for platform and gig workers. Reduces income volatility, improves trust.',tags:[{l:'Economy +6',c:'p'},{l:'Trust +9',c:'p'},{l:'Business friction',c:'w'}]},{name:'Digital Asset Economy Zone',effect:'Establish a licensed digital asset and AI business zone. High energy cost creates tension with Energy domain.',tags:[{l:'Economy +16',c:'p'},{l:'Energy strain +8',c:'m'},{l:'Tax revenue +',c:'p'}]}],
+    pass:'Avoid economic decisions. Income shocks compound — capital flight risk increases.',
+    strategic:[
+      {name:'Regulatory Capture — Quiet Edition',effect:'Build a behind-the-scenes advisory relationship with a major platform operator. Their compliance burden drops; your economic metrics improve.',gain:'Economy +12, +10 influence tokens',city:'Small business competitive pressure increases — Trust −6 if the relationship surfaces publicly'},
+      {name:'Tax Base Reclassification',effect:'Reclassify a profitable commercial zone as mixed-use to reduce its tax burden. Keeps them local and growing — without the public debate.',gain:'Economy +9, Prevents capital flight this turn',city:'Municipal revenue gap quietly opens — Government effectiveness drops 4pts next turn'},
+      {name:'Gig Platform Kickback',effect:'Approve a favorable operating license for a gig platform in exchange for an off-the-books economic stimulus arrangement.',gain:'+16 influence tokens',city:'Worker protections weaken — if surfaced, Trust −15 and Economy loses the benefit entirely'}
+    ],
+    sp:[{d:'Education & Skills',e:'Automation displacement requires parallel reskilling investment',dir:'neg'},{d:'Energy & Environment',e:'Digital asset zones increase grid load significantly',dir:'neg'}]},
+  education:{name:'Education & Skills',icon:'🎓',color:'a',cv:'var(--amber)',health:61,status:'STRAINED',
+    win:'Achieve education score ≥ 80 with AI literacy program active citywide and reskilling centers operational in at least 3 districts.',
+    desc:'Schools, universities, vocational training, AI literacy, workforce reskilling, and continuous learning infrastructure.',
+    decisions:[{name:'AI & Digital Literacy Program',effect:'City-wide initiative to build AI literacy across all age groups.',tags:[{l:'Education +12',c:'p'},{l:'Economy prep',c:'i'},{l:'3-turn payoff',c:'w'}]},{name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling intensive programs for workers displaced by automation.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'},{l:'Budget −12',c:'m'}]},{name:'Energy & Climate Workforce',effect:'Train new cohort of microgrid technicians and climate resilience workers.',tags:[{l:'Education +8',c:'p'},{l:'Energy support +6',c:'p'}]}],
+    pass:'Skip education investment. Skills mismatch deepens — long-term economic decline accelerates.',
+    strategic:[
+      {name:'Credential Fast-Tracking',effect:'Partner with a private credentialing body to issue accelerated certifications. Workforce numbers improve this turn; rigor of training is not audited.',gain:'Education +10, Labor supply +8 this turn',city:'Skills quality gap widens — Economy domain absorbs a hidden −6 productivity penalty over 3 turns'},
+      {name:'Grant Reporting Adjustment',effect:'Reclassify how workforce training outcomes are reported to a federal grant program. Metrics look strong; renewal is assured.',gain:'+12 influence tokens, Grant renewal secured',city:'Actual reskilling gaps go unreported — surfaces if Economy domain requests workforce data next turn'},
+      {name:'Institutional Preference Redirect',effect:'Quietly steer a discretionary research contract to a connected institution over the higher-scoring applicant.',gain:'Education +7, +8 influence tokens',city:'Innovation pipeline weakens slightly — if surfaced, Trust −8 and the favored institution loses 2 turns of output'}
+    ],
+    sp:[{d:'Economy & Work',e:'Skilled labor shortages compound automation displacement',dir:'neg'},{d:'Energy & Environment',e:'Trained technicians accelerate microgrid deployment',dir:'pos'}]}
+};
+
+let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid';
+
+function nav(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function chooseMode(m){
+  selectedMode=m;
+  ['hybrid','app'].forEach(id=>document.getElementById('mode-'+id).classList.remove('sel'));
+  document.getElementById('mode-'+m).classList.add('sel');
+  const labels={hybrid:'HYBRID MODE',app:'APP ONLY MODE'};
+  document.getElementById('mode-label').textContent=labels[m];
+  nav('sq');
+}
+
+function selectPlayer(n){document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));document.getElementById('pc'+n).classList.add('sel');}
+function selectMode(m){['hybrid','app','board'].forEach(id=>document.getElementById('mode-'+id).classList.remove('sel'));document.getElementById('mode-'+m).classList.add('sel');}
+function selectStart(s){cityStart=s;['stable','strained','critical'].forEach(id=>document.getElementById('start-'+id).classList.remove('sel'));document.getElementById('start-'+s).classList.add('sel');}
+
+function openDomain(key){
+  curDomain=key;selDec=null;
+  const d=domains[key];
+  const cm={g:'var(--green)',a:'var(--amber)',r:'var(--red)',c:'var(--cyan)'}[d.color];
+  document.getElementById('dmt').textContent=d.name.toUpperCase();
+  const decs=d.decisions.map((dec,i)=>{
+    const tags=dec.tags.map(t=>`<span class="dt dt-${t.c}">${t.l}</span>`).join('');
+    return `<div class="dcard" id="dec${i}" onclick="selDec2(${i})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
+  }).join('');
+  const sps=d.sp.map(s=>`<div class="spi"><div class="spd">${s.d}</div><div class="spe ${s.dir}">${s.dir==='neg'?'↓ Negative pressure':'↑ Positive synergy'}</div></div>`).join('');
+  document.getElementById('dcontent').innerHTML=`
+    <div style="padding:12px 20px;background:rgba(245,158,11,.04);border-bottom:1px solid rgba(245,158,11,.15);display:flex;gap:12px;align-items:flex-start;">
+      <div style="font-size:18px;flex-shrink:0;">🎯</div>
+      <div>
+        <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;">YOUR WIN OBJECTIVE</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">${d.win}</div>
+      </div>
+    </div>
+    <div class="ddh"><div class="ddbg">${d.icon}</div><div class="ddi">${d.icon}</div><div class="ddn">${d.name}</div><div class="ddd">${d.desc}</div><div class="ddr"><div class="gauge"><div class="gb"><div class="gf" style="width:${d.health}%;background:${cm}"></div></div><div class="gn"><span>0</span><span style="color:${cm};font-weight:600">${d.health}/100</span><span>100</span></div></div><div class="sbadge" style="color:${cm};border-color:${cm}">${d.status}</div></div></div>
+    <div class="as"><div class="asl">Your decision this turn</div>${decs}<div class="pcard" id="decpass" onclick="selDec2('pass')"><div class="drad"></div><div><div class="plbl">Pass — Take no action</div><div class="pcon">${d.pass}</div></div></div><div class="spp"><div class="spt">CROSS-DOMAIN SPILLOVER EFFECTS</div>${sps}</div></div>`;
+  nav('sd');
+}
+
+function selDec2(i){selDec=i;document.querySelectorAll('.dcard,.pcard').forEach(c=>c.classList.remove('sel'));const el=i==='pass'?document.getElementById('decpass'):document.getElementById('dec'+i);if(el)el.classList.add('sel');}
+function confirmDecision(){if(selDec===null){showToast('Select a decision first');return;}const d=domains[curDomain];const msg=selDec==='pass'?'Pass recorded — consequences apply next turn':`"${d.decisions[selDec].name}" committed`;showToast(msg);setTimeout(()=>nav('ste'),1200);}
+
+function openStrategic(){
+  chosenStrategic=null;
+  const d=domains[curDomain];
+  document.getElementById('sc2-title').textContent=d.icon+' '+d.name;
+  const html=d.strategic.map((s,i)=>`
+    <div onclick="selStrategic(${i})" id="so${i}" style="background:var(--panel);border:1px solid var(--border);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--border-bright)'" onmouseout="if(!this.classList.contains('selopt'))this.style.borderColor='var(--border)'">
+      <div style="font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);">${s.name}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;">${s.effect}</div>
+      <div style="font-family:var(--fm);font-size:9px;color:var(--green);margin-top:8px;letter-spacing:1px;">OUTCOME: ${s.gain}</div>
+    </div>`).join('');
+  document.getElementById('sc2-options').innerHTML=html;
+  nav('sc2');
+}
+
+function selStrategic(i){
+  chosenStrategic=i;
+  document.querySelectorAll('[id^="so"]').forEach(el=>{el.style.borderColor='var(--border)';el.classList.remove('selopt');});
+  const el=document.getElementById('so'+i);
+  if(el){el.style.borderColor='var(--amber)';el.style.background='var(--amber-glow)';el.classList.add('selopt');}
+}
+function commitStrategic(){
+  if(chosenStrategic===null){showToast('Select an option first');return;}
+  const d=domains[curDomain];
+  const s=d.strategic[chosenStrategic];
+  showToast(s.name+' — committed privately');
+  setTimeout(()=>nav('ste'),1300);
+}
+
+function selCorrupt(n){chosenStrategic=n;}
+
+function spendInf(cost,msg){if(infBal<cost){showToast('Insufficient influence tokens');return;}infBal-=cost;document.getElementById('infval').textContent=infBal;showToast(msg);}
+
+function runAudit(){
+  const exposed=Math.random()<0.35;
+  const ra=document.getElementById('auditresult');
+  const ab=document.getElementById('auditbar');
+  ra.innerHTML=exposed
+    ?`<div class="aurz exp" style="margin:16px 20px 0"><div class="aurzt">⚠ EXPOSED</div><div class="aurzd">Corruption confirmed in Housing &amp; Living. Player 3 loses domain control for 2 turns. Trust index −15. You gain 20 influence tokens.</div></div>`
+    :`<div class="aurz clean" style="margin:16px 20px 0"><div class="aurzt">✓ CLEAN</div><div class="aurzd">No corruption found. Player 3 retains domain control. You lose 8 credibility points and 15 influence tokens.</div></div>`;
+  ab.innerHTML=`<button class="btn btn-p" style="width:100%;" onclick="nav('ste')">CONTINUE → END OF TURN</button>`;
+  window.scrollTo(0,9999);
+}
+
+function resolveEv(id,msg,type){
+  const card=document.getElementById(id);
+  card.classList.add('resolved');
+  const b=document.createElement('div');
+  b.className='evrb';
+  b.textContent=type==='d'?'⏭ DEFERRED — consequences carry forward':'✓ RESOLVED — '+msg;
+  card.appendChild(b);
+  showToast(msg);
+}
+
+let pt;
+document.addEventListener('DOMContentLoaded',()=>{
+  const orb=document.getElementById('hcorb');
+  if(!orb)return;
+  const s=()=>{pt=setTimeout(()=>nav('scol'),1000);};
+  const e=()=>clearTimeout(pt);
+  orb.addEventListener('mousedown',s);orb.addEventListener('mouseup',e);
+  orb.addEventListener('touchstart',s);orb.addEventListener('touchend',e);
+});
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
