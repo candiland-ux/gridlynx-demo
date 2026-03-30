@@ -364,43 +364,43 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="scroll">
     <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border);">
-      <div style="font-family:var(--fd);font-size:26px;font-weight:700;color:var(--text);">Choose Your Role</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">Each player controls one civic domain. Your decisions are private — others see outcomes, not your method.</div>
+      <div style="font-family:var(--fd);font-size:26px;font-weight:700;color:var(--text);">Choose Your Domain</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">You control one domain. You can only make decisions inside it. Other players see the city — not your numbers, not your moves.</div>
     </div>
-    <div class="sl">PLAYERS THIS SESSION</div>
-    <div class="pc sel" id="pc1" onclick="selectPlayer(1)">
-      <div class="pav" style="background:rgba(245,158,11,.1);border-color:var(--amber)">⚡</div>
-      <div><div class="pn">Player 1 — You</div><div class="pd">Energy &amp; Environment</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="sl">SELECT YOUR DOMAIN</div>
+    <div class="pc" id="pd-energy" onclick="selectDomain('energy')">
+      <div class="pav" style="background:rgba(239,68,68,.1);border-color:var(--red)">⚡</div>
+      <div><div class="pn">Energy &amp; Environment</div><div class="pd">Grid, renewables, V2G, microgrids, climate</div><div class="prl">WIN: Stabilize grid ≥ 80 with 2 microgrids active</div></div>
       <div class="psr"></div>
     </div>
-    <div class="pc" id="pc2" onclick="selectPlayer(2)">
-      <div class="pav">🚇</div>
-      <div><div class="pn">Player 2</div><div class="pd">Transportation &amp; Access</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="pc" id="pd-transport" onclick="selectDomain('transport')">
+      <div class="pav" style="background:rgba(16,185,129,.1);border-color:var(--green)">🚇</div>
+      <div><div class="pn">Transportation &amp; Access</div><div class="pd">Roads, transit, EVs, drones, aerial corridors</div><div class="prl">WIN: Mobility score ≥ 90 with aerial corridor licensed</div></div>
       <div class="psr"></div>
     </div>
-    <div class="pc" id="pc3" onclick="selectPlayer(3)">
-      <div class="pav">🏘</div>
-      <div><div class="pn">Player 3</div><div class="pd">Housing &amp; Living Systems</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="pc" id="pd-housing" onclick="selectDomain('housing')">
+      <div class="pav" style="background:rgba(245,158,11,.1);border-color:var(--amber)">🏘</div>
+      <div><div class="pn">Housing &amp; Living Systems</div><div class="pd">Shelter, density, smart homes, in-home care</div><div class="prl">WIN: Housing ≥ 85 with smart energy program active</div></div>
       <div class="psr"></div>
     </div>
-    <div class="pc" id="pc4" onclick="selectPlayer(4)">
-      <div class="pav">🏥</div>
-      <div><div class="pn">Player 4</div><div class="pd">Health, Safety &amp; Care</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="pc" id="pd-health" onclick="selectDomain('health')">
+      <div class="pav" style="background:rgba(16,185,129,.1);border-color:var(--green)">🏥</div>
+      <div><div class="pn">Health, Safety &amp; Care</div><div class="pd">Emergency services, telehealth, mental health</div><div class="prl">WIN: Health ≥ 85, telehealth in 60% of districts</div></div>
       <div class="psr"></div>
     </div>
-    <div class="pc" id="pc5" onclick="selectPlayer(5)">
-      <div class="pav">📊</div>
-      <div><div class="pn">Player 5</div><div class="pd">Economy &amp; Work</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="pc" id="pd-economy" onclick="selectDomain('economy')">
+      <div class="pav" style="background:rgba(6,182,212,.1);border-color:var(--cyan)">📊</div>
+      <div><div class="pn">Economy &amp; Work</div><div class="pd">Labor, automation, gig economy, AI businesses</div><div class="prl">WIN: Economy ≥ 80 with workforce transition active</div></div>
       <div class="psr"></div>
     </div>
-    <div class="pc" id="pc6" onclick="selectPlayer(6)">
-      <div class="pav">🎓</div>
-      <div><div class="pn">Player 6</div><div class="pd">Education &amp; Skills</div><div class="prl">DOMAIN CONTROLLER</div></div>
+    <div class="pc" id="pd-education" onclick="selectDomain('education')">
+      <div class="pav" style="background:rgba(245,158,11,.1);border-color:var(--amber)">🎓</div>
+      <div><div class="pn">Education &amp; Skills</div><div class="pd">Reskilling, AI literacy, workforce development</div><div class="prl">WIN: Education ≥ 80 with citywide AI literacy active</div></div>
       <div class="psr"></div>
     </div>
     <div style="margin:16px 20px 0;padding:12px 14px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);">
       <div style="font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:5px;">SHARED GLOBAL LAYERS — ALL PLAYERS</div>
-      <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">⚖️ <strong style="color:var(--text)">Government &amp; Coordination</strong> and 🤝 <strong style="color:var(--text)">Community &amp; Trust</strong> are not controlled by any single player. They respond to collective decisions and act as system-wide multipliers — affecting how well your moves actually land.</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">⚖️ <strong style="color:var(--text)">Government &amp; Coordination</strong> and 🤝 <strong style="color:var(--text)">Community &amp; Trust</strong> are not owned by any player. Everyone can see and is affected by them.</div>
     </div>
     <div class="sl">SELECT CITY START STATE</div>
     <div class="mrow">
@@ -408,16 +408,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div class="mo sel" id="start-strained" onclick="selectStart('strained')"><div class="moi">🟡</div><div class="mon">Strained</div><div class="mos">Heart Core 65</div></div>
       <div class="mo" id="start-critical" onclick="selectStart('critical')"><div class="moi">🔴</div><div class="mon">Critical</div><div class="mos">Heart Core 40</div></div>
     </div>
-    <div class="sl">SELECT GAME MODE</div>
-    <div class="mrow">
-      <div class="mo sel" id="mode-hybrid" onclick="selectMode('hybrid')"><div class="moi">🎮</div><div class="mon">Hybrid</div><div class="mos">Board + App</div></div>
-      <div class="mo" id="mode-app" onclick="selectMode('app')"><div class="moi">📱</div><div class="mon">App Only</div><div class="mos">Solo / Remote</div></div>
-    </div>
     <div style="height:20px;"></div>
   </div>
   <div class="ab">
     <button class="btn btn-s" onclick="nav('ss')">CANCEL</button>
-    <button class="btn btn-p" onclick="nav('so')">START GAME →</button>
+    <button class="btn btn-p" onclick="startGame()">START GAME →</button>
   </div>
 </div>
 
@@ -454,15 +449,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <div class="hcb"><div class="hcbf"></div></div>
       </div>
     </div>
-    <div class="sl">CIVIC DOMAINS — TAP TO MANAGE</div>
-    <div class="dg">
-      <div class="dc g" onclick="openDomain('transport')"><div class="dci">🚇</div><div class="dcn">Transportation &amp; Access</div><div class="dcs">Roads, transit, EVs, drones</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>84</span></div><div class="dcmb"><div class="dcmf" style="width:84%"></div></div></div></div>
-      <div class="dc a" onclick="openDomain('housing')"><div class="dci">🏘</div><div class="dcn">Housing &amp; Living</div><div class="dcs">Shelter, density, smart homes</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>58</span></div><div class="dcmb"><div class="dcmf" style="width:58%"></div></div></div><div class="dcw">⚠ Overcrowding building</div></div>
-      <div class="dc r" onclick="openDomain('energy')"><div class="dci">⚡</div><div class="dcn">Energy &amp; Environment</div><div class="dcs">Grid, renewables, V2G</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>41</span></div><div class="dcmb"><div class="dcmf" style="width:41%"></div></div></div><div class="dcw">🔴 Cascade risk — act now</div></div>
-      <div class="dc g" onclick="openDomain('health')"><div class="dci">🏥</div><div class="dcn">Health, Safety &amp; Care</div><div class="dcs">Emergency, telehealth</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>79</span></div><div class="dcmb"><div class="dcmf" style="width:79%"></div></div></div></div>
-      <div class="dc c" onclick="openDomain('economy')"><div class="dci">📊</div><div class="dcn">Economy &amp; Work</div><div class="dcs">Labor, automation, AI biz</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>66</span></div><div class="dcmb"><div class="dcmf" style="width:66%"></div></div></div></div>
-      <div class="dc a" onclick="openDomain('education')"><div class="dci">🎓</div><div class="dcn">Education &amp; Skills</div><div class="dcs">Reskilling, AI literacy</div><div class="dcm"><div class="dcml"><span>HEALTH</span><span>61</span></div><div class="dcmb"><div class="dcmf" style="width:61%"></div></div></div><div class="dcw">⚠ Skills mismatch emerging</div></div>
-    </div>
+    <div class="sl" id="domains-label">CIVIC DOMAINS</div>
+    <div class="dg" id="domain-grid"></div>
     <div class="sl">SHARED GLOBAL LAYERS</div>
     <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;">
       <div style="background:var(--panel);border:1px solid rgba(139,92,246,.3);padding:14px;cursor:pointer;" onclick="nav('str')">
@@ -493,7 +481,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="ab">
     <button class="btn btn-s" onclick="nav('sev')">📋 EVENTS</button>
-    <button class="btn btn-p" onclick="openDomain('energy')">⚡ URGENT: ENERGY</button>
+    <button class="btn btn-p" id="urgent-btn" onclick="openDomain(myDomain||'energy')">MANAGE MY DOMAIN</button>
   </div>
   <div class="nt">
     <button class="ntb act" onclick="nav('so')"><span class="nti">🏙</span><div class="ntl">CITY</div></button>
@@ -816,22 +804,74 @@ const domains={
     sp:[{d:'Economy & Work',e:'Skilled labor shortages compound automation displacement',dir:'neg'},{d:'Energy & Environment',e:'Trained technicians accelerate microgrid deployment',dir:'pos'}]}
 };
 
-let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid';
+let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid',myDomain=null;
 
 function nav(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
 function chooseMode(m){
   selectedMode=m;
-  ['hybrid','app'].forEach(id=>document.getElementById('mode-'+id).classList.remove('sel'));
-  document.getElementById('mode-'+m).classList.add('sel');
   const labels={hybrid:'HYBRID MODE',app:'APP ONLY MODE'};
   document.getElementById('mode-label').textContent=labels[m];
   nav('sq');
 }
 
-function selectPlayer(n){document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));document.getElementById('pc'+n).classList.add('sel');}
-function selectMode(m){['hybrid','app','board'].forEach(id=>document.getElementById('mode-'+id).classList.remove('sel'));document.getElementById('mode-'+m).classList.add('sel');}
+function selectDomain(key){
+  myDomain=key;
+  document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('pd-'+key).classList.add('sel');
+}
+
+function selectMode(m){selectedMode=m;}
 function selectStart(s){cityStart=s;['stable','strained','critical'].forEach(id=>document.getElementById('start-'+id).classList.remove('sel'));document.getElementById('start-'+s).classList.add('sel');}
+
+function startGame(){
+  if(!myDomain){showToast('Choose your domain first');return;}
+  renderDomainGrid();
+  nav('so');
+}
+
+const domainPublic={
+  transport:{icon:'🚇',name:'Transportation & Access',sub:'Roads, transit, EVs, drones',color:'g',status:'STABLE',warn:null},
+  housing:  {icon:'🏘',name:'Housing & Living',sub:'Shelter, density, smart homes',color:'a',status:'STRAINED',warn:'⚠ Overcrowding building'},
+  energy:   {icon:'⚡',name:'Energy & Environment',sub:'Grid, renewables, V2G',color:'r',status:'CRITICAL',warn:'🔴 Cascade risk — act now'},
+  health:   {icon:'🏥',name:'Health, Safety & Care',sub:'Emergency, telehealth',color:'g',status:'STABLE',warn:null},
+  economy:  {icon:'📊',name:'Economy & Work',sub:'Labor, automation, AI biz',color:'c',status:'MODERATE',warn:null},
+  education:{icon:'🎓',name:'Education & Skills',sub:'Reskilling, AI literacy',color:'a',status:'STRAINED',warn:'⚠ Skills mismatch emerging'}
+};
+
+function renderDomainGrid(){
+  let html='';
+  Object.keys(domainPublic).forEach(key=>{
+    const p=domainPublic[key];
+    const col={g:'var(--green)',a:'var(--amber)',r:'var(--red)',c:'var(--cyan)'}[p.color];
+    if(key===myDomain){
+      const realD=domains[key];
+      html+=`<div class="dc ${p.color}" onclick="openDomain('${key}')" style="border-color:${col};box-shadow:inset 0 0 0 1px ${col}30;">
+        <div style="font-family:var(--fm);font-size:8px;color:${col};letter-spacing:2px;margin-bottom:6px;">YOUR DOMAIN</div>
+        <div class="dci">${p.icon}</div><div class="dcn">${p.name}</div><div class="dcs">${p.sub}</div>
+        <div class="dcm"><div class="dcml"><span>HEALTH</span><span style="color:${col}">${realD.health}</span></div>
+        <div class="dcmb"><div class="dcmf" style="width:${realD.health}%"></div></div></div>
+        ${p.warn?`<div class="dcw">${p.warn}</div>`:''}
+        <div style="font-family:var(--fm);font-size:8px;color:${col};margin-top:6px;letter-spacing:1px;">TAP TO MANAGE →</div>
+      </div>`;
+    } else {
+      const statusColor={STABLE:'var(--green)',STRAINED:'var(--amber)',CRITICAL:'var(--red)',MODERATE:'var(--cyan)'}[p.status]||'var(--text-muted)';
+      html+=`<div class="dc ${p.color}" onclick="showToast('This domain belongs to another player')" style="opacity:0.55;cursor:default;">
+        <div class="dci">${p.icon}</div><div class="dcn">${p.name}</div><div class="dcs">${p.sub}</div>
+        <div style="margin-top:9px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);">PUBLIC STATUS</div>
+          <div style="font-family:var(--fm);font-size:9px;color:${statusColor};">${p.status}</div>
+        </div>
+        <div style="height:3px;background:var(--bg3);margin-top:4px;overflow:hidden;">
+          <div style="height:100%;background:repeating-linear-gradient(90deg,${statusColor} 0,${statusColor} 3px,transparent 3px,transparent 7px);opacity:0.35;width:100%;"></div>
+        </div>
+        ${p.warn?`<div class="dcw">${p.warn}</div>`:''}
+        <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:6px;letter-spacing:1px;">🔒 NOT YOUR DOMAIN</div>
+      </div>`;
+    }
+  });
+  document.getElementById('domain-grid').innerHTML=html;
+}
 
 function openDomain(key){
   curDomain=key;selDec=null;
