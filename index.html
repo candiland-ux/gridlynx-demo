@@ -855,18 +855,11 @@ function renderDomainGrid(){
         <div style="font-family:var(--fm);font-size:8px;color:${col};margin-top:6px;letter-spacing:1px;">TAP TO MANAGE →</div>
       </div>`;
     } else {
-      const statusColor={STABLE:'var(--green)',STRAINED:'var(--amber)',CRITICAL:'var(--red)',MODERATE:'var(--cyan)'}[p.status]||'var(--text-muted)';
-      html+=`<div class="dc ${p.color}" onclick="showToast('This domain belongs to another player')" style="opacity:0.55;cursor:default;">
-        <div class="dci">${p.icon}</div><div class="dcn">${p.name}</div><div class="dcs">${p.sub}</div>
-        <div style="margin-top:9px;display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);">PUBLIC STATUS</div>
-          <div style="font-family:var(--fm);font-size:9px;color:${statusColor};">${p.status}</div>
-        </div>
-        <div style="height:3px;background:var(--bg3);margin-top:4px;overflow:hidden;">
-          <div style="height:100%;background:repeating-linear-gradient(90deg,${statusColor} 0,${statusColor} 3px,transparent 3px,transparent 7px);opacity:0.35;width:100%;"></div>
-        </div>
-        ${p.warn?`<div class="dcw">${p.warn}</div>`:''}
-        <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:6px;letter-spacing:1px;">🔒 NOT YOUR DOMAIN</div>
+      html+=`<div class="dc ${p.color}" onclick="showToast('This domain belongs to another player')" style="opacity:0.5;cursor:default;">
+        <div class="dci">${p.icon}</div>
+        <div class="dcn">${p.name}</div>
+        <div class="dcs">${p.sub}</div>
+        <div style="margin-top:12px;font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:1px;">🔒 NOT YOUR DOMAIN</div>
       </div>`;
     }
   });
