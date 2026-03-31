@@ -500,7 +500,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="scroll" id="dcontent"></div>
   <div class="ab">
-    <button class="btn btn-s" onclick="openStrategic()">STRATEGIC OPTIONS</button>
+    <button class="btn btn-s" onclick="openStrategic()">OFF-THE-RECORD</button>
     <button class="btn btn-p" onclick="confirmDecision()">CONFIRM DECISION</button>
   </div>
 </div>
@@ -557,17 +557,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
-<!-- STRATEGIC OPTIONS (private channel — looks like normal decisions) -->
+<!-- OFF-THE-RECORD (private channel — looks like normal decisions) -->
 <div id="sc2" class="screen">
   <div class="tb">
     <button class="bk" onclick="nav('sd')">← DOMAIN</button>
-    <div class="tbm">STRATEGIC OPTIONS</div>
+    <div class="tbm">OFF-THE-RECORD</div>
     <div class="vm"><div class="vml">VITALITY</div><div class="vmb"><div class="vmf"></div></div></div>
   </div>
   <div class="scroll">
     <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border);">
       <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;margin-bottom:6px;">YOUR DOMAIN — TURN 4</div>
-      <div id="sc2-title" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Strategic Options</div>
+      <div id="sc2-title" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Off-the-Record Options</div>
       <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">These options are available to you privately this turn. Other players will see the system outcome — not how you produced it.</div>
     </div>
     <div class="sl">AVAILABLE THIS TURN</div>
@@ -621,12 +621,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div class="tecc"><div class="teccl">⚠ SPILLOVER CHAIN ACTIVE</div><div class="tecct">Player 2 (Housing) passed this turn. Combined with Energy degradation, overcrowding pressure accelerated. Education skills mismatch compounding Economy slowdown.</div></div>
     <div class="sl">WHAT EACH PLAYER DID</div>
     <div style="padding:0 20px 20px;">
-      <div class="teci"><div class="teco">⚡</div><div><div class="tecd">Energy &amp; Environment — You</div><div class="teca">Emergency Load Balancing committed</div></div><div class="tecd2 pos">+18</div></div>
-      <div class="teci"><div class="teco">🚇</div><div><div class="tecd">Transportation &amp; Access</div><div class="teca">Expand EV Charging Network</div></div><div class="tecd2 pos">+12</div></div>
-      <div class="teci"><div class="teco">🏘</div><div><div class="tecd">Housing &amp; Living</div><div class="teca">Passed — no action taken</div></div><div class="tecd2 neg">−6</div></div>
-      <div class="teci"><div class="teco">🏥</div><div><div class="tecd">Health, Safety &amp; Care</div><div class="teca">Crisis Mental Health Response</div></div><div class="tecd2 pos">+8</div></div>
-      <div class="teci"><div class="teco">📊</div><div><div class="tecd">Economy &amp; Work</div><div class="teca">Gig Economy Protections enacted</div></div><div class="tecd2 pos">+6</div></div>
-      <div class="teci"><div class="teco">⚖️</div><div><div class="tecd">Government &amp; Coordination</div><div class="teca">Airspace Governance Framework started</div></div><div class="tecd2 nt">+8 (slow)</div></div>
+      <div class="teci" id="your-domain-row"><div class="teco">⚡</div><div><div class="tecd" style="color:var(--amber)">Energy &amp; Environment — You</div><div class="teca">Emergency Load Balancing committed</div></div><div class="tecd2 pos">+18</div></div>
+      <div class="teci"><div class="teco">🚇</div><div><div class="tecd">Transportation &amp; Access</div><div class="teca">Expand EV Charging Network</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
+      <div class="teci"><div class="teco">🏘</div><div><div class="tecd">Housing &amp; Living</div><div class="teca">Passed — no action taken</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
+      <div class="teci"><div class="teco">🏥</div><div><div class="tecd">Health, Safety &amp; Care</div><div class="teca">Crisis Mental Health Response</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
+      <div class="teci"><div class="teco">📊</div><div><div class="tecd">Economy &amp; Work</div><div class="teca">Gig Economy Protections enacted</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
+      <div class="teci"><div class="teco">⚖️</div><div><div class="tecd">Government &amp; Coordination</div><div class="teca">Airspace Governance Framework started</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
       <div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim)">
         <div class="teco">🕵️</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">❓</div>
       </div>
@@ -634,7 +634,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="ab">
     <button class="btn btn-s" onclick="nav('sa')">🔎 CALL AUDIT</button>
-    <button class="btn btn-p" onclick="nav('so')">BEGIN TURN 5 →</button>
+    <button class="btn btn-p" onclick="beginNextTurn()">BEGIN NEXT TURN →</button>
   </div>
 </div>
 
@@ -806,7 +806,22 @@ const domains={
 
 let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid',myDomain=null;
 
-function nav(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+let turnNumber=4;
+function beginNextTurn(){
+  turnNumber++;
+  selDec=null;
+  // Update turn display
+  const tl=document.getElementById('turn-label');
+  if(tl) tl.textContent='Turn '+turnNumber+' of 12';
+  nav('so');
+}
+function nav(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  // Refresh domain grid every time city is opened so health changes are visible
+  if(id==='so' && myDomain) renderDomainGrid();
+}
 
 function chooseMode(m){
   selectedMode=m;
@@ -890,7 +905,41 @@ function openDomain(key){
 }
 
 function selDec2(i){selDec=i;document.querySelectorAll('.dcard,.pcard').forEach(c=>c.classList.remove('sel'));const el=i==='pass'?document.getElementById('decpass'):document.getElementById('dec'+i);if(el)el.classList.add('sel');}
-function confirmDecision(){if(selDec===null){showToast('Select a decision first');return;}const d=domains[curDomain];const msg=selDec==='pass'?'Pass recorded — consequences apply next turn':`"${d.decisions[selDec].name}" committed`;showToast(msg);setTimeout(()=>nav('ste'),1200);}
+function confirmDecision(){
+  if(selDec===null){showToast('Select a decision first');return;}
+  const d=domains[curDomain];
+  if(selDec==='pass'){
+    // Pass: apply a small health penalty
+    d.health=Math.max(0,d.health-4);
+    showToast('Pass recorded — domain health declined');
+  } else {
+    const dec=d.decisions[selDec];
+    // Parse health delta from tags — look for tags like "Transport +12", "Energy +18", "Housing +9" etc
+    let delta=0;
+    dec.tags.forEach(t=>{
+      const m=t.l.match(/([+-])(\d+)/);
+      if(m){
+        const v=parseInt(m[2])*(m[1]==='+'?1:-1);
+        // Only apply the primary domain bonus (first positive health-like tag)
+        if(delta===0&&m[1]==='+') delta=v;
+      }
+    });
+    if(delta===0) delta=8; // fallback
+    d.health=Math.min(100,Math.max(0,d.health+delta));
+    // Update status based on new health
+    if(d.health>=80) d.status='STABLE';
+    else if(d.health>=55) d.status='MODERATE';
+    else if(d.health>=30) d.status='STRAINED';
+    else d.status='CRITICAL';
+    // Update the turn end screen to show YOUR domain change
+    const yourRow=document.getElementById('your-domain-row');
+    if(yourRow) yourRow.innerHTML=`<div class="teco">${d.icon}</div><div><div class="tecd" style="color:var(--amber)">${d.name} — You</div><div class="teca">${dec.name}</div></div><div class="tecd2 pos">+${delta}</div>`;
+    showToast(`"${dec.name}" committed — Health +${delta}`);
+  }
+  // Refresh domain grid on next city view
+  renderDomainGrid();
+  setTimeout(()=>nav('ste'),1200);
+}
 
 function openStrategic(){
   chosenStrategic=null;
