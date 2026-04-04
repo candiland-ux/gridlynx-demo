@@ -1272,7 +1272,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div class="sps" id="city-status-pills">
         <span class="pill pa">⚠ STRAINED</span>
         <span class="pill pc" id="round-pill">TURN 1</span>
-        <span class="pill pr">2 ALERTS</span>
         <span class="pill pp">⚡ YOUR TURN</span>
       </div>
       <!-- Utility bar -->
@@ -1748,6 +1747,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
+<!-- ALERTS PANEL -->
+<div id="alerts-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.8);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeAlerts()">
+  <div style="background:var(--panel2);width:100%;max-width:480px;max-height:80vh;border-top:1px solid var(--red);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
+    <div style="padding:16px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--red);">Active Alerts</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">Conditions affecting the city right now</div>
+      </div>
+      <button onclick="closeAlerts()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">CLOSE</button>
+    </div>
+    <div id="alerts-list" style="flex:1;overflow-y:auto;padding:12px 20px;"></div>
+  </div>
+</div>
+
 <!-- SHOCK EVENT OVERLAY -->
 <div id="shock-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);align-items:center;justify-content:center;">
   <div style="max-width:360px;width:90%;text-align:center;padding:32px 24px;">
@@ -2002,7 +2015,7 @@ function nav(id){
   if (target) target.classList.add('active');
   window.scrollTo(0,0);
   if(id==='so' && myDomain) renderDomainGrid();
-  if(id==='so') renderConditionsBar();
+  if(id==='so') { renderConditionsBar(); refreshAlertPill(); }
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
@@ -3203,12 +3216,13 @@ function startGame(){
     orbEl.style.boxShadow=os.shadow;
   }
 
-  // Update status pills
+  // Update status pills — alerts count is dynamic
+  const alertCount = countAlerts();
   const pills=document.getElementById('city-status-pills');
   if(pills) pills.innerHTML=
     `<span class="pill ${cfg.pillClass}">${cfg.pillLabel}</span>`+
     `<span class="pill pc" id="round-pill">TURN ${turnNumber}</span>`+
-    (cfg.alerts>0?`<span class="pill pr">${cfg.alerts} ALERT${cfg.alerts>1?'S':''}</span>`:'')+
+    (alertCount>0?`<span class="pill pr" onclick="openAlerts()" style="cursor:pointer;">${alertCount} ALERT${alertCount>1?'S':''}</span>`:'')+
     `<span class="pill pp">⚡ YOUR TURN</span>`;
 
   renderDomainGrid();
@@ -4662,6 +4676,97 @@ function buildRosterCard(p) {
 
 function closeRoster() {
   const overlay = document.getElementById('roster-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ── ALERTS SYSTEM ───────────────────────────────────────────────────
+function countAlerts() {
+  let count = 0;
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  // Cascade risks and active cascades
+  domKeys.forEach(k => { if (domains[k] && domains[k].health <= 30) count++; });
+  // Active global conditions
+  count += activeConditions.length;
+  // Heart Core danger
+  if (heartCore < 40) count++;
+  return count;
+}
+
+function refreshAlertPill() {
+  const n = countAlerts();
+  const pills = document.getElementById('city-status-pills');
+  if (!pills) return;
+  // Find existing alert pill or lack thereof
+  const existing = pills.querySelector('.pr');
+  if (n > 0 && !existing) {
+    const turnPill = pills.querySelector('#round-pill');
+    if (turnPill) {
+      const span = document.createElement('span');
+      span.className = 'pill pr';
+      span.style.cursor = 'pointer';
+      span.onclick = openAlerts;
+      span.textContent = n + ' ALERT' + (n > 1 ? 'S' : '');
+      turnPill.after(span);
+    }
+  } else if (n > 0 && existing) {
+    existing.textContent = n + ' ALERT' + (n > 1 ? 'S' : '');
+  } else if (n === 0 && existing) {
+    existing.remove();
+  }
+}
+
+function openAlerts() {
+  const overlay = document.getElementById('alerts-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  const list = document.getElementById('alerts-list');
+  if (!list) return;
+
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const domIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
+  let html = '';
+
+  // Heart Core danger
+  if (heartCore < 40) {
+    const col = heartCore < 20 ? 'var(--red)' : 'var(--amber)';
+    html += '<div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);padding:12px 14px;margin-bottom:8px;">' +
+      '<div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:2px;margin-bottom:4px;">HEART CORE ' + (heartCore < 20 ? 'CRITICAL' : 'WARNING') + '</div>' +
+      '<div style="font-size:12px;color:var(--text-dim);line-height:1.5;">City vitality at ' + heartCore + '/100. ' + (heartCore < 20 ? 'Collapse is imminent. Every decision matters.' : 'Collapse risk is elevated. Stabilize priority domains.') + '</div></div>';
+  }
+
+  // Cascade warnings
+  domKeys.forEach(k => {
+    if (domains[k] && domains[k].health <= 20) {
+      html += '<div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:2px;margin-bottom:4px;">CASCADE ACTIVE</div>' +
+        '<div style="font-size:12px;color:var(--text-dim);line-height:1.5;">' + domIcons[k] + ' ' + domains[k].name + ' at health ' + domains[k].health + ' \u2014 actively draining connected domains each turn.</div></div>';
+    } else if (domains[k] && domains[k].health <= 30) {
+      html += '<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:4px;">CASCADE RISK</div>' +
+        '<div style="font-size:12px;color:var(--text-dim);line-height:1.5;">' + domIcons[k] + ' ' + domains[k].name + ' at health ' + domains[k].health + ' \u2014 if it drops below 20, cascade begins.</div></div>';
+    }
+  });
+
+  // Active conditions
+  activeConditions.forEach(c => {
+    const catCol = c.cat === 'ECONOMIC' ? 'var(--amber)' : c.cat === 'GEOPOLITICAL' ? 'var(--red)' : c.cat === 'SOCIAL' ? 'var(--cyan)' : c.cat === 'TECHNOLOGY' ? 'var(--purple)' : c.cat === 'ENVIRONMENTAL' ? 'var(--green)' : 'var(--amber)';
+    html += '<div style="background:var(--panel);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;">' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
+        '<span style="font-size:16px;">' + c.icon + '</span>' +
+        '<span style="font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);">' + c.name + '</span>' +
+        '<span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:' + catCol + ';padding:1px 5px;border:1px solid ' + catCol + ';opacity:.7;">' + c.cat + '</span>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:4px;">' + c.desc + '</div>' +
+      '<div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);">' + c.turnsLeft + ' turn' + (c.turnsLeft > 1 ? 's' : '') + ' remaining</div>' +
+    '</div>';
+  });
+
+  if (!html) html = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:12px;">No active alerts. The city is stable.</div>';
+  list.innerHTML = html;
+}
+
+function closeAlerts() {
+  const overlay = document.getElementById('alerts-overlay');
   if (overlay) overlay.style.display = 'none';
 }
 
