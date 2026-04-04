@@ -1487,9 +1487,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div id="te-spillovers"></div>
     <!-- Dynamic: cascade warnings -->
     <div id="te-cascades"></div>
-    <div class="sl">WHAT EACH PLAYER DID</div>
+    <div class="sl" id="te-players-label">DOMAIN OUTCOMES THIS TURN</div>
     <div style="padding:0 20px 20px;" id="te-player-rows">
-      <div class="teci" id="your-domain-row"><div class="teco">⚡</div><div><div class="tecd" style="color:var(--amber)">Your Domain</div><div class="teca">Awaiting decision</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Health changes across all domains. Decisions remain private — you see outcomes, not intent.</div>
     </div>
   </div>
   <div class="ab">
@@ -2526,67 +2526,96 @@ function tickConditions() {
 // ── DYNAMIC TURN EVENTS ─────────────────────────────────────────────
 const EVENT_POOL = {
   crisis: [
-    { title:'Rolling Brownouts', desc:'Grid instability causing intermittent power loss across districts.', trigger:'energy<60', impacts:[{l:'Energy \u221212',c:'neg'},{l:'Housing \u22126',c:'neg'}], act:'EMERGENCY RESPONSE', def:'DEFER', actMsg:'Emergency power allocation committed', defMsg:'Deferred \u2014 strain compounds' },
-    { title:'Hospital Overflow', desc:'Emergency rooms at 140% capacity. Staff burnout accelerating. Non-critical patients turned away.', trigger:'health<55', impacts:[{l:'Health \u221214',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'ACTIVATE RESERVES', def:'DEFER', actMsg:'Reserve staff mobilized', defMsg:'Overflow continues next turn' },
-    { title:'Housing Displacement Wave', desc:'Mass evictions in three districts after landlord defaults. Shelters overwhelmed.', trigger:'housing<50', impacts:[{l:'Housing \u221216',c:'neg'},{l:'Health \u22126',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'EMERGENCY SHELTER', def:'DEFER', actMsg:'Emergency shelters activated', defMsg:'Displacement compounds' },
-    { title:'Transit System Failure', desc:'Major transit line offline due to infrastructure collapse. Commuters stranded.', trigger:'transport<55', impacts:[{l:'Transport \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY ROUTES', def:'DEFER', actMsg:'Emergency bus routes deployed', defMsg:'Transit down another turn' },
-    { title:'Employer Layoff Cascade', desc:'Three major employers announce simultaneous layoffs. 2,000 jobs at risk.', trigger:'economy<50', impacts:[{l:'Economy \u221216',c:'neg'},{l:'Education \u22126',c:'neg'},{l:'Trust \u22126',c:'neg'}], act:'RETENTION PACKAGE', def:'DEFER', actMsg:'Emergency retention incentives offered', defMsg:'Layoffs proceed unchecked' },
-    { title:'Teacher Shortage Crisis', desc:'Schools in four districts cannot open due to staffing. Parents pulled from workforce.', trigger:'education<50', impacts:[{l:'Education \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY STAFFING', def:'DEFER', actMsg:'Substitute deployment authorized', defMsg:'Schools remain closed' },
-    { title:'Trust Collapse Warning', desc:'Public confidence in city leadership at historic lows. Compliance dropping.', trigger:'trust<35', impacts:[{l:'Trust \u221210',c:'neg'},{l:'Gov \u22126',c:'neg'}], act:'TOWNHALL SUMMIT', def:'IGNORE', actMsg:'Emergency town hall convened', defMsg:'Distrust deepens' },
+    { title:'Rolling Brownouts', domain:'energy', desc:'Grid instability causing intermittent power loss across your districts.', trigger:'energy<60', impacts:[{l:'Energy \u221212',c:'neg'},{l:'Housing \u22126',c:'neg'}], act:'EMERGENCY RESPONSE', def:'DEFER', actMsg:'Emergency power allocation committed', defMsg:'Deferred \u2014 strain compounds' },
+    { title:'Substation Failure', domain:'energy', desc:'Key substation offline. Backup systems activated but aging fast.', trigger:'energy<50', impacts:[{l:'Energy \u221216',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY REPAIR', def:'REROUTE', actMsg:'Repair crews dispatched', defMsg:'Load rerouted \u2014 temporary' },
+    { title:'Hospital Overflow', domain:'health', desc:'Emergency rooms at 140% capacity. Staff burnout accelerating.', trigger:'health<55', impacts:[{l:'Health \u221214',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'ACTIVATE RESERVES', def:'DEFER', actMsg:'Reserve staff mobilized', defMsg:'Overflow continues next turn' },
+    { title:'Opioid Overdose Spike', domain:'health', desc:'Fatal overdoses doubled this month. Emergency rooms overwhelmed.', trigger:'health<60', impacts:[{l:'Health \u221212',c:'neg'},{l:'Trust \u22128',c:'neg'},{l:'Economy \u22124',c:'neg'}], act:'CRISIS RESPONSE TEAM', def:'DEFER', actMsg:'Mobile response units deployed', defMsg:'Existing services stretched thinner' },
+    { title:'Housing Displacement Wave', domain:'housing', desc:'Mass evictions in three districts. Shelters overwhelmed.', trigger:'housing<50', impacts:[{l:'Housing \u221216',c:'neg'},{l:'Health \u22126',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'EMERGENCY SHELTER', def:'DEFER', actMsg:'Emergency shelters activated', defMsg:'Displacement compounds' },
+    { title:'Rent Crisis Protest', domain:'housing', desc:'Hundreds of renters occupy city hall demanding immediate action.', trigger:'housing<55', impacts:[{l:'Housing \u22128',c:'neg'},{l:'Trust \u221210',c:'neg'},{l:'Gov \u22124',c:'neg'}], act:'NEGOTIATE', def:'WAIT OUT', actMsg:'Emergency housing summit convened', defMsg:'Protest intensifies' },
+    { title:'Transit System Failure', domain:'transport', desc:'Major transit line offline. Commuters stranded.', trigger:'transport<55', impacts:[{l:'Transport \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY ROUTES', def:'DEFER', actMsg:'Emergency bus routes deployed', defMsg:'Transit down another turn' },
+    { title:'Road Infrastructure Failure', domain:'transport', desc:'Critical overpass showing structural cracks. Emergency closure.', trigger:'transport<60', impacts:[{l:'Transport \u221216',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY ENGINEERING', def:'CLOSE', actMsg:'Emergency reinforcement authorized', defMsg:'Overpass closed pending review' },
+    { title:'Employer Layoff Cascade', domain:'economy', desc:'Three major employers announce simultaneous layoffs. 2,000 jobs at risk.', trigger:'economy<50', impacts:[{l:'Economy \u221216',c:'neg'},{l:'Education \u22126',c:'neg'},{l:'Trust \u22126',c:'neg'}], act:'RETENTION PACKAGE', def:'DEFER', actMsg:'Emergency retention incentives offered', defMsg:'Layoffs proceed unchecked' },
+    { title:'Tax Revenue Shortfall', domain:'economy', desc:'Quarterly revenue 22% below projections. Service cuts imminent.', trigger:'economy<55', impacts:[{l:'Economy \u221210',c:'neg'},{l:'Gov \u22126',c:'neg'}], act:'EMERGENCY AUDIT', def:'CUT SERVICES', actMsg:'Forensic audit launched \u2014 fraud suspected', defMsg:'Across-the-board 10% service cuts' },
+    { title:'Teacher Shortage Crisis', domain:'education', desc:'Schools in four districts cannot open due to staffing.', trigger:'education<50', impacts:[{l:'Education \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY STAFFING', def:'DEFER', actMsg:'Substitute deployment authorized', defMsg:'Schools remain closed' },
+    { title:'School Shooting Threat', domain:'education', desc:'Credible threat forces lockdowns across 12 schools.', trigger:'education<65', impacts:[{l:'Education \u221214',c:'neg'},{l:'Trust \u221210',c:'neg'},{l:'Health \u22124',c:'neg'}], act:'FULL SECURITY', def:'STANDARD RESPONSE', actMsg:'Enhanced security deployed', defMsg:'Standard lockdown followed' },
+    { title:'Trust Collapse Warning', domain:'city', desc:'Public confidence at historic lows. Compliance dropping.', trigger:'trust<35', impacts:[{l:'Trust \u221210',c:'neg'},{l:'Gov \u22126',c:'neg'}], act:'TOWNHALL SUMMIT', def:'IGNORE', actMsg:'Emergency town hall convened', defMsg:'Distrust deepens' },
+    { title:'Governance Scandal', domain:'city', desc:'Internal audit reveals mismanagement of emergency funds.', trigger:'governance<50', impacts:[{l:'Gov \u221210',c:'neg'},{l:'Trust \u221212',c:'neg'}], act:'FULL TRANSPARENCY', def:'INTERNAL REVIEW', actMsg:'Records released publicly', defMsg:'Internal investigation initiated' },
+    { title:'Water Main Collapse', domain:'housing', desc:'Aging infrastructure failure floods three districts. Boil water advisory.', trigger:'housing<60', impacts:[{l:'Housing \u221210',c:'neg'},{l:'Health \u22128',c:'neg'},{l:'Trust \u22126',c:'neg'}], act:'EMERGENCY REPAIR', def:'DEFER', actMsg:'Repair crews dispatched', defMsg:'Temporary water distribution only' },
   ],
   policy: [
-    { title:'Federal Reskilling Grant', desc:'A federal grant for workforce reskilling. Accepting costs influence but boosts Education and Economy.', trigger:'always', impacts:[{l:'Education +14',c:'pos'},{l:'Economy +8',c:'pos'},{l:'Influence \u221212',c:'neg'}], act:'ACCEPT GRANT', def:'DECLINE', actMsg:'Grant accepted \u2014 Education boost queued', defMsg:'Grant window closed' },
-    { title:'Climate Resilience Bond', desc:'State offering matching funds for climate infrastructure. Requires governance commitment.', trigger:'always', impacts:[{l:'Energy +12',c:'pos'},{l:'Housing +8',c:'pos'},{l:'Gov commitment',c:'neg'}], act:'ISSUE BOND', def:'DECLINE', actMsg:'Bond issued \u2014 resilience investment locked', defMsg:'Bond opportunity passed' },
-    { title:'Public Health Data Sharing', desc:'Federal program to share health data across jurisdictions. Privacy concerns vs. better outcomes.', trigger:'always', impacts:[{l:'Health +10',c:'pos'},{l:'Trust \u22124',c:'neg'}], act:'OPT IN', def:'DECLINE', actMsg:'Data sharing agreement signed', defMsg:'City opts out of program' },
-    { title:'Affordable Housing Mandate', desc:'State legislature considering density requirements. Compliance costs but addresses crisis.', trigger:'always', impacts:[{l:'Housing +12',c:'pos'},{l:'Economy \u22126',c:'neg'},{l:'Trust +4',c:'pos'}], act:'COMPLY EARLY', def:'WAIT', actMsg:'Early compliance \u2014 housing pipeline accelerated', defMsg:'Waiting for final mandate language' },
-    { title:'Digital Infrastructure Grant', desc:'Tech company offering to fund city-wide broadband. Strings attached around data access.', trigger:'always', impacts:[{l:'Education +10',c:'pos'},{l:'Economy +6',c:'pos'},{l:'Privacy risk',c:'neg'}], act:'ACCEPT', def:'NEGOTIATE', actMsg:'Broadband grant accepted', defMsg:'Negotiations continue next turn' },
+    { title:'Federal Reskilling Grant', domain:'education', desc:'Federal grant for workforce reskilling. Costs influence but boosts Education and Economy.', trigger:'always', impacts:[{l:'Education +14',c:'pos'},{l:'Economy +8',c:'pos'},{l:'Influence \u221212',c:'neg'}], act:'ACCEPT GRANT', def:'DECLINE', actMsg:'Grant accepted \u2014 Education boost queued', defMsg:'Grant window closed' },
+    { title:'Climate Resilience Bond', domain:'energy', desc:'State matching funds for climate infrastructure. Requires governance commitment.', trigger:'always', impacts:[{l:'Energy +12',c:'pos'},{l:'Housing +8',c:'pos'},{l:'Gov commitment',c:'neg'}], act:'ISSUE BOND', def:'DECLINE', actMsg:'Bond issued \u2014 resilience investment locked', defMsg:'Opportunity passed' },
+    { title:'Public Health Data Sharing', domain:'health', desc:'Federal program to share health data. Privacy concerns vs. better outcomes.', trigger:'always', impacts:[{l:'Health +10',c:'pos'},{l:'Trust \u22124',c:'neg'}], act:'OPT IN', def:'DECLINE', actMsg:'Data sharing signed', defMsg:'City opts out' },
+    { title:'Affordable Housing Mandate', domain:'housing', desc:'State density requirements. Compliance costs but addresses crisis.', trigger:'always', impacts:[{l:'Housing +12',c:'pos'},{l:'Economy \u22126',c:'neg'},{l:'Trust +4',c:'pos'}], act:'COMPLY EARLY', def:'WAIT', actMsg:'Housing pipeline accelerated', defMsg:'Waiting for final mandate' },
+    { title:'Digital Infrastructure Grant', domain:'education', desc:'Tech company offering city-wide broadband. Strings attached.', trigger:'always', impacts:[{l:'Education +10',c:'pos'},{l:'Economy +6',c:'pos'},{l:'Privacy risk',c:'neg'}], act:'ACCEPT', def:'NEGOTIATE', actMsg:'Broadband grant accepted', defMsg:'Negotiations continue' },
+    { title:'State Infrastructure Match', domain:'transport', desc:'State offers 2:1 matching for infrastructure projects filed this quarter.', trigger:'always', impacts:[{l:'Transport +12',c:'pos'},{l:'Energy +8',c:'pos'},{l:'Filing deadline',c:'neg'}], act:'FILE NOW', def:'SKIP', actMsg:'Matching fund application submitted', defMsg:'Filing window closed' },
+    { title:'Zoning Reform Package', domain:'housing', desc:'Sweeping zoning reform. Developers love it, neighborhoods don\u2019t.', trigger:'always', impacts:[{l:'Housing +10',c:'pos'},{l:'Economy +6',c:'pos'},{l:'Trust \u22126',c:'neg'}], act:'ADOPT', def:'TABLE', actMsg:'Zoning reform adopted', defMsg:'Tabled for community input' },
+    { title:'Emergency Management Drill', domain:'city', desc:'FEMA-funded city-wide emergency drill. Tests all systems.', trigger:'always', impacts:[{l:'Gov +8',c:'pos'},{l:'Health +4',c:'pos'},{l:'1-turn disruption',c:'neg'}], act:'PARTICIPATE', def:'DECLINE', actMsg:'Drill completed \u2014 gaps addressed', defMsg:'Drill opportunity passed' },
+    { title:'CDC Health Data Grant', domain:'health', desc:'CDC grants for community health data infrastructure.', trigger:'always', impacts:[{l:'Health +10',c:'pos'},{l:'Education +4',c:'pos'},{l:'Privacy concerns',c:'neg'}], act:'APPLY', def:'SKIP', actMsg:'Grant awarded', defMsg:'Funding went elsewhere' },
+    { title:'Workforce Innovation Funding', domain:'economy', desc:'Federal retraining funds for cities with approved transition plans.', trigger:'always', impacts:[{l:'Education +12',c:'pos'},{l:'Economy +8',c:'pos'}], act:'SUBMIT PLAN', def:'SKIP', actMsg:'Retraining funds secured', defMsg:'Funding allocated elsewhere' },
+    { title:'EV Fleet Incentive Program', domain:'transport', desc:'Federal rebates for municipal EV fleet conversion. Reduces emissions and fuel costs.', trigger:'always', impacts:[{l:'Transport +8',c:'pos'},{l:'Energy +6',c:'pos'},{l:'Budget \u22128',c:'neg'}], act:'CONVERT FLEET', def:'DEFER', actMsg:'Fleet conversion initiated', defMsg:'Staying with current fleet' },
+    { title:'Small Business Tax Credit', domain:'economy', desc:'New state tax credit for small businesses hiring locally. Application window open.', trigger:'always', impacts:[{l:'Economy +10',c:'pos'},{l:'Trust +4',c:'pos'}], act:'PROMOTE', def:'IGNORE', actMsg:'Outreach campaign launched \u2014 200 businesses applied', defMsg:'Credit goes underutilized' },
   ],
   opportunity: [
-    { title:'eVTOL Corridor License', desc:'Aerial mobility company seeking airspace corridors for flying taxis.', trigger:'transport>60', impacts:[{l:'Transport +14',c:'pos'},{l:'Economy +10',c:'pos'},{l:'Gov friction \u22127',c:'neg'}], act:'APPROVE', def:'DECLINE', actMsg:'Airspace corridors licensed', defMsg:'License application declined' },
-    { title:'Innovation District Proposal', desc:'Tech consortium wants to establish an innovation district. Long-term economic engine.', trigger:'economy>60', impacts:[{l:'Economy +12',c:'pos'},{l:'Education +8',c:'pos'},{l:'Housing pressure',c:'neg'}], act:'APPROVE ZONE', def:'TABLE', actMsg:'Innovation district approved', defMsg:'Proposal tabled for further review' },
-    { title:'Community Solar Initiative', desc:'Neighborhood groups organized to deploy community solar. Grassroots energy resilience.', trigger:'trust>50', impacts:[{l:'Energy +10',c:'pos'},{l:'Trust +8',c:'pos'},{l:'Housing +4',c:'pos'}], act:'FUND IT', def:'DEFER', actMsg:'Community solar funded \u2014 trust boost', defMsg:'Initiative deferred' },
-    { title:'Sister City Partnership', desc:'International city proposes knowledge exchange. Boosts reputation and best practices.', trigger:'always', impacts:[{l:'Education +8',c:'pos'},{l:'Gov +6',c:'pos'}], act:'ACCEPT', def:'DECLINE', actMsg:'Partnership established', defMsg:'Partnership declined' },
+    { title:'eVTOL Corridor License', domain:'transport', desc:'Aerial mobility company seeking airspace corridors.', trigger:'transport>60', impacts:[{l:'Transport +14',c:'pos'},{l:'Economy +10',c:'pos'},{l:'Gov friction \u22127',c:'neg'}], act:'APPROVE', def:'DECLINE', actMsg:'Airspace corridors licensed', defMsg:'License declined' },
+    { title:'Innovation District Proposal', domain:'economy', desc:'Tech consortium establishing an innovation district.', trigger:'economy>60', impacts:[{l:'Economy +12',c:'pos'},{l:'Education +8',c:'pos'},{l:'Housing pressure',c:'neg'}], act:'APPROVE ZONE', def:'TABLE', actMsg:'Innovation district approved', defMsg:'Proposal tabled' },
+    { title:'Community Solar Initiative', domain:'energy', desc:'Neighborhood groups deploying community solar.', trigger:'trust>50', impacts:[{l:'Energy +10',c:'pos'},{l:'Trust +8',c:'pos'},{l:'Housing +4',c:'pos'}], act:'FUND IT', def:'DEFER', actMsg:'Community solar funded', defMsg:'Initiative deferred' },
+    { title:'Sister City Partnership', domain:'city', desc:'International city proposes knowledge exchange.', trigger:'always', impacts:[{l:'Education +8',c:'pos'},{l:'Gov +6',c:'pos'}], act:'ACCEPT', def:'DECLINE', actMsg:'Partnership established', defMsg:'Partnership declined' },
+    { title:'University Research Partnership', domain:'education', desc:'Local university offers embedded research teams.', trigger:'education>55', impacts:[{l:'Education +10',c:'pos'},{l:'Health +6',c:'pos'},{l:'Gov +4',c:'pos'}], act:'PARTNER', def:'DECLINE', actMsg:'Research teams deployed', defMsg:'Partnership declined' },
+    { title:'Corporate Relocation Offer', domain:'economy', desc:'Major employer considering relocating HQ here. 2,000 jobs.', trigger:'economy>55', impacts:[{l:'Economy +14',c:'pos'},{l:'Housing pressure \u22126',c:'neg'}], act:'INCENTIVIZE', def:'PASS', actMsg:'Relocation incentive approved', defMsg:'Company chose another city' },
+    { title:'Volunteer Health Brigade', domain:'health', desc:'Retired healthcare workers organizing free weekend clinics.', trigger:'trust>45', impacts:[{l:'Health +8',c:'pos'},{l:'Trust +10',c:'pos'}], act:'SUPPORT', def:'ACKNOWLEDGE', actMsg:'City providing space and supplies', defMsg:'No city resources allocated' },
+    { title:'Green Bond Investor Interest', domain:'energy', desc:'ESG fund wants municipal green bonds. Cheap capital for climate projects.', trigger:'energy>55', impacts:[{l:'Energy +10',c:'pos'},{l:'Housing +6',c:'pos'}], act:'ISSUE BONDS', def:'DEFER', actMsg:'Green bonds issued', defMsg:'Deferred' },
+    { title:'Affordable Housing Developer', domain:'housing', desc:'Mission-driven developer proposing 500 affordable units. Needs fast permitting.', trigger:'housing>55', impacts:[{l:'Housing +12',c:'pos'},{l:'Trust +6',c:'pos'},{l:'Gov workload',c:'neg'}], act:'FAST-TRACK', def:'STANDARD PROCESS', actMsg:'Permits fast-tracked \u2014 construction starting', defMsg:'Standard 18-month review' },
+    { title:'Transit Innovation Grant', domain:'transport', desc:'DOT pilot program for smart traffic management. Your city shortlisted.', trigger:'transport>55', impacts:[{l:'Transport +10',c:'pos'},{l:'Energy +4',c:'pos'}], act:'ACCEPT PILOT', def:'DECLINE', actMsg:'Smart traffic pilot launching', defMsg:'Pilot went to another city' },
   ]
 };
 
 let turnEvents = []; // [{type, ...event, id}] generated each turn
+let recentEventTitles = []; // last 2 turns of event titles — prevents repeats
 
 function generateTurnEvents() {
   turnEvents = [];
-  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
 
-  // Check for triggered crisis events
-  const triggeredCrises = EVENT_POOL.crisis.filter(ev => {
+  function isRelevant(ev) {
+    if (recentEventTitles.includes(ev.title)) return false;
+    if (ev.domain === 'city') return true;
+    if (myDoms.includes(ev.domain)) return true;
+    return false;
+  }
+
+  function isTriggered(ev) {
     if (ev.trigger === 'always') return true;
     const m = ev.trigger.match(/(\w+)([<>])(\d+)/);
     if (!m) return false;
-    const val = m[1] === 'trust' ? trust : m[1] === 'governance' ? governance : (domains[m[1]] ? domains[m[1]].health : 100);
+    const val = m[1] === 'trust' ? trust : m[1] === 'governance' ? governance : (domains[m[1]] ? domains[m[1]].health : 75);
     return m[2] === '<' ? val < parseInt(m[3]) : val > parseInt(m[3]);
-  });
+  }
 
-  // Check for triggered opportunities
-  const triggeredOpps = EVENT_POOL.opportunity.filter(ev => {
-    if (ev.trigger === 'always') return true;
-    const m = ev.trigger.match(/(\w+)([<>])(\d+)/);
-    if (!m) return false;
-    const val = m[1] === 'trust' ? trust : m[1] === 'governance' ? governance : (domains[m[1]] ? domains[m[1]].health : 50);
-    return m[2] === '<' ? val < parseInt(m[3]) : val > parseInt(m[3]);
-  });
+  const relevantCrises = EVENT_POOL.crisis.filter(ev => isRelevant(ev) && isTriggered(ev));
+  const relevantPolicies = EVENT_POOL.policy.filter(ev => isRelevant(ev));
+  const relevantOpps = EVENT_POOL.opportunity.filter(ev => isRelevant(ev) && isTriggered(ev));
 
-  // Pick 1 crisis if any triggered (80% chance), 1 policy (always), 1 opportunity if triggered (60% chance)
-  if (triggeredCrises.length > 0 && Math.random() < 0.8) {
-    const pick = triggeredCrises[Math.floor(Math.random() * triggeredCrises.length)];
+  const thisTurnTitles = [];
+
+  if (relevantCrises.length > 0 && Math.random() < 0.8) {
+    const pick = relevantCrises[Math.floor(Math.random() * relevantCrises.length)];
     turnEvents.push({ type: 'crisis', ...pick, id: 'ev-cr-' + turnNumber });
+    thisTurnTitles.push(pick.title);
   }
 
-  const policies = EVENT_POOL.policy;
-  const policyPick = policies[Math.floor(Math.random() * policies.length)];
+  const policyPool = relevantPolicies.length > 0 ? relevantPolicies : EVENT_POOL.policy;
+  const policyPick = policyPool[Math.floor(Math.random() * policyPool.length)];
   turnEvents.push({ type: 'policy', ...policyPick, id: 'ev-po-' + turnNumber });
+  thisTurnTitles.push(policyPick.title);
 
-  if (triggeredOpps.length > 0 && Math.random() < 0.6) {
-    const pick = triggeredOpps[Math.floor(Math.random() * triggeredOpps.length)];
+  if (relevantOpps.length > 0 && Math.random() < 0.6) {
+    const pick = relevantOpps[Math.floor(Math.random() * relevantOpps.length)];
     turnEvents.push({ type: 'opportunity', ...pick, id: 'ev-op-' + turnNumber });
+    thisTurnTitles.push(pick.title);
   }
+
+  recentEventTitles = [...thisTurnTitles, ...recentEventTitles].slice(0, 8);
 }
 
 function renderTurnEvents() {
@@ -4054,9 +4083,7 @@ function confirmDecision(){
     applySpillovers(spillovers);
     turnSpillovers.push(...spillovers);
 
-    const yourRow=document.getElementById('your-domain-row');
     const govNote = govMod < 0.9 ? ' (gov: ' + Math.round(govMod*100) + '%)' : '';
-    if(yourRow) yourRow.innerHTML=`<div class="teco">${d.icon}</div><div><div class="tecd" style="color:var(--amber)">${d.name} — You</div><div class="teca">${dec.name}${govNote}</div></div><div class="tecd2 pos">${effectiveDelta>0?'+'+effectiveDelta:'—'}</div>`;
     showToast(effectiveDelta>0?`"${dec.name}" committed — Health +${effectiveDelta}${spillovers.length?' + '+spillovers.length+' spillovers':''}`:`"${dec.name}" committed`);
   }
 
@@ -5268,8 +5295,6 @@ function selectStrategic(idx) {
   committedDomains.add(curDomain);
   if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
   usedDecisions[curDomain][s.name] = 3; // corruption has longer cooldown
-  const yourRow = document.getElementById('your-domain-row');
-  if (yourRow) yourRow.innerHTML = '<div class="teco">' + d.icon + '</div><div><div class="tecd" style="color:var(--amber)">' + d.name + ' — You (PRIVATE)</div><div class="teca">' + s.name + '</div></div><div class="tecd2" style="color:var(--amber);">🕵️</div>';
   showToast('Private action committed. Other players will see the flag.');
   renderDomainGrid();
   renderDSB();
@@ -5375,41 +5400,38 @@ function renderTurnEndRows() {
   const container = document.getElementById('te-player-rows');
   if (!container) return;
 
+  const label = document.getElementById('te-players-label');
+  if (label) label.textContent = 'TURN ' + turnNumber + ' \u2014 CITY STATUS';
+
   const domKeys = ['transport','housing','energy','health','economy','education'];
-  const domIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
+  const domIcons = {transport:'\uD83D\uDE87',housing:'\uD83C\uDFD8',energy:'\u26A1',health:'\uD83C\uDFE5',economy:'\uD83D\uDCCA',education:'\uD83C\uDF93'};
   const domNames = {transport:'Transportation & Access',housing:'Housing & Living',energy:'Energy & Environment',health:'Health, Safety & Care',economy:'Economy & Work',education:'Education & Skills'};
 
-  // Sample decision names per domain for simulated players
-  const sampleActions = {
-    transport:['Expand EV Charging Network','Aerial Corridor Licensing','Transit Frequency Boost','Road Repair Program','Smart Traffic Signals'],
-    housing:['Affordable Housing Fund','Smart Home Energy Nodes','Community Land Trust','Density Adjustment Program','Emergency Shelter Expansion'],
-    energy:['Deploy Second Microgrid','V2G Fleet Integration','Emergency Load Balancing','Carbon Credit Program','Demand Reduction Order'],
-    health:['Expand Telehealth','Crisis Mental Health Response','Emergency Health Mobilization','Mutual Aid Health Network','Workforce Burnout Prevention'],
-    economy:['Workforce Automation Transition','Small Business Fund','Digital Asset Zone','Gig Economy Protections','Supply Chain Resilience'],
-    education:['AI & Digital Literacy Program','Rapid Reskilling Centers','Vocational Track Expansion','City Learning Network','Youth Apprenticeship Pipeline']
-  };
-
   const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
-  let html = '';
+  let html = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Your domain shows full data. Other domains show status only \u2014 exact numbers are hidden.</div>';
 
-  // Your domain row(s) — preserved from confirmDecision
-  const existingYourRow = document.getElementById('your-domain-row');
-  if (existingYourRow) html += existingYourRow.outerHTML;
-
-  // Other domains — simulated actions
   domKeys.forEach(key => {
-    if (myDoms.includes(key)) return; // skip your domains
-    const actions = sampleActions[key] || ['Standard Operations'];
-    const passed = Math.random() < 0.15;
-    const action = passed ? 'Passed \u2014 no action taken' : actions[Math.floor(Math.random() * actions.length)];
-    const delta = passed ? '\u2014' : ('+' + (4 + Math.floor(Math.random() * 14)));
-    const deltaClass = passed ? '' : 'pos';
-    html += '<div class="teci"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd">' + domNames[key] + '</div><div class="teca">' + action + '</div></div><div class="tecd2' + (deltaClass ? ' ' + deltaClass : '') + '" style="color:' + (passed ? 'var(--text-muted)' : 'var(--green)') + ';">' + delta + '</div></div>';
+    const isYours = myDoms.includes(key);
+    const d = domains[key];
+    if (!d) return;
+
+    if (isYours) {
+      // YOUR domain — show exact health and status
+      const statusCol = d.health >= 80 ? 'var(--green)' : d.health >= 55 ? 'var(--amber)' : d.health >= 30 ? 'var(--amber)' : 'var(--red)';
+      html += '<div class="teci" style="background:rgba(245,158,11,.04);border-color:var(--amber-dim);"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd" style="color:var(--amber)">' + domNames[key] + ' <span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--amber);padding:1px 4px;border:1px solid var(--amber-dim);vertical-align:middle;">YOU</span></div><div class="teca">Health: ' + d.health + '/100 \u2014 ' + d.status + '</div></div><div class="tecd2" style="color:' + statusCol + ';">' + d.health + '</div></div>';
+    } else {
+      // OTHER domains — status label and direction ONLY
+      const statusCol = d.health >= 80 ? 'var(--green)' : d.health >= 55 ? 'var(--cyan)' : d.health >= 30 ? 'var(--amber)' : 'var(--red)';
+      const simDelta = Math.round((Math.random() * 18) - 6);
+      const direction = simDelta > 2 ? '\u2191 Improved' : simDelta < -2 ? '\u2193 Declined' : '\u2194 Holding';
+      const dirCol = simDelta > 2 ? 'var(--green)' : simDelta < -2 ? 'var(--red)' : 'var(--text-muted)';
+      html += '<div class="teci"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd">' + domNames[key] + '</div><div class="teca" style="color:' + statusCol + '">' + d.status + '</div></div><div class="tecd2" style="color:' + dirCol + ';font-size:10px;">' + direction + '</div></div>';
+    }
   });
 
-  // Private action detected — 25% chance each turn
+  // Private action detected — 25% chance
   if (Math.random() < 0.25) {
-    html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">🕵️</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">❓</div></div>';
+    html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">\uD83D\uDD75\uFE0F</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">\u2753</div></div>';
   }
 
   container.innerHTML = html;
