@@ -1314,6 +1314,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
           </svg>
         </div>
       </div>
+      <!-- Turn elapsed timer -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px;">
+        <span style="font-size:10px;">⏱</span>
+        <span id="turn-elapsed" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;">0:00</span>
+        <span style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">THIS TURN</span>
+      </div>
     </div>
     <!-- Active Global Conditions -->
     <div id="conditions-bar" style="display:none;padding:0 20px 10px;"></div>
@@ -1768,7 +1774,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div id="briefing-city" style="font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px;"></div>
     <div id="briefing-region" style="font-family:var(--fm);font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;"></div>
     <div id="briefing-conditions" style="text-align:left;margin-bottom:16px;"></div>
-    <div id="briefing-shock-hint" style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:20px;"></div>
+    <div id="briefing-shock-hint" style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:14px;"></div>
+    <div id="briefing-session-time" style="background:var(--panel);border:1px solid var(--border);padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:16px;">⏱</span>
+      <div style="text-align:left;">
+        <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:2px;">ESTIMATED SESSION</div>
+        <div id="briefing-time-value" style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);margin-top:2px;">90–120 min</div>
+        <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">~10–15 min per turn including table talk</div>
+      </div>
+    </div>
     <button onclick="dismissBriefing()" class="btn btn-p" style="padding:12px 32px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">BEGIN TURN 1 →</button>
   </div>
 </div>
@@ -1981,8 +1995,35 @@ const domains={
 let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid',myDomain=null;
 let heartCore=65,turnNumber=1;
 let committedDomains = new Set();
-let usedDecisions = {}; // {domainKey: Set of decision names already taken}
+let usedDecisions = {}; // {domainKey: {decName: turnsLeft}} — cooldown, not permanent
+
+function tickDecisionCooldowns() {
+  Object.keys(usedDecisions).forEach(domain => {
+    Object.keys(usedDecisions[domain]).forEach(name => {
+      usedDecisions[domain][name]--;
+      if (usedDecisions[domain][name] <= 0) delete usedDecisions[domain][name];
+    });
+  });
+}
 let maxTurns = 12; // flexible — recalculated each turn
+let turnStartTime = Date.now();
+let turnTimerInterval = null;
+
+function startTurnTimer() {
+  turnStartTime = Date.now();
+  if (turnTimerInterval) clearInterval(turnTimerInterval);
+  turnTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - turnStartTime) / 1000);
+    const min = Math.floor(elapsed / 60);
+    const sec = String(elapsed % 60).padStart(2, '0');
+    const el = document.getElementById('turn-elapsed');
+    if (el) {
+      el.textContent = min + ':' + sec;
+      // Subtle color shift after 10+ minutes
+      el.style.color = elapsed >= 600 ? 'var(--amber)' : elapsed >= 900 ? 'var(--red)' : 'var(--text-muted)';
+    }
+  }, 1000);
+}
 
 function recalcMaxTurns() {
   // Base 12, but flex based on game state
@@ -2067,9 +2108,12 @@ function beginNextTurn(){
   applyConditionEffects();
   // Tick condition durations
   tickConditions();
+  // Tick decision cooldowns
+  tickDecisionCooldowns();
 
   turnNumber++;
   recalcMaxTurns();
+  startTurnTimer();
   selDec=null;
   committedDomains = new Set();
   turnSpillovers = [];  // reset for new turn
@@ -3453,6 +3497,7 @@ function startGame(){
   renderDSB();
   renderConditionsBar();
   startVisualHeartbeat();
+  startTurnTimer();
   // Show city briefing before player starts
   showBriefing();
 }
@@ -3674,17 +3719,139 @@ function getTier(h){
   return 'critical';
 }
 
+// ── EXPANDED DECISION POOLS ─────────────────────────────────────────
+// Additional options per domain/tier — merged at runtime for variety
+const extraDecisions = {
+  energy: {
+    thriving:[
+      {name:'Regional Grid Leadership',effect:'Lead a multi-city grid coordination initiative. Strengthens regional resilience and earns influence.',tags:[{l:'Trust +10',c:'p'},{l:'+15 influence',c:'p'}],delta:0},
+      {name:'Green Hydrogen Pilot',effect:'Launch a hydrogen fuel cell pilot program. Positions the city for next-gen energy storage.',tags:[{l:'Energy +4',c:'p'},{l:'Economy +6',c:'p'},{l:'Innovation',c:'i'}],delta:4}
+    ],
+    stable:[
+      {name:'Smart Grid AI Optimization',effect:'Deploy AI-driven load prediction and routing. Reduces waste and improves response time.',tags:[{l:'Energy +8',c:'p'},{l:'Gov efficiency +4',c:'p'}],delta:8},
+      {name:'Community Solar Cooperative',effect:'Fund resident-owned solar cooperatives. Builds trust and distributed generation.',tags:[{l:'Energy +6',c:'p'},{l:'Trust +8',c:'p'},{l:'Housing +4',c:'p'}],delta:6}
+    ],
+    moderate:[
+      {name:'Grid Hardening Program',effect:'Reinforce vulnerable transmission lines and substations against weather events.',tags:[{l:'Energy +12',c:'p'},{l:'Resilience +10',c:'p'},{l:'Budget −14',c:'m'}],delta:12},
+      {name:'Peak Demand Incentive',effect:'Pay large consumers to reduce usage during peak hours. Market-based demand management.',tags:[{l:'Energy +10',c:'p'},{l:'Economy −4',c:'m'}],delta:10}
+    ],
+    strained:[
+      {name:'Rolling Blackout Schedule',effect:'Implement controlled outage rotation to prevent uncontrolled cascade. Equitable but painful.',tags:[{l:'Energy +14',c:'p'},{l:'Trust −8',c:'m'},{l:'Prevents cascade',c:'p'}],delta:14},
+      {name:'Cross-Border Emergency Import',effect:'Negotiate emergency power imports from neighboring state. Fast relief, political cost.',tags:[{l:'Energy +18',c:'p'},{l:'Gov −4',c:'m'},{l:'Budget −16',c:'m'}],delta:18}
+    ],
+    critical:[
+      {name:'Martial Grid Authority',effect:'Emergency military-style grid control. Maximum speed, zero public input.',tags:[{l:'Energy +24',c:'p'},{l:'Trust −12',c:'m'},{l:'Gov −6',c:'m'}],delta:24}
+    ]
+  },
+  housing: {
+    thriving:[{name:'Net-Zero Housing Standard',effect:'Mandate all new construction meets net-zero energy standards. National model.',tags:[{l:'Energy +8',c:'p'},{l:'Trust +6',c:'p'},{l:'City prestige',c:'i'}],delta:0}],
+    stable:[{name:'Accessory Dwelling Unit Program',effect:'Fast-track ADU permits to increase housing supply within existing neighborhoods.',tags:[{l:'Housing +8',c:'p'},{l:'Economy +4',c:'p'}],delta:8},
+      {name:'Tenant Protection Initiative',effect:'Strengthen renter protections against displacement. Builds trust, slows development pace.',tags:[{l:'Housing +6',c:'p'},{l:'Trust +10',c:'p'},{l:'Economy −4',c:'m'}],delta:6}],
+    moderate:[{name:'Modular Housing Factory',effect:'Establish a prefab housing factory. Reduces construction costs 30% and accelerates delivery.',tags:[{l:'Housing +14',c:'p'},{l:'Economy +6',c:'p'},{l:'Budget −12',c:'m'}],delta:14},
+      {name:'Housing-Transit Integration',effect:'Co-locate new housing with transit hubs. Reduces car dependency and commute burden.',tags:[{l:'Housing +10',c:'p'},{l:'Transport +6',c:'p'}],delta:10}],
+    strained:[{name:'Emergency Rent Freeze',effect:'Freeze rents city-wide for 2 turns. Prevents displacement cascade but chills investment.',tags:[{l:'Housing +16',c:'p'},{l:'Trust +8',c:'p'},{l:'Economy −10',c:'m'}],delta:16},
+      {name:'Vacant Property Seizure',effect:'Invoke eminent domain on abandoned properties for emergency conversion. Legal risk.',tags:[{l:'Housing +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Trust −4',c:'m'}],delta:18}],
+    critical:[{name:'Federal Housing Emergency',effect:'Declare federal housing emergency. FEMA-style temporary shelters. Dignity low but lives saved.',tags:[{l:'Housing +22',c:'p'},{l:'Trust −6',c:'m'},{l:'Federal oversight',c:'m'}],delta:22}]
+  },
+  transport: {
+    thriving:[{name:'Autonomous Transit Network',effect:'Launch self-driving shuttle routes. Eliminates driver shortage and extends service hours.',tags:[{l:'Transport +4',c:'p'},{l:'Economy +8',c:'p'},{l:'Innovation',c:'i'}],delta:4}],
+    stable:[{name:'Bike Infrastructure Expansion',effect:'Protected bike lanes and bike-share in every district. Reduces car dependency.',tags:[{l:'Transport +6',c:'p'},{l:'Health +4',c:'p'},{l:'Trust +4',c:'p'}],delta:6},
+      {name:'Freight Corridor Optimization',effect:'Dedicated freight routes reduce commercial/residential traffic conflict.',tags:[{l:'Transport +8',c:'p'},{l:'Economy +6',c:'p'}],delta:8}],
+    moderate:[{name:'Bus Rapid Transit Line',effect:'Dedicated bus lanes with signal priority. Fastest transit improvement per dollar.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +4',c:'p'},{l:'Budget −10',c:'m'}],delta:14},
+      {name:'Road Safety Overhaul',effect:'Complete streets redesign in high-injury corridors. Saves lives but disrupts traffic flow during construction.',tags:[{l:'Transport +10',c:'p'},{l:'Health +6',c:'p'},{l:'2-turn disruption',c:'w'}],delta:10}],
+    strained:[{name:'Emergency Transit Vouchers',effect:'Free transit passes for all residents. Keeps people moving while system recovers.',tags:[{l:'Transport +14',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −14',c:'m'}],delta:14},
+      {name:'National Guard Traffic Control',effect:'Deploy National Guard for traffic management. Fast but signals crisis.',tags:[{l:'Transport +18',c:'p'},{l:'Trust −6',c:'m'}],delta:18}],
+    critical:[{name:'Emergency Movement Corridors',effect:'Designate critical-only road access. Emergency vehicles and essential workers only.',tags:[{l:'Transport +22',c:'p'},{l:'Economy −10',c:'m'},{l:'Trust −8',c:'m'}],delta:22}]
+  },
+  health: {
+    thriving:[{name:'Preventive Care Campus',effect:'Build a wellness-focused campus. Shifts city from reactive to preventive health model.',tags:[{l:'Health +4',c:'p'},{l:'Economy +6',c:'p'},{l:'Trust +8',c:'p'}],delta:4}],
+    stable:[{name:'Community Health Workers',effect:'Deploy trained community health workers to underserved districts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Equity +',c:'i'}],delta:8},
+      {name:'Digital Health Records',effect:'Unified city-wide health records system. Better coordination, privacy concerns.',tags:[{l:'Health +6',c:'p'},{l:'Gov +4',c:'p'},{l:'Privacy risk',c:'w'}],delta:6}],
+    moderate:[{name:'Mobile Clinic Fleet',effect:'Deploy mobile health clinics to areas without fixed facilities. Extends reach.',tags:[{l:'Health +12',c:'p'},{l:'Transport dependency',c:'w'}],delta:12},
+      {name:'Nurse Practitioner Fast-Track',effect:'Accelerate NP certification pipeline to address provider shortage.',tags:[{l:'Health +10',c:'p'},{l:'Education +4',c:'p'},{l:'2-turn payoff',c:'w'}],delta:10}],
+    strained:[{name:'Hospital Surge Protocol',effect:'Activate surge capacity — cancel elective procedures, convert spaces, extend shifts.',tags:[{l:'Health +18',c:'p'},{l:'Burnout risk +',c:'m'}],delta:18},
+      {name:'Regional Mutual Aid',effect:'Activate mutual aid agreements with neighboring health systems.',tags:[{l:'Health +14',c:'p'},{l:'Transport +4',c:'p'}],delta:14}],
+    critical:[{name:'Field Hospital Deployment',effect:'Erect temporary field hospitals in parking structures. Last-resort capacity.',tags:[{l:'Health +24',c:'p'},{l:'Trust −4',c:'m'},{l:'Signals crisis',c:'m'}],delta:24}]
+  },
+  economy: {
+    thriving:[{name:'Sovereign Wealth Fund',effect:'Establish a city wealth fund from surplus revenue. Long-term financial resilience.',tags:[{l:'Economy +4',c:'p'},{l:'Resilience +12',c:'p'},{l:'City prestige',c:'i'}],delta:4}],
+    stable:[{name:'Local Procurement Policy',effect:'Require 40% local sourcing on city contracts. Keeps money circulating locally.',tags:[{l:'Economy +8',c:'p'},{l:'Trust +4',c:'p'}],delta:8},
+      {name:'Tech Startup Incubator',effect:'Fund a startup accelerator focused on civic tech. Creates jobs and innovation pipeline.',tags:[{l:'Economy +6',c:'p'},{l:'Education +6',c:'p'}],delta:6}],
+    moderate:[{name:'Commercial Rent Stabilization',effect:'Cap commercial rent increases to prevent small business displacement.',tags:[{l:'Economy +12',c:'p'},{l:'Trust +6',c:'p'},{l:'Investment friction',c:'w'}],delta:12},
+      {name:'Green Jobs Program',effect:'Training and placement program for renewable energy and retrofit jobs.',tags:[{l:'Economy +10',c:'p'},{l:'Energy +4',c:'p'},{l:'Education +4',c:'p'}],delta:10}],
+    strained:[{name:'Emergency Business Grants',effect:'Direct grants to businesses at risk of closure. Stops the bleeding but drains reserves.',tags:[{l:'Economy +16',c:'p'},{l:'Budget −18',c:'m'}],delta:16},
+      {name:'Tax Holiday Declaration',effect:'Suspend business taxes for 2 turns. Keeps employers but starves city services.',tags:[{l:'Economy +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Services cut',c:'m'}],delta:18}],
+    critical:[{name:'Federal Economic Disaster Zone',effect:'Apply for federal disaster designation. Maximum aid, maximum stigma.',tags:[{l:'Economy +24',c:'p'},{l:'Trust −8',c:'m'},{l:'Federal control',c:'m'}],delta:24}]
+  },
+  education: {
+    thriving:[{name:'Open University Initiative',effect:'Free online courses for all residents. Positions city as knowledge hub.',tags:[{l:'Education +4',c:'p'},{l:'Economy +6',c:'p'},{l:'Trust +8',c:'p'}],delta:4}],
+    stable:[{name:'Teacher Housing Subsidy',effect:'Subsidized housing for educators. Addresses recruitment crisis.',tags:[{l:'Education +8',c:'p'},{l:'Housing +4',c:'p'}],delta:8},
+      {name:'Industry Apprenticeship Pipeline',effect:'Partner with major employers for paid apprenticeship programs.',tags:[{l:'Education +6',c:'p'},{l:'Economy +8',c:'p'}],delta:6}],
+    moderate:[{name:'School Infrastructure Bond',effect:'Issue bonds for facility repairs and technology upgrades across all schools.',tags:[{l:'Education +14',c:'p'},{l:'Budget −12',c:'m'},{l:'2-turn payoff',c:'w'}],delta:14},
+      {name:'After-School STEM Program',effect:'City-funded after-school programs in underserved neighborhoods. Equity focus.',tags:[{l:'Education +10',c:'p'},{l:'Trust +6',c:'p'}],delta:10}],
+    strained:[{name:'Emergency Teacher Recruitment',effect:'Signing bonuses and fast-track certification to fill critical vacancies.',tags:[{l:'Education +16',c:'p'},{l:'Budget −14',c:'m'}],delta:16},
+      {name:'Virtual School Pivot',effect:'Shift struggling schools to hybrid/virtual model. Maintains access, reduces facility pressure.',tags:[{l:'Education +12',c:'p'},{l:'Trust −4',c:'m'},{l:'Equity concerns',c:'w'}],delta:12}],
+    critical:[{name:'State Takeover Prevention',effect:'Emergency measures to avoid state intervention in school system. All resources redirected.',tags:[{l:'Education +22',c:'p'},{l:'Economy −6',c:'m'},{l:'Gov −4',c:'m'}],delta:22}]
+  }
+};
+
+// Contextual decisions — appear only under specific game conditions
+function getContextualDecisions(domainKey) {
+  const ctx = [];
+  const dk = ['transport','housing','energy','health','economy','education'];
+  // If another domain is cascading, offer cross-domain rescue options
+  dk.forEach(k => {
+    if (k !== domainKey && domains[k] && domains[k].health <= 25) {
+      const icons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
+      ctx.push({name:'Emergency Aid to ' + domains[k].name.split(' ')[0],effect:'Divert resources to stabilize ' + domains[k].name + '. Sacrifices your turn to prevent city-wide cascade.',tags:[{l:domains[k].name.split(' ')[0]+' +12',c:'p'},{l:'Your domain: no progress',c:'m'},{l:'HC +4',c:'p'}],delta:0,contextual:true});
+    }
+  });
+  // If trust is very low, offer trust-building option
+  if (trust < 30) {
+    ctx.push({name:'Public Transparency Initiative',effect:'Open your domain\u2019s records to public scrutiny. Rebuilds trust at the cost of exposing inefficiencies.',tags:[{l:'Trust +12',c:'p'},{l:'Gov −4',c:'m'}],delta:2,contextual:true});
+  }
+  // If governance is very low, offer reform option
+  if (governance < 35) {
+    ctx.push({name:'Institutional Reform Push',effect:'Reorganize your domain\u2019s operations to improve execution capacity. Slow but structural.',tags:[{l:'Gov +8',c:'p'},{l:'2-turn payoff',c:'w'}],delta:4,contextual:true});
+  }
+  return ctx;
+}
+
 function openDomain(key){
   curDomain=key;selDec=null;
   const d=domains[key];
   const cm=healthColor(d.health);
   const tier=getTier(d.health);
-  const tierDecs=(tieredDecisions[key]&&tieredDecisions[key][tier])||d.decisions;
+  const baseDecs=(tieredDecisions[key]&&tieredDecisions[key][tier])||d.decisions;
+  // Merge extra decisions from expanded pool
+  const extras = (extraDecisions[key] && extraDecisions[key][tier]) || [];
+  // Add contextual decisions based on game state
+  const contextual = getContextualDecisions(key);
+  const tierDecs = [...baseDecs, ...extras, ...contextual];
   document.getElementById('dmt').textContent=d.name.toUpperCase();
 
-  // Filter out decisions already used in previous turns
-  const used = usedDecisions[key] || new Set();
-  const availDecs = tierDecs.filter(dec => !used.has(dec.name));
+  // Filter out decisions on cooldown
+  const cooldowns = usedDecisions[key] || {};
+  let availDecs = tierDecs.filter(dec => !cooldowns[dec.name]);
+
+  // Ensure at least 3 options — pull from adjacent tier if needed
+  if (availDecs.length < 3) {
+    const tierOrder = ['critical','strained','moderate','stable','thriving'];
+    const curIdx = tierOrder.indexOf(tier);
+    for (let offset = 1; availDecs.length < 3 && offset < tierOrder.length; offset++) {
+      for (const dir of [1, -1]) {
+        const adjIdx = curIdx + (offset * dir);
+        if (adjIdx >= 0 && adjIdx < tierOrder.length) {
+          const adjTier = tierOrder[adjIdx];
+          const adjDecs = (tieredDecisions[key] && tieredDecisions[key][adjTier]) || [];
+          const fresh = adjDecs.filter(d => !cooldowns[d.name] && !availDecs.some(a => a.name === d.name));
+          while (availDecs.length < 3 && fresh.length > 0) {
+            availDecs.push(fresh.shift());
+          }
+        }
+      }
+    }
+  }
 
   // Thriving banner
   const thrivingBanner = tier==='thriving' ? `
@@ -3708,7 +3875,7 @@ function openDomain(key){
   }).join('');
 
   // Show message if all decisions in this tier have been used
-  const exhaustedMsg = availDecs.length === 0 ? '<div style="padding:16px;text-align:center;color:var(--amber);font-size:12px;line-height:1.6;">All available decisions in this tier have been used in previous turns. Pass or wait for conditions to change your tier.</div>' : '';
+  const exhaustedMsg = availDecs.length === 0 ? '<div style="padding:16px;text-align:center;color:var(--amber);font-size:12px;line-height:1.6;">All available decisions are on cooldown. Pass this turn \u2014 options return next turn.</div>' : '';
 
   const sps=d.sp.map(s=>`<div class="spi"><div class="spd">${s.d}</div><div class="spe ${s.dir}">${s.dir==='neg'?'↓ Negative pressure':'↑ Positive synergy'}</div></div>`).join('');
 
@@ -3900,13 +4067,13 @@ function confirmDecision(){
   // Track this domain as committed
   committedDomains.add(curDomain);
 
-  // Track the decision name so it doesn't appear again in future turns
+  // Track the decision with a 2-turn cooldown
   if (selDec !== 'pass') {
-    if (!usedDecisions[curDomain]) usedDecisions[curDomain] = new Set();
+    if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
     const tier2 = getTier(domains[curDomain].health);
     const tierDecs2 = (tieredDecisions[curDomain] && tieredDecisions[curDomain][tier2]) || domains[curDomain].decisions;
     const usedDec = tierDecs2[selDec] || domains[curDomain].decisions[selDec];
-    if (usedDec) usedDecisions[curDomain].add(usedDec.name);
+    if (usedDec) usedDecisions[curDomain][usedDec.name] = 2; // unavailable for 2 turns
   }
 
   // Multi-domain flow: if more domains need decisions, go back to overview
@@ -4187,7 +4354,7 @@ function renderDSB(){
   const d=domains[myDomain];
   const hcCol=heartCore>=80?'var(--green)':heartCore>=55?'var(--amber)':'var(--red)';
   const myCol=d.health>=80?'var(--green)':d.health>=55?'var(--amber)':'var(--red)';
-  const hcStatus=heartCore>=80?'STABLE':heartCore>=55?'STRAINED':heartCore>=30?'CRITICAL':'FAILING';
+  const hcStatus=heartCore>=80?'STABLE':heartCore>=55?'MODERATE':heartCore>=30?'STRAINED':'CRITICAL';
   const myStatus=d.health>=100?'THRIVING':d.health>=80?'STABLE':d.health>=55?'MODERATE':d.health>=30?'STRAINED':'CRITICAL';
   const myWin=d.health>=100?'DOMAIN COMPLETE':'YOUR WIN OBJECTIVE';
   const domLabel=d.name.length>20?d.name.split(' ').slice(0,2).join(' '):d.name;
@@ -5019,7 +5186,7 @@ function showBriefing() {
 
   const regionCfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
   document.getElementById('briefing-city').textContent = cityName || 'The City';
-  document.getElementById('briefing-region').textContent = regionCfg.icon + ' ' + regionCfg.label.toUpperCase() + ' \u00B7 ' + (cityStart || 'strained').toUpperCase() + ' \u00B7 TURN 1 OF 12';
+  document.getElementById('briefing-region').textContent = regionCfg.icon + ' ' + regionCfg.label.toUpperCase() + ' \u00B7 ' + (cityStart || 'strained').toUpperCase() + ' \u00B7 TURN 1 OF ~' + maxTurns;
 
   const condEl = document.getElementById('briefing-conditions');
   if (condEl) {
@@ -5044,6 +5211,16 @@ function showBriefing() {
 
   const hintEl = document.getElementById('briefing-shock-hint');
   if (hintEl) hintEl.textContent = pendingShock ? 'Intelligence suggests an external crisis may strike during this session.' : 'No external crisis warnings at this time.';
+
+  // Session time estimate based on player count and turns
+  const pc = playerCount || 4;
+  // Session time — decisions are personal (1-2 min), table talk after reveal (2-4 min)
+  const minPerTurn = pc <= 2 ? 4 : pc <= 4 ? 5 : 6;
+  const maxPerTurn = pc <= 2 ? 6 : pc <= 4 ? 8 : 10;
+  const lowMin = Math.round(maxTurns * minPerTurn);
+  const highMin = Math.min(120, Math.round(maxTurns * maxPerTurn)); // cap at 2 hours
+  const timeEl = document.getElementById('briefing-time-value');
+  if (timeEl) timeEl.textContent = lowMin + '\u2013' + highMin + ' min';
 }
 
 function openStrategic() {
@@ -5089,8 +5266,8 @@ function selectStrategic(idx) {
   trust = Math.max(0, trust - 4);
   // Mark as committed and track decision
   committedDomains.add(curDomain);
-  if (!usedDecisions[curDomain]) usedDecisions[curDomain] = new Set();
-  usedDecisions[curDomain].add(s.name);
+  if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
+  usedDecisions[curDomain][s.name] = 3; // corruption has longer cooldown
   const yourRow = document.getElementById('your-domain-row');
   if (yourRow) yourRow.innerHTML = '<div class="teco">' + d.icon + '</div><div><div class="tecd" style="color:var(--amber)">' + d.name + ' — You (PRIVATE)</div><div class="teca">' + s.name + '</div></div><div class="tecd2" style="color:var(--amber);">🕵️</div>';
   showToast('Private action committed. Other players will see the flag.');
@@ -5116,7 +5293,7 @@ function renderGovTrust() {
   const govLabel = document.getElementById('gov-value-label');
   const govEffect = document.getElementById('gov-effect-line');
   if (govBar) govBar.style.width = governance + '%';
-  const govStatus = governance >= 75 ? 'EFFECTIVE' : governance >= 55 ? 'MODERATE' : governance >= 35 ? 'STRAINED' : 'FAILING';
+  const govStatus = governance >= 75 ? 'STABLE' : governance >= 55 ? 'MODERATE' : governance >= 35 ? 'STRAINED' : 'CRITICAL';
   if (govLabel) govLabel.textContent = governance + ' \u2014 ' + govStatus;
   if (govEffect) govEffect.textContent = 'Decisions land at ' + governance + '% strength \u00B7 Decaying ' + (-2) + '/turn \u00B7 TAP TO VIEW \u2192';
 
@@ -5125,7 +5302,7 @@ function renderGovTrust() {
   const trustLabel = document.getElementById('trust-value-label');
   const trustEffect = document.getElementById('trust-effect-line');
   if (trustBar) trustBar.style.width = trust + '%';
-  const trustStatus = trust >= 70 ? 'STABLE' : trust >= 45 ? 'TENSE' : trust >= 25 ? 'FRACTURED' : 'COLLAPSED';
+  const trustStatus = trust >= 70 ? 'STABLE' : trust >= 45 ? 'MODERATE' : trust >= 25 ? 'STRAINED' : 'CRITICAL';
   const volLabel = trust < 40 ? 'High volatility (\u00B130%)' : trust < 60 ? 'Moderate volatility (\u00B115%)' : 'Stable \u2014 no volatility';
   if (trustLabel) trustLabel.textContent = trust + ' \u2014 ' + trustStatus;
   if (trustEffect) trustEffect.textContent = volLabel + ' \u00B7 TAP TO VIEW \u2192';
