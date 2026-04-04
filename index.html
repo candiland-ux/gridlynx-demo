@@ -520,6 +520,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <span><span style="display:block;font-size:14px;letter-spacing:3px;">APP ONLY</span><span style="display:block;font-size:9px;color:rgba(6,182,212,.5);font-weight:400;letter-spacing:1px;margin-top:1px;">Solo or remote — no board needed</span></span>
       </button>
     </div>
+
+    <!-- Endgame simulations — demo access -->
+    <div style="margin-top:24px;opacity:.5;transition:opacity .3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">
+      <div style="font-family:var(--fm);font-size:8px;letter-spacing:3px;color:var(--text-muted);margin-bottom:8px;">SIMULATE ENDGAME</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="simulateVictoryWinner()" style="background:var(--green-glow);border:1px solid rgba(16,185,129,.3);color:var(--green);font-family:var(--fm);font-size:8px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">🏆 YOU WIN</button>
+        <button onclick="simulateVictoryOther()" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--amber);font-family:var(--fm);font-size:8px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">👤 OTHER WINS</button>
+        <button onclick="simulateCollapse()" style="background:var(--red-glow);border:1px solid rgba(239,68,68,.3);color:var(--red);font-family:var(--fm);font-size:8px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">💀 FLATLINE</button>
+      </div>
+    </div>
   </div>
 </div>
 <!-- CONNECTION TYPE -->
@@ -1348,22 +1358,144 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
-<!-- COLLAPSE -->
-<div id="scol" class="screen" style="flex-direction:column;">
-  <div class="coli">💀</div>
-  <div class="colt">CITY COLLAPSE</div>
-  <div style="font-family:var(--fm);font-size:11px;color:var(--red);margin-top:6px;">Heart Core reached 0 — Turn 7</div>
-  <div class="cold">The city's systems failed. The cascade began in Energy and spread faster than governance could respond.</div>
-  <div class="coldiv"></div>
-  <div class="colch">
-    <div class="colcht">FAILURE CASCADE SEQUENCE</div>
-    <div class="colchi">⚡ Energy grid destabilized → Turn 5</div>
-    <div class="colchi">🏘 Housing lost power continuity → Turn 6</div>
-    <div class="colchi">🏥 Emergency services overwhelmed → Turn 6</div>
-    <div class="colchi">🤝 Community trust collapsed → Turn 7</div>
-    <div class="colchi">💀 Heart Core: 0 → COLLAPSE</div>
+<!-- COLLAPSE — FLATLINE -->
+<div id="scol" class="screen" style="flex-direction:column;background:#050508;">
+  <!-- EKG Flatline animation -->
+  <div style="width:100%;max-width:360px;margin:0 auto 20px;position:relative;height:60px;overflow:hidden;">
+    <svg id="ekg-svg" viewBox="0 0 360 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <line x1="0" y1="30" x2="360" y2="30" stroke="rgba(239,68,68,.15)" stroke-width="1"/>
+      <polyline id="ekg-line" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0,30"/>
+    </svg>
+    <div id="ekg-dot" style="position:absolute;top:26px;left:0;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 12px rgba(239,68,68,.8);transition:top .05s;"></div>
   </div>
-  <button class="btn btn-p" style="max-width:240px;margin:0 auto;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);" onclick="nav('sq')">↩ NEW GAME</button>
+  <div style="font-size:64px;margin-bottom:12px;animation:flk .5s infinite alternate;">💀</div>
+  <div style="font-family:var(--fd);font-size:36px;font-weight:700;color:var(--red);letter-spacing:4px;">CITY COLLAPSE</div>
+  <div id="col-turn-line" style="font-family:var(--fm);font-size:11px;color:var(--red);margin-top:6px;"></div>
+  <div id="col-city-name" style="font-family:var(--fd);font-size:16px;color:var(--text-dim);margin-top:4px;"></div>
+  <div style="font-size:13px;color:var(--text-dim);margin-top:10px;line-height:1.6;max-width:280px;text-align:center;">The city's systems failed. The cascade spread faster than governance could respond. Everyone loses.</div>
+  <div style="width:80px;height:1px;background:var(--red);margin:22px auto;opacity:.4;"></div>
+
+  <!-- Final stats -->
+  <div style="text-align:left;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);padding:14px;max-width:320px;width:100%;">
+    <div style="font-family:var(--fm);font-size:9px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">FINAL STATE</div>
+    <div id="col-domain-final" style="display:flex;flex-direction:column;gap:4px;"></div>
+  </div>
+
+  <!-- Exposed corruption -->
+  <div id="col-corruption" style="display:none;margin-top:12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);padding:14px;max-width:320px;width:100%;text-align:left;">
+    <div style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:8px;">CORRUPTION EXPOSED AT COLLAPSE</div>
+    <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">All private channel actions are now visible. The city's records are public.</div>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:10px;">
+    <button class="btn btn-s" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">↩ MENU</button>
+    <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">NEW GAME</button>
+  </div>
+</div>
+
+<!-- VICTORY — WINNER VIEW -->
+<div id="s-victory-winner" class="screen" style="flex-direction:column;background:#050508;position:relative;overflow:hidden;">
+  <!-- Ambient glow -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(16,185,129,.12) 0%,transparent 60%);pointer-events:none;"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,rgba(245,158,11,.08) 0%,transparent 50%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;">
+    <!-- Victory orb -->
+    <div style="width:90px;height:90px;margin:0 auto 20px;border-radius:50%;background:radial-gradient(circle,#6ee7b7,#10b981,#065f46);box-shadow:0 0 40px rgba(16,185,129,.7),0 0 80px rgba(16,185,129,.3);animation:hpa 2s ease-in-out infinite;"></div>
+
+    <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:var(--green);text-transform:uppercase;margin-bottom:8px;opacity:.8;">Domain Objective Complete</div>
+    <div style="font-family:var(--fd);font-size:38px;font-weight:700;color:var(--text);letter-spacing:3px;line-height:1;">YOU WIN</div>
+    <div id="victory-subtitle" style="font-family:var(--fb);font-size:12px;color:var(--text-dim);margin-top:8px;font-style:italic;letter-spacing:2px;"></div>
+
+    <div style="width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);margin:20px auto;"></div>
+
+    <!-- Winner identity -->
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--panel);border:1px solid rgba(16,185,129,.3);max-width:320px;width:100%;margin-bottom:16px;">
+      <div id="vic-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--panel2);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;"></div>
+      <div style="text-align:left;flex:1;">
+        <div id="vic-name" style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--green);"></div>
+        <div id="vic-domain" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:3px;"></div>
+      </div>
+      <div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--green);padding:3px 10px;border:1px solid rgba(16,185,129,.3);background:var(--green-glow);">WINNER</div>
+    </div>
+
+    <!-- Win condition met -->
+    <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);padding:14px;max-width:320px;width:100%;text-align:left;margin-bottom:12px;">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--green);letter-spacing:2px;margin-bottom:6px;">WIN CONDITION MET</div>
+      <div id="vic-condition" style="font-size:12px;color:var(--text-dim);line-height:1.6;"></div>
+    </div>
+
+    <!-- Final stats -->
+    <div style="background:var(--panel);border:1px solid var(--border);padding:14px;max-width:320px;width:100%;text-align:left;">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">YOUR FINAL STATS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div style="text-align:center;padding:8px;background:var(--bg3);">
+          <div id="vic-health" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);"></div>
+          <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">DOMAIN HEALTH</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:var(--bg3);">
+          <div id="vic-hc" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--amber);"></div>
+          <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">HEART CORE</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:var(--bg3);">
+          <div id="vic-turn" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--cyan);"></div>
+          <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">WON ON TURN</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:10px;">
+      <button class="btn btn-s" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">↩ MENU</button>
+      <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">NEW GAME</button>
+    </div>
+  </div>
+</div>
+
+<!-- VICTORY — OTHER PLAYERS VIEW -->
+<div id="s-victory-other" class="screen" style="flex-direction:column;background:#050508;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(245,158,11,.08) 0%,transparent 60%);pointer-events:none;"></div>
+
+  <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;">
+
+    <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;opacity:.8;">Game Over</div>
+    <div style="font-family:var(--fd);font-size:32px;font-weight:700;color:var(--text);letter-spacing:3px;line-height:1;">DOMAIN OBJECTIVE<br>ACHIEVED</div>
+    <div style="font-family:var(--fb);font-size:12px;color:var(--text-dim);margin-top:8px;font-style:italic;letter-spacing:2px;">Another player completed their win condition.</div>
+
+    <div style="width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:20px auto;"></div>
+
+    <!-- Winner card -->
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--panel);border:1px solid rgba(16,185,129,.3);max-width:320px;width:100%;margin-bottom:16px;">
+      <div id="vico-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--panel2);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;"></div>
+      <div style="text-align:left;flex:1;">
+        <div id="vico-name" style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--green);"></div>
+        <div id="vico-domain" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:3px;"></div>
+      </div>
+      <div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--green);padding:3px 10px;border:1px solid rgba(16,185,129,.3);background:var(--green-glow);">WINNER</div>
+    </div>
+
+    <!-- Your result -->
+    <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);padding:14px;max-width:320px;width:100%;text-align:left;margin-bottom:12px;">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:6px;">YOUR RESULT</div>
+      <div id="vico-your-result" style="font-size:12px;color:var(--text-dim);line-height:1.6;"></div>
+    </div>
+
+    <!-- City survived banner -->
+    <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);padding:14px;max-width:320px;width:100%;text-align:left;">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;">THE CITY SURVIVED</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#fcd34d,#d97706,#92400e);box-shadow:0 0 16px rgba(245,158,11,.5);flex-shrink:0;"></div>
+        <div>
+          <div id="vico-hc" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);"></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Heart Core at game end</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:10px;">
+      <button class="btn btn-s" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">↩ MENU</button>
+      <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">NEW GAME</button>
+    </div>
+  </div>
 </div>
 
 <!-- JOIN REQUEST OVERLAY -->
@@ -1538,7 +1670,7 @@ function beginNextTurn(){
   if (roundPill) roundPill.textContent = 'TURN ' + turnNumber;
   const cityHeader = document.getElementById('city-name-header');
   if (cityHeader && cityName) cityHeader.textContent = cityName;
-  if(heartCore<=0){nav('scol');return;}
+  if(heartCore<=0){populateCollapseScreen();nav('scol');return;}
   renderDomainGrid();
   renderDSB();
   renderDomainContext();
@@ -2818,7 +2950,7 @@ function confirmDecision(){
 
   // Heart Core changes are DEFERRED — display stays frozen at hcBeforeTurn
   // Internal heartCore is updated for collapse logic, but UI won't show it yet
-  if(heartCore<=0){renderDomainGrid();renderDSB();setTimeout(()=>nav('scol'),1400);return;}
+  if(heartCore<=0){renderDomainGrid();renderDSB();populateCollapseScreen();setTimeout(()=>nav('scol'),1400);return;}
   renderDomainGrid();
   renderDSB();
 
@@ -2894,7 +3026,7 @@ let pt;
 document.addEventListener('DOMContentLoaded',()=>{
   const orb=document.getElementById('hcorb');
   if(!orb)return;
-  const s=()=>{pt=setTimeout(()=>nav('scol'),1000);};
+  const s=()=>{pt=setTimeout(()=>{populateCollapseScreen();nav('scol');},1000);};
   const e=()=>clearTimeout(pt);
   orb.addEventListener('mousedown',s);orb.addEventListener('mouseup',e);
   orb.addEventListener('touchstart',s);orb.addEventListener('touchend',e);
@@ -3243,6 +3375,141 @@ function dismissJoinRequest() {
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ── ENDGAME SIMULATIONS ────────────────────────────────────────────────
+
+function populateCollapseScreen() {
+  const turnLine = document.getElementById('col-turn-line');
+  if (turnLine) turnLine.textContent = 'Heart Core reached 0 — Turn ' + turnNumber;
+  const cityEl = document.getElementById('col-city-name');
+  if (cityEl) cityEl.textContent = cityName || 'The city';
+
+  const finalEl = document.getElementById('col-domain-final');
+  if (finalEl) {
+    const domKeys = ['energy','transport','housing','health','economy','education'];
+    finalEl.innerHTML = domKeys.map(key => {
+      const d = domains[key];
+      const col = d.health >= 55 ? 'var(--amber)' : 'var(--red)';
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,.1);">
+        <span style="font-size:11px;color:var(--text-dim);">${d.icon} ${d.name}</span>
+        <span style="font-family:var(--fm);font-size:10px;color:${col};">${d.health}/100</span>
+      </div>`;
+    }).join('');
+  }
+
+  const corr = document.getElementById('col-corruption');
+  if (corr) corr.style.display = 'block';
+  startEkgFlatline();
+}
+
+function startEkgFlatline() {
+  const line = document.getElementById('ekg-line');
+  const dot = document.getElementById('ekg-dot');
+  if (!line || !dot) return;
+
+  let x = 0;
+  const points = [];
+  const w = 360;
+  let phase = 'heartbeat';
+  let beatCount = 0;
+
+  function tick() {
+    x += 2;
+    if (x > w) { x = 0; points.length = 0; }
+
+    let y = 30;
+    if (phase === 'heartbeat') {
+      const t = x % 60;
+      if (t > 20 && t < 24) y = 12;
+      else if (t > 24 && t < 28) y = 48;
+      else if (t > 28 && t < 32) y = 22;
+      beatCount++;
+      if (beatCount > 120) { phase = 'slowing'; beatCount = 0; }
+    } else if (phase === 'slowing') {
+      const t = x % 90;
+      if (t > 30 && t < 34) y = 18 + Math.random() * 6;
+      else if (t > 34 && t < 38) y = 40 + Math.random() * 4;
+      beatCount++;
+      if (beatCount > 100) { phase = 'flatline'; }
+    }
+
+    points.push(x + ',' + y);
+    if (points.length > w / 2) points.shift();
+    line.setAttribute('points', points.join(' '));
+    dot.style.left = x + 'px';
+    dot.style.top = (y - 4) + 'px';
+
+    if (phase === 'flatline') {
+      dot.style.boxShadow = '0 0 6px rgba(239,68,68,.3)';
+      line.setAttribute('stroke', 'rgba(239,68,68,.4)');
+    }
+
+    if (document.getElementById('scol').classList.contains('active')) {
+      setTimeout(tick, phase === 'slowing' ? 35 : 25);
+    }
+  }
+  tick();
+}
+
+function simulateVictoryWinner() {
+  const d = domains[myDomain] || domains.energy;
+  d.health = 100;
+  d.status = 'THRIVING';
+
+  const avatar = document.getElementById('vic-avatar');
+  const name = document.getElementById('vic-name');
+  const domain = document.getElementById('vic-domain');
+  const condition = document.getElementById('vic-condition');
+  const health = document.getElementById('vic-health');
+  const hc = document.getElementById('vic-hc');
+  const turn = document.getElementById('vic-turn');
+  const sub = document.getElementById('victory-subtitle');
+
+  if (avatar) { avatar.textContent = playerProfile.emoji || '⚡'; avatar.style.borderColor = playerProfile.colorVar || 'var(--green)'; }
+  if (name) name.textContent = playerProfile.name || 'Player';
+  if (domain) domain.textContent = (d.name || 'ENERGY & ENVIRONMENT').toUpperCase();
+  if (condition) condition.textContent = d.win || 'Domain health reached 100 with all objectives met.';
+  if (health) health.textContent = '100';
+  if (hc) hc.textContent = heartCore;
+  if (turn) turn.textContent = turnNumber;
+  if (sub) sub.textContent = (cityName || 'The city') + ' endures — because of you.';
+
+  nav('s-victory-winner');
+}
+
+function simulateVictoryOther() {
+  const winnerNames = ['Shadow Wolf','Neon Viper','Iron Lynx','Circuit Fox'];
+  const winnerEmojis = ['🐺','🐍','🦊','🐉'];
+  const winnerDomains = ['Transportation & Access','Housing & Living','Health, Safety & Care','Economy & Work'];
+  const idx = Math.floor(Math.random() * winnerNames.length);
+
+  const avatar = document.getElementById('vico-avatar');
+  const name = document.getElementById('vico-name');
+  const domain = document.getElementById('vico-domain');
+  const yourResult = document.getElementById('vico-your-result');
+  const hcEl = document.getElementById('vico-hc');
+
+  if (avatar) avatar.textContent = winnerEmojis[idx];
+  if (name) name.textContent = winnerNames[idx];
+  if (domain) domain.textContent = winnerDomains[idx].toUpperCase();
+
+  const d = domains[myDomain] || domains.energy;
+  if (yourResult) {
+    yourResult.innerHTML = '<strong style="color:var(--text)">' + (playerProfile.name || 'You') + '</strong> — ' +
+      (d.name || 'Energy & Environment') + '<br>' +
+      'Domain health: <span style="color:' + (d.health >= 70 ? 'var(--green)' : d.health >= 40 ? 'var(--amber)' : 'var(--red)') + '">' + d.health + '/100</span>' +
+      '<br><span style="color:var(--text-muted)">Win condition was not met before another player achieved theirs.</span>';
+  }
+  if (hcEl) hcEl.textContent = heartCore + '/100';
+
+  nav('s-victory-other');
+}
+
+function simulateCollapse() {
+  heartCore = 0;
+  populateCollapseScreen();
+  nav('scol');
+}
 
 // ── SPLASH ANIMATIONS ────────────────────────────────────────────────
 (function() {
