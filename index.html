@@ -1520,25 +1520,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div></div>
   </div>
   <div class="scroll" style="padding-bottom:20px;">
-    <div class="sl">ACTIVE THIS TURN — RESPOND BEFORE END OF ROUND</div>
-    <div class="evc cr" id="ev1">
-      <div class="evch"><div class="evt">🔴 CRISIS EVENT</div></div>
-      <div class="evb"><div class="evti">Rolling Brownouts — Eastside Grid</div><div class="evde">Eastern energy microgrid is failing. Data center loads from Turn 3 exceeded capacity. Cascading outages beginning in housing and health sectors.</div>
-      <div class="evim"><div class="evip neg">Energy −18</div><div class="evip neg">Housing −9</div><div class="evip neg">Health −6</div><div class="evip neg">Trust −4</div></div></div>
-      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev1','Emergency power allocation committed')">EMERGENCY RESPONSE</button><button class="evbtn de" onclick="resolveEv('ev1','Deferred — strain compounds next turn','d')">DEFER</button></div>
-    </div>
-    <div class="evc po" id="ev2">
-      <div class="evch"><div class="evt">🔵 POLICY WINDOW</div></div>
-      <div class="evb"><div class="evti">Federal Reskilling Grant — AI Workforce</div><div class="evde">A federal grant opened a window for workforce reskilling. Accepting reallocates 12 influence tokens but boosts Education and Economy over 3 turns.</div>
-      <div class="evim"><div class="evip pos">Education +16</div><div class="evip pos">Economy +8</div><div class="evip neg">Influence −12</div></div></div>
-      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev2','Grant accepted — Education +16 queued')">ACCEPT GRANT</button><button class="evbtn de" onclick="resolveEv('ev2','Grant window closed — opportunity lost','d')">DECLINE</button></div>
-    </div>
-    <div class="evc op" id="ev3">
-      <div class="evch"><div class="evt">🟢 OPPORTUNITY</div></div>
-      <div class="evb"><div class="evti">eVTOL Corridor License</div><div class="evde">An aerial mobility company has approached about licensing airspace corridors for flying taxis. Boosts Transport and Economy but creates Gov friction.</div>
-      <div class="evim"><div class="evip pos">Transport +14</div><div class="evip pos">Economy +10</div><div class="evip neg">Gov friction −7</div></div></div>
-      <div class="evf"><button class="evbtn ac" onclick="resolveEv('ev3','eVTOL corridor approved — airspace licensed')">APPROVE LICENSE</button><button class="evbtn de" onclick="resolveEv('ev3','License declined','d')">DECLINE</button></div>
-    </div>
+    <div class="sl" id="events-turn-label">ACTIVE THIS TURN — RESPOND BEFORE END OF ROUND</div>
+    <div id="events-dynamic"></div>
     <div style="margin:16px 20px 0;padding:12px 14px;background:var(--panel);border:1px solid var(--border);">
       <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">WHEN ALL EVENTS ARE RESOLVED</div>
       <button class="btn btn-c" style="width:100%;clip-path:none;" onclick="nav('ste')">→ END TURN &amp; SEE CONSEQUENCES</button>
@@ -1967,6 +1950,7 @@ const domains={
 let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid',myDomain=null;
 let heartCore=65,turnNumber=1;
 let committedDomains = new Set();
+let usedDecisions = {}; // {domainKey: Set of decision names already taken}
 let hcBeforeTurn = 65; // snapshot at turn start — display stays frozen until reveal
 
 function beginNextTurn(){
@@ -2032,6 +2016,7 @@ function nav(id){
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
+  if(id==='sev') renderTurnEvents();
   if(id==='sev' || id==='ste') revealHeartCore();
 }
 
@@ -2107,19 +2092,20 @@ function initProfileScreen() {
       '#8b5cf6', // Violet
       '#ec4899', // Pink
       '#e2e8f0', // White
+      '#1e1e2e', // Black
       '#64748b'  // Slate
     ];
     picker.innerHTML = spectrum.map((c, i) =>
-      `<div class="color-dot${i===2?' sel':''}" data-hex="${c}" onclick="selectProfileColor(this)" style="background:${c};" title="${c}"></div>`
+      `<div class="color-dot${i===2?' sel':''}" data-hex="${c}" onclick="selectProfileColor(this)" style="background:${c};${c==='#1e1e2e'?'border:1px solid var(--border);':''}" title="${c==='#1e1e2e'?'Black':c}"></div>`
     ).join('');
   }
 
   // Build color dots preview
   const dots = document.getElementById('profile-color-dots');
   if (dots) {
-    const previewCols = ['#ef4444','#f59e0b','#10b981','#06b6d4','#8b5cf6','#e2e8f0'];
+    const previewCols = ['#ef4444','#f59e0b','#10b981','#06b6d4','#8b5cf6','#1e1e2e','#e2e8f0'];
     dots.innerHTML = previewCols.map(c =>
-      `<div style="width:10px;height:10px;border-radius:50%;background:${c};opacity:.6;"></div>`
+      `<div style="width:10px;height:10px;border-radius:50%;background:${c};opacity:.6;${c==='#1e1e2e'?'border:1px solid var(--border);':''}"></div>`
     ).join('');
   }
   // Reset to self mode on each visit
@@ -2160,26 +2146,31 @@ function selectProfileColor(el) {
 function previewCustomColor() {}
 function applyCustomColor() {}
 
+function isColorDark(hex) {
+  const c = hex.replace('#','');
+  const r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+  return (r*0.299 + g*0.587 + b*0.114) < 80;
+}
+
 function updateProfilePreview() {
   const namePreview   = document.getElementById('profile-name-preview');
   const avatarPreview = document.getElementById('profile-avatar-preview');
+  const nameColor = isColorDark(playerProfile.color || '#f59e0b') ? 'var(--text)' : playerProfile.color;
 
   if (profileMode === 'game') {
-    // In "Name me" mode — name is locked from generated value, only color + emoji update
     const pendingName = (playerProfile._pending && playerProfile._pending.name)
       ? playerProfile._pending.name
       : (playerProfile.name || 'Iron Lynx');
     if (namePreview) {
       namePreview.textContent = pendingName;
-      namePreview.style.color = playerProfile.color;
+      namePreview.style.color = nameColor;
     }
   } else {
-    // "I'll choose" mode — name comes from input
     const inp = document.getElementById('profile-name-input');
     const name = inp ? inp.value.trim() : '';
     if (namePreview) {
-      namePreview.textContent = name || playerProfile.name || '—';
-      namePreview.style.color = name ? playerProfile.color : 'var(--text-muted)';
+      namePreview.textContent = name || playerProfile.name || '\u2014';
+      namePreview.style.color = name ? nameColor : 'var(--text-muted)';
     }
   }
 
@@ -2367,6 +2358,98 @@ function tickConditions() {
   const expiring = activeConditions.filter(c => c.turnsLeft <= 0);
   activeConditions = activeConditions.filter(c => c.turnsLeft > 0);
   expiring.forEach(c => showToast(c.icon + ' ' + c.name + ' has ended'));
+}
+
+// ── DYNAMIC TURN EVENTS ─────────────────────────────────────────────
+const EVENT_POOL = {
+  crisis: [
+    { title:'Rolling Brownouts', desc:'Grid instability causing intermittent power loss across districts.', trigger:'energy<60', impacts:[{l:'Energy \u221212',c:'neg'},{l:'Housing \u22126',c:'neg'}], act:'EMERGENCY RESPONSE', def:'DEFER', actMsg:'Emergency power allocation committed', defMsg:'Deferred \u2014 strain compounds' },
+    { title:'Hospital Overflow', desc:'Emergency rooms at 140% capacity. Staff burnout accelerating. Non-critical patients turned away.', trigger:'health<55', impacts:[{l:'Health \u221214',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'ACTIVATE RESERVES', def:'DEFER', actMsg:'Reserve staff mobilized', defMsg:'Overflow continues next turn' },
+    { title:'Housing Displacement Wave', desc:'Mass evictions in three districts after landlord defaults. Shelters overwhelmed.', trigger:'housing<50', impacts:[{l:'Housing \u221216',c:'neg'},{l:'Health \u22126',c:'neg'},{l:'Trust \u22128',c:'neg'}], act:'EMERGENCY SHELTER', def:'DEFER', actMsg:'Emergency shelters activated', defMsg:'Displacement compounds' },
+    { title:'Transit System Failure', desc:'Major transit line offline due to infrastructure collapse. Commuters stranded.', trigger:'transport<55', impacts:[{l:'Transport \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY ROUTES', def:'DEFER', actMsg:'Emergency bus routes deployed', defMsg:'Transit down another turn' },
+    { title:'Employer Layoff Cascade', desc:'Three major employers announce simultaneous layoffs. 2,000 jobs at risk.', trigger:'economy<50', impacts:[{l:'Economy \u221216',c:'neg'},{l:'Education \u22126',c:'neg'},{l:'Trust \u22126',c:'neg'}], act:'RETENTION PACKAGE', def:'DEFER', actMsg:'Emergency retention incentives offered', defMsg:'Layoffs proceed unchecked' },
+    { title:'Teacher Shortage Crisis', desc:'Schools in four districts cannot open due to staffing. Parents pulled from workforce.', trigger:'education<50', impacts:[{l:'Education \u221214',c:'neg'},{l:'Economy \u22128',c:'neg'}], act:'EMERGENCY STAFFING', def:'DEFER', actMsg:'Substitute deployment authorized', defMsg:'Schools remain closed' },
+    { title:'Trust Collapse Warning', desc:'Public confidence in city leadership at historic lows. Compliance dropping.', trigger:'trust<35', impacts:[{l:'Trust \u221210',c:'neg'},{l:'Gov \u22126',c:'neg'}], act:'TOWNHALL SUMMIT', def:'IGNORE', actMsg:'Emergency town hall convened', defMsg:'Distrust deepens' },
+  ],
+  policy: [
+    { title:'Federal Reskilling Grant', desc:'A federal grant for workforce reskilling. Accepting costs influence but boosts Education and Economy.', trigger:'always', impacts:[{l:'Education +14',c:'pos'},{l:'Economy +8',c:'pos'},{l:'Influence \u221212',c:'neg'}], act:'ACCEPT GRANT', def:'DECLINE', actMsg:'Grant accepted \u2014 Education boost queued', defMsg:'Grant window closed' },
+    { title:'Climate Resilience Bond', desc:'State offering matching funds for climate infrastructure. Requires governance commitment.', trigger:'always', impacts:[{l:'Energy +12',c:'pos'},{l:'Housing +8',c:'pos'},{l:'Gov commitment',c:'neg'}], act:'ISSUE BOND', def:'DECLINE', actMsg:'Bond issued \u2014 resilience investment locked', defMsg:'Bond opportunity passed' },
+    { title:'Public Health Data Sharing', desc:'Federal program to share health data across jurisdictions. Privacy concerns vs. better outcomes.', trigger:'always', impacts:[{l:'Health +10',c:'pos'},{l:'Trust \u22124',c:'neg'}], act:'OPT IN', def:'DECLINE', actMsg:'Data sharing agreement signed', defMsg:'City opts out of program' },
+    { title:'Affordable Housing Mandate', desc:'State legislature considering density requirements. Compliance costs but addresses crisis.', trigger:'always', impacts:[{l:'Housing +12',c:'pos'},{l:'Economy \u22126',c:'neg'},{l:'Trust +4',c:'pos'}], act:'COMPLY EARLY', def:'WAIT', actMsg:'Early compliance \u2014 housing pipeline accelerated', defMsg:'Waiting for final mandate language' },
+    { title:'Digital Infrastructure Grant', desc:'Tech company offering to fund city-wide broadband. Strings attached around data access.', trigger:'always', impacts:[{l:'Education +10',c:'pos'},{l:'Economy +6',c:'pos'},{l:'Privacy risk',c:'neg'}], act:'ACCEPT', def:'NEGOTIATE', actMsg:'Broadband grant accepted', defMsg:'Negotiations continue next turn' },
+  ],
+  opportunity: [
+    { title:'eVTOL Corridor License', desc:'Aerial mobility company seeking airspace corridors for flying taxis.', trigger:'transport>60', impacts:[{l:'Transport +14',c:'pos'},{l:'Economy +10',c:'pos'},{l:'Gov friction \u22127',c:'neg'}], act:'APPROVE', def:'DECLINE', actMsg:'Airspace corridors licensed', defMsg:'License application declined' },
+    { title:'Innovation District Proposal', desc:'Tech consortium wants to establish an innovation district. Long-term economic engine.', trigger:'economy>60', impacts:[{l:'Economy +12',c:'pos'},{l:'Education +8',c:'pos'},{l:'Housing pressure',c:'neg'}], act:'APPROVE ZONE', def:'TABLE', actMsg:'Innovation district approved', defMsg:'Proposal tabled for further review' },
+    { title:'Community Solar Initiative', desc:'Neighborhood groups organized to deploy community solar. Grassroots energy resilience.', trigger:'trust>50', impacts:[{l:'Energy +10',c:'pos'},{l:'Trust +8',c:'pos'},{l:'Housing +4',c:'pos'}], act:'FUND IT', def:'DEFER', actMsg:'Community solar funded \u2014 trust boost', defMsg:'Initiative deferred' },
+    { title:'Sister City Partnership', desc:'International city proposes knowledge exchange. Boosts reputation and best practices.', trigger:'always', impacts:[{l:'Education +8',c:'pos'},{l:'Gov +6',c:'pos'}], act:'ACCEPT', def:'DECLINE', actMsg:'Partnership established', defMsg:'Partnership declined' },
+  ]
+};
+
+let turnEvents = []; // [{type, ...event, id}] generated each turn
+
+function generateTurnEvents() {
+  turnEvents = [];
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+
+  // Check for triggered crisis events
+  const triggeredCrises = EVENT_POOL.crisis.filter(ev => {
+    if (ev.trigger === 'always') return true;
+    const m = ev.trigger.match(/(\w+)([<>])(\d+)/);
+    if (!m) return false;
+    const val = m[1] === 'trust' ? trust : m[1] === 'governance' ? governance : (domains[m[1]] ? domains[m[1]].health : 100);
+    return m[2] === '<' ? val < parseInt(m[3]) : val > parseInt(m[3]);
+  });
+
+  // Check for triggered opportunities
+  const triggeredOpps = EVENT_POOL.opportunity.filter(ev => {
+    if (ev.trigger === 'always') return true;
+    const m = ev.trigger.match(/(\w+)([<>])(\d+)/);
+    if (!m) return false;
+    const val = m[1] === 'trust' ? trust : m[1] === 'governance' ? governance : (domains[m[1]] ? domains[m[1]].health : 50);
+    return m[2] === '<' ? val < parseInt(m[3]) : val > parseInt(m[3]);
+  });
+
+  // Pick 1 crisis if any triggered (80% chance), 1 policy (always), 1 opportunity if triggered (60% chance)
+  if (triggeredCrises.length > 0 && Math.random() < 0.8) {
+    const pick = triggeredCrises[Math.floor(Math.random() * triggeredCrises.length)];
+    turnEvents.push({ type: 'crisis', ...pick, id: 'ev-cr-' + turnNumber });
+  }
+
+  const policies = EVENT_POOL.policy;
+  const policyPick = policies[Math.floor(Math.random() * policies.length)];
+  turnEvents.push({ type: 'policy', ...policyPick, id: 'ev-po-' + turnNumber });
+
+  if (triggeredOpps.length > 0 && Math.random() < 0.6) {
+    const pick = triggeredOpps[Math.floor(Math.random() * triggeredOpps.length)];
+    turnEvents.push({ type: 'opportunity', ...pick, id: 'ev-op-' + turnNumber });
+  }
+}
+
+function renderTurnEvents() {
+  const container = document.getElementById('events-dynamic');
+  if (!container) return;
+  generateTurnEvents();
+
+  const label = document.getElementById('events-turn-label');
+  if (label) label.textContent = 'TURN ' + turnNumber + ' EVENTS — RESPOND BEFORE END OF ROUND';
+
+  const typeClass = { crisis: 'cr', policy: 'po', opportunity: 'op' };
+  const typeLabel = { crisis: '🔴 CRISIS EVENT', policy: '🔵 POLICY WINDOW', opportunity: '🟢 OPPORTUNITY' };
+
+  container.innerHTML = turnEvents.map(ev => {
+    return '<div class="evc ' + typeClass[ev.type] + '" id="' + ev.id + '">' +
+      '<div class="evch"><div class="evt">' + typeLabel[ev.type] + '</div></div>' +
+      '<div class="evb"><div class="evti">' + ev.title + '</div><div class="evde">' + ev.desc + '</div>' +
+      '<div class="evim">' + ev.impacts.map(im => '<div class="evip ' + im.c + '">' + im.l + '</div>').join('') + '</div></div>' +
+      '<div class="evf"><button class="evbtn ac" onclick="resolveEv(\'' + ev.id + '\',\'' + ev.actMsg.replace(/'/g, "\\'") + '\')">' + ev.act + '</button>' +
+      '<button class="evbtn de" onclick="resolveEv(\'' + ev.id + '\',\'' + ev.defMsg.replace(/'/g, "\\'") + '\',\'d\')">' + ev.def + '</button></div>' +
+    '</div>';
+  }).join('');
+
+  if (turnEvents.length === 0) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px;">No events this turn. The city is quiet.</div>';
+  }
 }
 
 function renderConditionsBar() {
@@ -3173,6 +3256,7 @@ function startGame(){
   heartCore=cfg.hcVal;
   turnNumber=1;
   committedDomains = new Set();
+  usedDecisions = {};
   turnSpillovers = [];
   turnCascades = [];
 
@@ -3479,6 +3563,10 @@ function openDomain(key){
   const tierDecs=(tieredDecisions[key]&&tieredDecisions[key][tier])||d.decisions;
   document.getElementById('dmt').textContent=d.name.toUpperCase();
 
+  // Filter out decisions already used in previous turns
+  const used = usedDecisions[key] || new Set();
+  const availDecs = tierDecs.filter(dec => !used.has(dec.name));
+
   // Thriving banner
   const thrivingBanner = tier==='thriving' ? `
     <div style="padding:14px 20px;background:rgba(16,185,129,.08);border-bottom:1px solid rgba(16,185,129,.25);display:flex;gap:12px;align-items:center;">
@@ -3493,10 +3581,15 @@ function openDomain(key){
   const tierLabels={thriving:'Expansion &amp; Influence Options',stable:'Optimization Decisions',moderate:'Investment Decisions',strained:'Recovery Decisions',critical:'Emergency Actions Only'};
   const tierColors={thriving:'var(--green)',stable:'var(--cyan)',moderate:'var(--amber)',strained:'var(--amber)',critical:'var(--red)'};
 
-  const decs=tierDecs.map((dec,i)=>{
+  const decs=availDecs.map((dec,i)=>{
+    // Store original tierDecs index for confirmDecision
+    const origIdx = tierDecs.indexOf(dec);
     const tags=dec.tags.map(t=>`<span class="dt dt-${t.c}">${t.l}</span>`).join('');
-    return `<div class="dcard" id="dec${i}" onclick="selDec2(${i})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
+    return `<div class="dcard" id="dec${i}" onclick="selDec2(${origIdx})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
   }).join('');
+
+  // Show message if all decisions in this tier have been used
+  const exhaustedMsg = availDecs.length === 0 ? '<div style="padding:16px;text-align:center;color:var(--amber);font-size:12px;line-height:1.6;">All available decisions in this tier have been used in previous turns. Pass or wait for conditions to change your tier.</div>' : '';
 
   const sps=d.sp.map(s=>`<div class="spi"><div class="spd">${s.d}</div><div class="spe ${s.dir}">${s.dir==='neg'?'↓ Negative pressure':'↑ Positive synergy'}</div></div>`).join('');
 
@@ -3512,6 +3605,7 @@ function openDomain(key){
     <div class="ddh"><div class="ddbg">${d.icon}</div><div class="ddi">${d.icon}</div><div class="ddn">${d.name}</div><div class="ddd">${d.desc}</div><div class="ddr"><div class="gauge"><div class="gb"><div class="gf" style="width:${d.health}%;background:${cm}"></div></div><div class="gn"><span>0</span><span style="color:${cm};font-weight:600">${d.health}/100</span><span>100</span></div></div><div class="sbadge" style="color:${cm};border-color:${cm}">${tier==='thriving'?'THRIVING':d.status}</div></div></div>
     <div class="as">
       <div class="asl" style="color:${tierColors[tier]}">${tierLabels[tier]}</div>
+      ${exhaustedMsg}
       ${decs}
       ${tier!=='thriving'?`<div class="pcard" id="decpass" onclick="selDec2('pass')"><div class="drad"></div><div><div class="plbl">Pass — Take no action</div><div class="pcon">${d.pass}</div></div></div>`:''}
       <div class="spp"><div class="spt">CROSS-DOMAIN SPILLOVER EFFECTS</div>${sps}</div>
@@ -3686,6 +3780,15 @@ function confirmDecision(){
 
   // Track this domain as committed
   committedDomains.add(curDomain);
+
+  // Track the decision name so it doesn't appear again in future turns
+  if (selDec !== 'pass') {
+    if (!usedDecisions[curDomain]) usedDecisions[curDomain] = new Set();
+    const tier2 = getTier(domains[curDomain].health);
+    const tierDecs2 = (tieredDecisions[curDomain] && tieredDecisions[curDomain][tier2]) || domains[curDomain].decisions;
+    const usedDec = tierDecs2[selDec] || domains[curDomain].decisions[selDec];
+    if (usedDec) usedDecisions[curDomain].add(usedDec.name);
+  }
 
   // Multi-domain flow: if more domains need decisions, go back to overview
   const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
@@ -4865,8 +4968,10 @@ function selectStrategic(idx) {
   const cost = 6 + Math.floor(Math.random() * 8);
   if (domains[victim]) { domains[victim].health = Math.max(0, domains[victim].health - cost); updateDomainStatus(victim); }
   trust = Math.max(0, trust - 4);
-  // Mark as committed
+  // Mark as committed and track decision
   committedDomains.add(curDomain);
+  if (!usedDecisions[curDomain]) usedDecisions[curDomain] = new Set();
+  usedDecisions[curDomain].add(s.name);
   const yourRow = document.getElementById('your-domain-row');
   if (yourRow) yourRow.innerHTML = '<div class="teco">' + d.icon + '</div><div><div class="tecd" style="color:var(--amber)">' + d.name + ' — You (PRIVATE)</div><div class="teca">' + s.name + '</div></div><div class="tecd2" style="color:var(--amber);">🕵️</div>';
   showToast('Private action committed. Other players will see the flag.');
