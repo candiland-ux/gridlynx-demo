@@ -4519,10 +4519,12 @@ function openRoster() {
     emoji: playerProfile.emoji || '⚡',
     color: playerProfile.colorVar || 'var(--amber)',
     domains: myDoms.map(k => ({key:k, name:domainNames[k], icon:domainIcons[k]})),
-    isYou: true,
+    isYou: !playerLeftGame,
     isHost: true,
-    turnDone: myAllDone,
-    stats: {played:24,wins:14,winrate:'58%'}
+    turnDone: playerLeftGame ? true : myAllDone,
+    stats: playerLeftGame ? null : {played:24,wins:14,winrate:'58%'},
+    leftGame: playerLeftGame,
+    leftTurn: playerLeftGame ? playerLeftTurn : null
   });
 
   // Other human players
@@ -4829,12 +4831,41 @@ function dismissLeaveConfirm() {
   if (confirm) confirm.style.display = 'none';
 }
 
+let playerLeftGame = false;
+let playerLeftTurn = 0;
+
 function executeLeaveGame() {
   const confirm = document.getElementById('leave-confirm-overlay');
   if (confirm) confirm.style.display = 'none';
   closeRoster();
-  showToast('You left the game. AI has taken over your domain.');
-  setTimeout(() => nav('ss'), 1500);
+
+  playerLeftGame = true;
+  playerLeftTurn = turnNumber;
+
+  // Show takeover notification
+  showToast('AI has taken control of your domain. You are now spectating.');
+
+  // Disable the manage button and mark domains as AI-controlled
+  const manageBtn = document.getElementById('manage-btn');
+  if (manageBtn) {
+    manageBtn.textContent = '🤖 AI CONTROLLING';
+    manageBtn.style.opacity = '0.5';
+    manageBtn.style.pointerEvents = 'none';
+  }
+
+  // Add spectating banner to dashboard
+  const hcPanel = document.querySelector('.hcw');
+  if (hcPanel && !document.getElementById('spectate-banner')) {
+    const banner = document.createElement('div');
+    banner.id = 'spectate-banner';
+    banner.style.cssText = 'background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);padding:10px 14px;margin:10px 0 0;display:flex;align-items:center;gap:10px;';
+    banner.innerHTML = '<span style="font-size:20px;">🤖</span><div><div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--purple);">AI Takeover Active</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px;">You left on Turn ' + turnNumber + '. AI is managing your domain in ' + (aiMode ? aiMode.charAt(0).toUpperCase() + aiMode.slice(1) : 'Neutral') + ' mode.</div></div>';
+    hcPanel.appendChild(banner);
+  }
+
+  // Stay on dashboard
+  nav('so');
+  refreshAlertPill();
 }
 
 // ── SPLASH ANIMATIONS ────────────────────────────────────────────────
