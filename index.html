@@ -1994,6 +1994,23 @@ const domains={
 
 let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='volatile',selectedMode='hybrid',myDomain=null;
 let heartCore=65,turnNumber=1;
+let pendingHCChanges = []; // queue HC changes during decision phase, apply at turn-end
+
+// Sync all HC displays across the UI
+function syncHC() {
+  const hcv = document.getElementById('hc-value');
+  if (hcv) hcv.innerHTML = heartCore + '<span style="font-size:18px;color:var(--text-muted)">/100</span>';
+  const hcbar = document.getElementById('hc-bar');
+  if (hcbar) {
+    const hcCol = heartCore>=75?'var(--green)':heartCore>=50?'var(--amber)':'var(--red)';
+    hcbar.style.width = heartCore + '%';
+    hcbar.style.background = hcCol;
+  }
+  const hcSub = document.getElementById('hc-sub');
+  if (hcSub) {
+    hcSub.textContent = heartCore >= 75 ? 'City systems operational.' : heartCore >= 50 ? 'City under pressure. Monitor closely.' : heartCore >= 25 ? 'Critical condition. Collapse risk high.' : 'Collapse imminent.';
+  }
+}
 let committedDomains = new Set();
 let usedDecisions = {}; // {domainKey: {decName: turnsLeft}} — cooldown, not permanent
 
@@ -2123,11 +2140,8 @@ function beginNextTurn(){
     heartCore = Math.max(0, heartCore - turnCascades.length * 2);
   }
   hcBeforeTurn = heartCore;
-  const hcv=document.getElementById('hc-value');
-  if(hcv) hcv.innerHTML=heartCore+'<span style="font-size:18px;color:var(--text-muted)">/100</span>';
+  syncHC();
   if (typeof updateHeartbeatSpeed === 'function') updateHeartbeatSpeed(heartCore);
-  const hcbar=document.getElementById('hc-bar');
-  if(hcbar){const hcCol=heartCore>=80?'var(--green)':heartCore>=55?'var(--amber)':'var(--red)';hcbar.style.width=heartCore+'%';hcbar.style.background=hcCol;}
   const ctl=document.getElementById('city-turn-label');
   if(ctl) ctl.textContent='City Dashboard — Turn ' + turnNumber + (maxTurns ? ' of ~' + maxTurns : '');
   const hcTurnNum = document.getElementById('hc-turn-num');
@@ -3448,7 +3462,7 @@ function startGame(){
   turnNumber=1;
   committedDomains = new Set();
   usedDecisions = {};
-  turnSpillovers = [];
+  pendingHCChanges = [];  turnSpillovers = [];
   turnCascades = [];
 
   // Governance and trust scale with city starting state + regional modifier
@@ -3540,14 +3554,14 @@ const domainPublic={
 };
 
 function healthColor(h){
-  if(h>=80) return 'var(--green)';
-  if(h>=55) return 'var(--amber)';
-  if(h>=30) return 'var(--red)';
+  if(h>=75) return 'var(--green)';
+  if(h>=50) return 'var(--amber)';
+  if(h>=25) return 'var(--red)';
   return 'var(--red)';
 }
 function healthClass(h){
-  if(h>=80) return 'g';
-  if(h>=55) return 'a';
+  if(h>=75) return 'g';
+  if(h>=50) return 'a';
   return 'r';
 }
 
@@ -3741,9 +3755,9 @@ const tieredDecisions={
 
 function getTier(h){
   if(h>=100) return 'thriving';
-  if(h>=80)  return 'stable';
-  if(h>=55)  return 'moderate';
-  if(h>=30)  return 'strained';
+  if(h>=75)  return 'stable';
+  if(h>=50)  return 'moderate';
+  if(h>=25)  return 'strained';
   return 'critical';
 }
 
@@ -4056,14 +4070,14 @@ function confirmDecision(){
   if(selDec==='pass'){
     const passDelta = -4;
     d.health=Math.max(0,d.health + passDelta);
-    heartCore=Math.max(0,heartCore-2);
+    pendingHCChanges.push({reason:'Pass — no action', delta:-2});
 
     // Passing still generates negative spillovers
     const spillovers = calculateSpillovers(curDomain, passDelta);
     applySpillovers(spillovers);
     turnSpillovers.push(...spillovers);
 
-    showToast('Pass recorded — domain health declined, spillovers applied');
+    showToast('Pass recorded — consequences revealed at turn end');
   } else {
     const dec=tierDecs[selDec]||d.decisions[selDec];
     let delta=dec.delta!=null?dec.delta:0;
@@ -4076,7 +4090,7 @@ function confirmDecision(){
     const condMod = getConditionDeltaMod(curDomain);
     const effectiveDelta = Math.round(delta * govMod * (1 + condMod));
     d.health=Math.min(100,Math.max(0,d.health+effectiveDelta));
-    if(effectiveDelta>0) heartCore=Math.min(100,heartCore+Math.floor(effectiveDelta/6));
+    if(effectiveDelta>0) pendingHCChanges.push({reason:'Decision bonus', delta:Math.floor(effectiveDelta/6)});
     updateDomainStatus(curDomain);
 
     // Calculate and apply cross-domain spillovers
@@ -4116,23 +4130,19 @@ function confirmDecision(){
 
 
 function revealHeartCore() {
+  // Apply all queued HC changes from this turn's decisions
+  pendingHCChanges.forEach(change => {
+    heartCore = Math.max(0, Math.min(100, heartCore + change.delta));
+  });
+  pendingHCChanges = []; // reset queue
+
   const hcAfter = heartCore;
   const hcDiff = hcAfter - hcBeforeTurn;
-  const hcCol = hcAfter >= 80 ? 'var(--green)' : hcAfter >= 55 ? 'var(--amber)' : 'var(--red)';
+  const hcCol = hcAfter >= 75 ? 'var(--green)' : hcAfter >= 50 ? 'var(--amber)' : 'var(--red)';
 
-  // Update overview display
-  const hcv = document.getElementById('hc-value');
-  if (hcv) hcv.innerHTML = hcAfter + '<span style="font-size:18px;color:var(--text-muted)">/100</span>';
+  // Sync all HC displays now that changes are applied
+  syncHC();
   if (typeof updateHeartbeatSpeed === 'function') updateHeartbeatSpeed(hcAfter);
-  const hcbar = document.getElementById('hc-bar');
-  if (hcbar) { hcbar.style.width = hcAfter + '%'; hcbar.style.background = hcCol; }
-  const hcSub = document.getElementById('hc-sub');
-  if (hcSub) {
-    if (hcAfter >= 80) hcSub.textContent = 'City systems healthy. Maintain momentum.';
-    else if (hcAfter >= 55) hcSub.textContent = 'Moderate pressure. Stay alert.';
-    else if (hcAfter >= 30) hcSub.textContent = 'City under strain. Collapse risk rising.';
-    else hcSub.textContent = 'Critical condition. Collapse imminent.';
-  }
 
   // Update turn label
   const teTurnLabel = document.getElementById('te-turn-label');
@@ -4380,8 +4390,8 @@ function renderDomainContext() {
 function renderDSB(){
   if(!myDomain) return;
   const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
-  const hcCol=heartCore>=80?'var(--green)':heartCore>=55?'var(--amber)':'var(--red)';
-  const hcStatus=heartCore>=80?'STABLE':heartCore>=55?'PRESSURED':heartCore>=30?'STRAINED':'CRITICAL';
+  const hcCol=heartCore>=75?'var(--green)':heartCore>=50?'var(--amber)':'var(--red)';
+  const hcStatus=heartCore>=75?'STABLE':heartCore>=50?'PRESSURED':heartCore>=25?'STRAINED':'CRITICAL';
 
   let inner=`
     <div class="dsb-half">
@@ -4397,8 +4407,8 @@ function renderDSB(){
   myDoms.forEach(key => {
     const d = domains[key];
     if (!d) return;
-    const col = d.health>=80?'var(--green)':d.health>=55?'var(--amber)':'var(--red)';
-    const status = d.health>=100?'THRIVING':d.health>=80?'STABLE':d.health>=55?'PRESSURED':d.health>=30?'STRAINED':'CRITICAL';
+    const col = d.health>=75?'var(--green)':d.health>=50?'var(--amber)':'var(--red)';
+    const status = d.health>=90?'THRIVING':d.health>=75?'STABLE':d.health>=50?'PRESSURED':d.health>=25?'STRAINED':'CRITICAL';
     const label = d.name.length>20?d.name.split(' ').slice(0,2).join(' '):d.name;
     inner += `
     <div class="dsb-half">
@@ -5434,7 +5444,7 @@ function renderTurnEndRows() {
 
     if (isYours) {
       // YOUR domain — show exact health and status
-      const statusCol = d.health >= 80 ? 'var(--green)' : d.health >= 55 ? 'var(--amber)' : d.health >= 30 ? 'var(--amber)' : 'var(--red)';
+      const statusCol = d.health >= 75 ? 'var(--green)' : d.health >= 50 ? 'var(--amber)' : d.health >= 25 ? 'var(--amber)' : 'var(--red)';
       html += '<div class="teci" style="background:rgba(245,158,11,.04);border-color:var(--amber-dim);"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd" style="color:var(--amber)">' + domNames[key] + ' <span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--amber);padding:1px 4px;border:1px solid var(--amber-dim);vertical-align:middle;">YOU</span></div><div class="teca">Health: ' + d.health + '/100 \u2014 ' + d.status + '</div></div><div class="tecd2" style="color:' + statusCol + ';">' + d.health + '</div></div>';
     } else {
       // OTHER domains — status label and direction ONLY
