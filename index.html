@@ -668,6 +668,149 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       </div>
     </div>
 
+    <!-- PLAYBOOK -->
+    <div style="padding:0 20px 8px;margin-top:8px;border-top:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;">PLAYBOOK</div>
+          <div style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--text-muted);padding:1px 5px;border:1px solid var(--border);background:var(--panel);">CLAIMED NAMES ONLY</div>
+        </div>
+        <button onclick="togglePlaybook()" id="playbook-expand-btn" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:8px;letter-spacing:1px;padding:4px 10px;cursor:pointer;transition:all .2s;">SHOW &#9660;</button>
+      </div>
+
+      <div id="playbook-content" style="display:none;">
+
+        <!-- FREE TIER: Last win summary -->
+        <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-family:var(--fm);font-size:8px;color:var(--green);letter-spacing:2px;">LAST WIN</div>
+            <div style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--text-muted);padding:1px 5px;border:1px solid var(--border);">FREE</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:22px;">⚡</div>
+            <div>
+              <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);">Energy &amp; Environment</div>
+              <div style="font-size:11px;color:var(--text-dim);line-height:1.6;margin-top:4px;">Won on <strong style="color:var(--amber)">Turn 8</strong> in Nova Ridge. Stabilized the grid at 92 using microgrid deployment after a cascade scare on Turn 5. Heart Core finished at 71.</div>
+              <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:6px;">3 DAYS AGO · STRAINED START · 4 PLAYERS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FREE TIER: Best domain -->
+        <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);letter-spacing:2px;">STRONGEST DOMAIN</div>
+            <div style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--text-muted);padding:1px 5px;border:1px solid var(--border);">FREE</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">⚡</div>
+            <div style="flex:1;">
+              <div style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);">Energy &amp; Environment</div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:2px;">7 wins in 11 games &middot; 64% domain win rate</div>
+            </div>
+            <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);">64%</div>
+          </div>
+        </div>
+
+        <!-- PRO TIER: Strategy breakdown -->
+        <div style="position:relative;overflow:hidden;">
+          <!-- PRO blur overlay -->
+          <div style="position:absolute;inset:0;z-index:2;background:rgba(10,10,15,.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;">
+            <div style="font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--amber);margin-bottom:8px;">🔒 GRIDLYNX PRO</div>
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Unlock Your Full Playbook</div>
+            <div style="font-size:11px;color:var(--text-dim);line-height:1.6;max-width:260px;margin-bottom:14px;">Risk patterns, streak data, domain strategy history, and win condition analysis — all private to you.</div>
+            <button onclick="showToast('GRIDLYNX Pro — available at launch')" style="background:var(--amber-glow);border:1px solid var(--amber);color:var(--amber);font-family:var(--fd);font-size:12px;font-weight:600;letter-spacing:2px;padding:10px 24px;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">UPGRADE TO PRO</button>
+          </div>
+
+          <!-- Blurred PRO content preview (visible behind overlay) -->
+          <div style="padding:0;opacity:.4;">
+            <!-- Risk pattern -->
+            <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);margin-bottom:10px;">
+              <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;">RISK PATTERN</div>
+              <div style="display:flex;gap:16px;margin-bottom:8px;">
+                <div style="text-align:center;">
+                  <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--amber);">6</div>
+                  <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">OFF-RECORD USED</div>
+                </div>
+                <div style="text-align:center;">
+                  <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--red);">2</div>
+                  <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">TIMES CAUGHT</div>
+                </div>
+                <div style="text-align:center;">
+                  <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--green);">67%</div>
+                  <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">ESCAPE RATE</div>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">You tend to use off-the-record moves in mid-game (turns 4–7) when domain health drops below 50. You've been audited 4 times — exposed twice.</div>
+            </div>
+
+            <!-- Streak data -->
+            <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);margin-bottom:10px;">
+              <div style="font-family:var(--fm);font-size:8px;color:var(--purple);letter-spacing:2px;margin-bottom:10px;">STREAK DATA</div>
+              <div style="display:flex;gap:12px;margin-bottom:8px;">
+                <div style="flex:1;padding:8px;background:var(--panel);border:1px solid var(--border);text-align:center;">
+                  <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--green);">3</div>
+                  <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">CURRENT STREAK</div>
+                </div>
+                <div style="flex:1;padding:8px;background:var(--panel);border:1px solid var(--border);text-align:center;">
+                  <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--amber);">5</div>
+                  <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">LONGEST STREAK</div>
+                </div>
+              </div>
+              <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:1px;margin-bottom:6px;">LAST 5 GAMES</div>
+              <div style="display:flex;gap:6px;">
+                <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--green-glow);border:1px solid rgba(16,185,129,.3);">W</div>
+                <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--green-glow);border:1px solid rgba(16,185,129,.3);">W</div>
+                <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--green-glow);border:1px solid rgba(16,185,129,.3);">W</div>
+                <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--red-glow);border:1px solid rgba(239,68,68,.3);color:var(--red);">L</div>
+                <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--red-glow);border:1px solid rgba(239,68,68,.3);color:var(--red);">L</div>
+              </div>
+            </div>
+
+            <!-- Domain strategy history -->
+            <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);margin-bottom:10px;">
+              <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);letter-spacing:2px;margin-bottom:10px;">DOMAIN HISTORY</div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">⚡</span><span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text);">Energy</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--text-muted);">11 games</span>
+                    <div style="width:60px;height:4px;background:var(--bg);"><div style="height:100%;width:64%;background:var(--green);"></div></div>
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--green);">64%</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">🚇</span><span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text);">Transport</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--text-muted);">5 games</span>
+                    <div style="width:60px;height:4px;background:var(--bg);"><div style="height:100%;width:40%;background:var(--amber);"></div></div>
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--amber);">40%</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">🏥</span><span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text);">Health</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--text-muted);">4 games</span>
+                    <div style="width:60px;height:4px;background:var(--bg);"><div style="height:100%;width:75%;background:var(--green);"></div></div>
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--green);">75%</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">📊</span><span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text);">Economy</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--text-muted);">4 games</span>
+                    <div style="width:60px;height:4px;background:var(--bg);"><div style="height:100%;width:50%;background:var(--amber);"></div></div>
+                    <span style="font-family:var(--fm);font-size:9px;color:var(--amber);">50%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Cancel — tucked at bottom of scroll so it's reachable but not in the way -->
     <div style="padding:24px 20px 32px;text-align:center;">
       <button onclick="nav('ss')" style="background:none;border:none;font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--text-muted);cursor:pointer;padding:8px 16px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'">CANCEL &amp; RETURN TO MENU</button>
@@ -882,11 +1025,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div id="sq-sub" style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">You control one domain. You can only make decisions inside it. Other players see the city — not your numbers, not your moves.</div>
     </div>
     <div class="sl">SELECT YOUR DOMAIN</div>
-    <div class="pc" id="pd-energy" onclick="selectDomain('energy')">
-      <div class="pav" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)">⚡</div>
-      <div><div class="pn">Energy &amp; Environment</div><div class="pd">Grid, renewables, V2G, microgrids, climate</div><div class="prl">WIN: Stabilize grid ≥ 80 with 2 microgrids active</div></div>
-      <div class="psr"></div>
-    </div>
     <div class="pc" id="pd-transport" onclick="selectDomain('transport')">
       <div class="pav" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)">🚇</div>
       <div><div class="pn">Transportation &amp; Access</div><div class="pd">Roads, transit, EVs, drones, aerial corridors</div><div class="prl">WIN: Mobility score ≥ 90 with aerial corridor licensed</div></div>
@@ -895,6 +1033,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div class="pc" id="pd-housing" onclick="selectDomain('housing')">
       <div class="pav" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)">🏘</div>
       <div><div class="pn">Housing &amp; Living Systems</div><div class="pd">Shelter, density, smart homes, in-home care</div><div class="prl">WIN: Housing ≥ 85 with smart energy program active</div></div>
+      <div class="psr"></div>
+    </div>
+    <div class="pc" id="pd-energy" onclick="selectDomain('energy')">
+      <div class="pav" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)">⚡</div>
+      <div><div class="pn">Energy &amp; Environment</div><div class="pd">Grid, renewables, V2G, microgrids, climate</div><div class="prl">WIN: Stabilize grid ≥ 80 with 2 microgrids active</div></div>
       <div class="psr"></div>
     </div>
     <div class="pc" id="pd-health" onclick="selectDomain('health')">
@@ -1076,7 +1219,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   <div class="tb">
     <div class="tbl">GRID<span>LYNX</span></div>
   <div class="dsb" id="dsb-so"></div>
-    <button id="sound-toggle" onclick="toggleSound()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:1px;transition:all .2s;" title="Toggle heartbeat sound">&#128266;</button>
   </div>
   <div class="scroll">
     <div class="ovh">
@@ -1087,7 +1229,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <div id="domain-context-player" style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(245,158,11,.15);">
           <div id="dc-player-avatar" style="width:28px;height:28px;border-radius:50%;background:var(--panel);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;"></div>
           <div id="dc-player-name" style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);flex:1;"></div>
-          <div id="domain-context-header" style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;">YOUR DOMAINS</div>
+          <div id="domain-context-header" style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;padding:2px 8px;border:1px solid var(--amber-dim);background:var(--amber-glow);white-space:nowrap;"></div>
         </div>
         <div id="domain-context-list" style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
@@ -1096,6 +1238,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <span class="pill pc" id="round-pill">TURN 1</span>
         <span class="pill pr">2 ALERTS</span>
         <span class="pill pp">⚡ YOUR TURN</span>
+      </div>
+      <!-- Utility bar -->
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button id="sound-toggle" onclick="toggleSound()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:9px 12px;cursor:pointer;transition:all .2s;">
+          <span style="font-size:14px;">&#128263;</span> HEARTBEAT OFF
+        </button>
+        <button onclick="openRoster()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:9px 12px;cursor:pointer;transition:all .2s;">
+          <span style="font-size:14px;">👥</span> PLAYER ROSTER
+        </button>
       </div>
     </div>
     <div class="hcp">
@@ -1498,6 +1649,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
+<!-- PLAYER ROSTER OVERLAY -->
+<div id="roster-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.8);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeRoster()">
+  <div style="background:var(--panel2);width:100%;max-width:480px;max-height:85vh;border-top:1px solid var(--border-bright);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
+    <!-- Header -->
+    <div style="padding:16px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--text);">Player Roster</div>
+        <div id="roster-subtitle" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;"></div>
+      </div>
+      <button onclick="closeRoster()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">CLOSE</button>
+    </div>
+    <!-- Player list -->
+    <div id="roster-list" style="flex:1;overflow-y:auto;padding:12px 20px;"></div>
+  </div>
+</div>
+
 <!-- JOIN REQUEST OVERLAY -->
 <div id="join-request-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)dismissJoinRequest()">
   <div style="background:var(--panel2);width:100%;max-width:480px;border-top:1px solid var(--border-bright);padding:0 0 32px;animation:sheetUp .3s cubic-bezier(.16,1,.3,1);">
@@ -1893,6 +2060,15 @@ function toggleStatsExpand() {
   const btn = document.getElementById('stats-expand-btn');
   if (content) content.style.display = statsVisible ? 'block' : 'none';
   if (btn) btn.innerHTML = statsVisible ? 'HIDE &#9650;' : 'SHOW &#9660;';
+}
+
+let playbookVisible = false;
+function togglePlaybook() {
+  playbookVisible = !playbookVisible;
+  const content = document.getElementById('playbook-content');
+  const btn = document.getElementById('playbook-expand-btn');
+  if (content) content.style.display = playbookVisible ? 'block' : 'none';
+  if (btn) btn.innerHTML = playbookVisible ? 'HIDE &#9650;' : 'SHOW &#9660;';
 }
 
 function selectVisibility(level) {
@@ -2377,7 +2553,7 @@ function updateDomainCounter() {
 }
 
 function autoAssignDomain() {
-  const domains = ['energy','transport','housing','health','economy','education'];
+  const domains = ['transport','housing','energy','health','economy','education'];
   const shuffled = domains.sort(() => Math.random() - 0.5);
   const cfg = playerConfigs[playerCount] || {each:1};
   const assigned = shuffled.slice(0, cfg.each);
@@ -3102,19 +3278,21 @@ function renderDomainContext() {
   const uncommitted = myDomains.filter(k => !committedDomains.has(k));
   const nextUp = uncommitted[0] || null;
 
-  // Update header to show progress
+  // Update header badge
   const headerEl = document.getElementById('domain-context-header');
   if (headerEl) {
     const done = committedDomains.size;
     const total = myDomains.length;
-    if (total <= 1) {
-      headerEl.textContent = done >= total ? 'COMMITTED ✓' : 'YOUR DOMAIN';
-      headerEl.style.color = done >= total ? 'var(--green)' : 'var(--amber)';
+    if (done >= total) {
+      headerEl.textContent = 'ALL DONE ✓';
+      headerEl.style.color = 'var(--green)';
+      headerEl.style.borderColor = 'rgba(16,185,129,.3)';
+      headerEl.style.background = 'var(--green-glow)';
     } else {
-      headerEl.textContent = done < total
-        ? done + '/' + total + ' COMMITTED'
-        : 'ALL COMMITTED ✓';
-      headerEl.style.color = done >= total ? 'var(--green)' : 'var(--amber)';
+      headerEl.textContent = total === 1 ? '1 DOMAIN' : total + ' DOMAINS';
+      headerEl.style.color = 'var(--amber)';
+      headerEl.style.borderColor = 'var(--amber-dim)';
+      headerEl.style.background = 'var(--amber-glow)';
     }
   }
 
@@ -3269,13 +3447,15 @@ function toggleSound() {
   soundEnabled = !soundEnabled;
   const btn = document.getElementById('sound-toggle');
   if (btn) {
-    btn.innerHTML = soundEnabled ? '&#128266;' : '&#128263;';
+    btn.innerHTML = soundEnabled
+      ? '<span style="font-size:14px;">&#128266;</span> HEARTBEAT ON'
+      : '<span style="font-size:14px;">&#128263;</span> HEARTBEAT OFF';
     btn.style.borderColor = soundEnabled ? 'var(--amber)' : 'var(--border)';
     btn.style.color = soundEnabled ? 'var(--amber)' : 'var(--text-muted)';
   }
   if (soundEnabled) {
     startHeartbeat();
-    showToast('Heartbeat sound on');
+    showToast('Heartbeat sound on — uses Web Audio API');
   } else {
     stopHeartbeat();
     showToast('Heartbeat sound off');
@@ -3386,7 +3566,7 @@ function populateCollapseScreen() {
 
   const finalEl = document.getElementById('col-domain-final');
   if (finalEl) {
-    const domKeys = ['energy','transport','housing','health','economy','education'];
+    const domKeys = ['transport','housing','energy','health','economy','education'];
     finalEl.innerHTML = domKeys.map(key => {
       const d = domains[key];
       const col = d.health >= 55 ? 'var(--amber)' : 'var(--red)';
@@ -3509,6 +3689,158 @@ function simulateCollapse() {
   heartCore = 0;
   populateCollapseScreen();
   nav('scol');
+}
+
+// ── PLAYER ROSTER ─────────────────────────────────────────────────────
+
+const simulatedPlayers = [
+  { name:'Shadow Wolf', emoji:'🐺', color:'var(--cyan)', colorHex:'#06b6d4', vis:'public',
+    stats:{played:31,wins:18,winrate:'58%',hosted:12,bestSave:19,peakHC:98,favDomain:'Transportation & Access',favIcon:'🚇',favPlayed:14,favWins:9} },
+  { name:'Neon Viper', emoji:'🐍', color:'var(--purple)', colorHex:'#8b5cf6', vis:'wins',
+    stats:{played:22,wins:11,winrate:'50%'} },
+  { name:'Circuit Fox', emoji:'🦊', color:'var(--green)', colorHex:'#10b981', vis:'private', stats:{} },
+  { name:'Iron Talon', emoji:'🦅', color:'var(--red)', colorHex:'#ef4444', vis:'public',
+    stats:{played:45,wins:29,winrate:'64%',hosted:8,bestSave:12,peakHC:100,favDomain:'Energy & Environment',favIcon:'⚡',favPlayed:19,favWins:14} },
+  { name:'Phantom Ace', emoji:'🃏', color:'var(--amber)', colorHex:'#f59e0b', vis:'wins',
+    stats:{played:17,wins:6,winrate:'35%'} }
+];
+
+function openRoster() {
+  const overlay = document.getElementById('roster-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+
+  const list = document.getElementById('roster-list');
+  const subtitle = document.getElementById('roster-subtitle');
+  if (!list) return;
+
+  const pc = playerCount || 4;
+  const cfg = playerConfigs[pc] || {human:4,ai:2,each:1};
+  const humanCount = cfg.human;
+  const aiCount = cfg.ai;
+  const domainKeys = ['transport','housing','energy','health','economy','education'];
+  const domainNames = {energy:'Energy & Environment',transport:'Transportation & Access',housing:'Housing & Living',health:'Health, Safety & Care',economy:'Economy & Work',education:'Education & Skills'};
+  const domainIcons = {energy:'⚡',transport:'🚇',housing:'🏘',health:'🏥',economy:'📊',education:'🎓'};
+
+  if (subtitle) subtitle.textContent = humanCount + ' PLAYERS' + (aiCount > 0 ? ' · ' + aiCount + ' AI' : '') + ' · ' + cityName;
+
+  // Build player cards
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  let usedDomains = [...myDoms];
+  const availDomains = domainKeys.filter(k => !usedDomains.includes(k));
+
+  // Host player card (you)
+  let html = buildRosterCard({
+    name: playerProfile.name || 'Player',
+    emoji: playerProfile.emoji || '⚡',
+    color: playerProfile.colorVar || 'var(--amber)',
+    domains: myDoms.map(k => ({key:k, name:domainNames[k], icon:domainIcons[k]})),
+    isYou: true,
+    isHost: true,
+    vis: statsVisibility || 'public',
+    stats: {played:24,wins:14,winrate:'58%',hosted:9,bestSave:23,peakHC:97,favDomain:'Energy & Environment',favIcon:'⚡',favPlayed:11,favWins:7}
+  });
+
+  // Other human players
+  for (let i = 0; i < humanCount - 1 && i < simulatedPlayers.length; i++) {
+    const p = simulatedPlayers[i];
+    const pDomains = [];
+    for (let d = 0; d < cfg.each && availDomains.length > 0; d++) {
+      const dk = availDomains.shift();
+      usedDomains.push(dk);
+      pDomains.push({key:dk, name:domainNames[dk], icon:domainIcons[dk]});
+    }
+    html += buildRosterCard({
+      name: p.name, emoji: p.emoji, color: p.color,
+      domains: pDomains, isYou: false, isHost: false,
+      vis: p.vis, stats: p.stats
+    });
+  }
+
+  // AI players
+  if (aiCount > 0) {
+    const aiDomains = [];
+    for (let d = 0; d < aiCount && availDomains.length > 0; d++) {
+      const dk = availDomains.shift();
+      aiDomains.push({key:dk, name:domainNames[dk], icon:domainIcons[dk]});
+    }
+    html += `<div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--panel);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🤖</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--purple);">AI Controller</div>
+            <div style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--purple);padding:2px 6px;border:1px solid rgba(139,92,246,.3);background:var(--purple-glow);">${(aiMode||'NEUTRAL').toUpperCase()}</div>
+          </div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:3px;">${aiCount} domain${aiCount>1?'s':''} controlled</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        ${aiDomains.map(d => `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid rgba(139,92,246,.12);">
+          <span style="font-size:14px;">${d.icon}</span>
+          <span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text-dim);">${d.name}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  list.innerHTML = html;
+}
+
+function buildRosterCard(p) {
+  const borderCol = p.isYou ? p.color : 'var(--border)';
+  const bgCol = p.isYou ? 'rgba(245,158,11,.04)' : 'var(--panel)';
+
+  // Only show stats on YOUR card
+  let statsHtml = '';
+  if (p.isYou && p.stats) {
+    statsHtml = `
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">YOUR STATS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div style="text-align:center;padding:6px;background:var(--bg3);">
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);">${p.stats.played}</div>
+            <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">PLAYED</div>
+          </div>
+          <div style="text-align:center;padding:6px;background:var(--bg3);">
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--amber);">${p.stats.wins}</div>
+            <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">WINS</div>
+          </div>
+          <div style="text-align:center;padding:6px;background:var(--bg3);">
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--green);">${p.stats.winrate}</div>
+            <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;">WIN RATE</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const badges = [];
+  if (p.isYou) badges.push('<span style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--amber);padding:2px 6px;border:1px solid var(--amber-dim);background:var(--amber-glow);">YOU</span>');
+  if (p.isHost) badges.push('<span style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--green);padding:2px 6px;border:1px solid rgba(16,185,129,.3);background:var(--green-glow);">HOST</span>');
+
+  return `<div style="background:${bgCol};border:1px solid ${borderCol};padding:14px 16px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--panel);border:2px solid ${p.color};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${p.emoji}</div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);">${p.name}</div>
+          ${badges.join('')}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px;">
+          ${p.domains.map(d => `<div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;">${d.icon}</span>
+            <span style="font-family:var(--fm);font-size:9px;color:var(--text-dim);letter-spacing:1px;">${d.name}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${statsHtml}
+  </div>`;
+}
+
+function closeRoster() {
+  const overlay = document.getElementById('roster-overlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 // ── SPLASH ANIMATIONS ────────────────────────────────────────────────
