@@ -2134,11 +2134,7 @@ function beginNextTurn(){
   committedDomains = new Set();
   turnSpillovers = [];  // reset for new turn
 
-  heartCore=Math.max(0,heartCore-3);
-  // Cascade drain on Heart Core
-  if (turnCascades.length > 0) {
-    heartCore = Math.max(0, heartCore - turnCascades.length * 2);
-  }
+  // HC is already decayed from revealHeartCore — just snapshot for next turn
   hcBeforeTurn = heartCore;
   syncHC();
   if (typeof updateHeartbeatSpeed === 'function') updateHeartbeatSpeed(heartCore);
@@ -4134,7 +4130,13 @@ function revealHeartCore() {
   pendingHCChanges.forEach(change => {
     heartCore = Math.max(0, Math.min(100, heartCore + change.delta));
   });
-  pendingHCChanges = []; // reset queue
+  pendingHCChanges = [];
+
+  // Apply per-turn HC decay and cascade drain — visible on turn-end screen
+  heartCore = Math.max(0, heartCore - 3);
+  if (turnCascades.length > 0) {
+    heartCore = Math.max(0, heartCore - turnCascades.length * 2);
+  }
 
   const hcAfter = heartCore;
   const hcDiff = hcAfter - hcBeforeTurn;
