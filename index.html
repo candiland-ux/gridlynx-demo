@@ -4048,7 +4048,10 @@ function confirmDecision(){
   if(selDec===null){showToast('Select a decision first');return;}
   const d=domains[curDomain];
   const tier=getTier(d.health);
-  const tierDecs=(tieredDecisions[curDomain]&&tieredDecisions[curDomain][tier])||d.decisions;
+  const baseDecs=(tieredDecisions[curDomain]&&tieredDecisions[curDomain][tier])||d.decisions;
+  const extras = (extraDecisions[curDomain] && extraDecisions[curDomain][tier]) || [];
+  const contextual = getContextualDecisions(curDomain);
+  const tierDecs = [...baseDecs, ...extras, ...contextual];
   const govMod = governance / 100;
 
   if(selDec==='pass'){
