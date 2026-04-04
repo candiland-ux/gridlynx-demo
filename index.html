@@ -1126,6 +1126,42 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
     <div style="padding:12px 20px 0;">
       <div style="width:100%;height:1px;background:var(--border);"></div>
+      <div style="font-family:var(--fd);font-size:26px;font-weight:700;color:var(--text);margin-top:14px;margin-bottom:6px;">City Type</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:10px;">The region type changes how domains interact, which events appear, and how governance and trust behave.</div>
+    </div>
+
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+      <div class="setup-tile" id="cr-urban" onclick="selectCityRegion('urban')">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;flex-shrink:0;">🏙</div>
+          <div>
+            <div style="font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px;">Urban Core</div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">Dense, complex, interconnected. Transport and Economy dominate. Housing pressure is constant. Trust starts low. Spillovers hit harder. Events include protests, cyber threats, and transit strikes.</div>
+          </div>
+        </div>
+      </div>
+      <div class="setup-tile" id="cr-suburban" onclick="selectCityRegion('suburban')">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;flex-shrink:0;">🏘</div>
+          <div>
+            <div style="font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px;">Suburban Region</div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">Sprawl-driven. Car-dependent transit, school-quality housing, spread-out health access. Energy demand is high from cooling and commuting. Balanced tension. Events include wildfires, flooding, and school crises.</div>
+          </div>
+        </div>
+      </div>
+      <div class="setup-tile" id="cr-rural" onclick="selectCityRegion('rural')">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;flex-shrink:0;">🌾</div>
+          <div>
+            <div style="font-family:var(--fd);font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px;">Rural Community</div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">Self-reliant but fragile. Energy is about resilience, not scale. Health access is distant. Economy depends on fewer employers. Trust starts high but is brittle. Events include droughts, isolation, and single-employer collapse.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:0 20px 0;">
+      <div style="width:100%;height:1px;background:var(--border);"></div>
       <div style="font-family:var(--fd);font-size:26px;font-weight:700;color:var(--text);margin-top:14px;margin-bottom:2px;">City Starting State</div>
     </div>
 
@@ -1277,6 +1313,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         </div>
       </div>
     </div>
+    <!-- Active Global Conditions -->
+    <div id="conditions-bar" style="display:none;padding:0 20px 10px;"></div>
     <div class="sl" id="domains-label">CIVIC DOMAINS</div>
     <div class="dg" id="domain-grid"></div>
     <div class="sl">SHARED GLOBAL LAYERS</div>
@@ -1710,6 +1748,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
+<!-- SHOCK EVENT OVERLAY -->
+<div id="shock-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);align-items:center;justify-content:center;">
+  <div style="max-width:360px;width:90%;text-align:center;padding:32px 24px;">
+    <div id="shock-icon" style="font-size:64px;margin-bottom:16px;animation:flk .4s infinite alternate;"></div>
+    <div id="shock-type" style="font-family:var(--fm);font-size:10px;letter-spacing:4px;color:var(--red);margin-bottom:8px;"></div>
+    <div id="shock-name" style="font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:10px;"></div>
+    <div id="shock-desc" style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;"></div>
+    <div id="shock-impacts" style="text-align:left;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);padding:14px;margin-bottom:16px;"></div>
+    <div id="shock-meta" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:20px;"></div>
+    <button onclick="dismissShock()" class="btn btn-r" style="padding:12px 32px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">RESPOND TO CRISIS</button>
+  </div>
+</div>
+
 <!-- LEAVE GAME CONFIRMATION -->
 <div id="leave-confirm-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;">
   <div style="background:var(--panel2);border:1px solid var(--border-bright);padding:24px;max-width:320px;width:90%;text-align:center;">
@@ -1898,6 +1949,10 @@ function beginNextTurn(){
   applyCascades();
   // Update governance and trust based on city state
   updateGovernanceAndTrust();
+  // Apply global condition ongoing effects
+  applyConditionEffects();
+  // Tick condition durations
+  tickConditions();
 
   turnNumber++;
   selDec=null;
@@ -1928,6 +1983,14 @@ function beginNextTurn(){
   renderDSB();
   renderDomainContext();
   updateManageButton();
+
+  // Check for shock event delivery
+  if (pendingShock && !shockDelivered && turnNumber >= pendingShock.deliverTurn) {
+    shockDelivered = true;
+    deliverShock(pendingShock);
+    return; // shock overlay handles navigation
+  }
+
   nav('so');
   // Heartbeat starts muted — user activates with sound toggle
   soundEnabled = false;
@@ -1939,6 +2002,7 @@ function nav(id){
   if (target) target.classList.add('active');
   window.scrollTo(0,0);
   if(id==='so' && myDomain) renderDomainGrid();
+  if(id==='so') renderConditionsBar();
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
@@ -2106,7 +2170,200 @@ function focusEmojiPicker() {
 
 // ── CITY NAME ────────────────────────────────────────────────────────
 let cityName = '';
+let cityRegion = 'urban'; // 'urban' | 'suburban' | 'rural'
 const CITY_NAMES = ['Vantara', 'Solace Grid', 'Port Endra', 'Ironfield', 'Cascadia Prime', 'New Voss', 'The Meridian', 'Helix City', 'Creston', 'Duskport', 'Nova Tal', 'Ironshore', 'Arken', 'Halcyon', 'Vertex City', 'Salport', 'The Grid', 'Eastholm', 'Vael', 'Cinderwick', 'Overreach', 'Thorngate', 'Arcline', 'Nexara', 'Coldspire'];
+
+// ── REGIONAL CONFIGURATION ──────────────────────────────────────────
+const REGIONAL_CONFIG = {
+  urban: {
+    label: 'Urban Core',
+    icon: '🏙',
+    trustBase: -8,     // trust starts lower (anonymity, complexity)
+    govBase: 0,        // governance at baseline
+    spilloverMod: 1.15, // spillovers hit 15% harder (density)
+    cascadeDrainMod: 1.2, // cascades propagate faster
+    weightOverrides: { // specific weight adjustments
+      'transport-economy': 0.28,  // transit-dependent economy
+      'housing-health': 0.25,     // density amplifies health pressure
+    },
+    shockPool: ['earthquake','cyberattack','protest','transit_strike','pandemic','heatwave','flood'],
+    names: ['Vantara','Helix City','The Meridian','Vertex City','Nexara','Arcline','Nova Tal']
+  },
+  suburban: {
+    label: 'Suburban Region',
+    icon: '🏘',
+    trustBase: 0,
+    govBase: -4,       // governance less efficient (sprawl)
+    spilloverMod: 1.0,
+    cascadeDrainMod: 1.0,
+    weightOverrides: {
+      'energy-housing': 0.30,  // cooling-dependent housing
+      'transport-economy': 0.18, // car-dependent but distributed
+    },
+    shockPool: ['wildfire','flood','tornado','school_crisis','pipeline_leak','heatwave','ice_storm'],
+    names: ['Ironfield','Creston','Eastholm','Thorngate','Coldspire','Salport','Overreach']
+  },
+  rural: {
+    label: 'Rural Community',
+    icon: '🌾',
+    trustBase: 10,     // trust starts higher (community bonds)
+    govBase: -10,      // governance less resourced
+    spilloverMod: 0.85, // spillovers dampened (less interconnected)
+    cascadeDrainMod: 0.8,
+    weightOverrides: {
+      'health-economy': 0.25,   // single hospital = critical dependency
+      'economy-education': 0.28, // single employer = education pipeline
+      'transport-health': 0.20,  // distance to care amplified
+    },
+    shockPool: ['drought','flood','employer_collapse','wildfire','tornado','isolation','bridge_failure'],
+    names: ['Duskport','Ironshore','Cinderwick','Halcyon','Vael','Port Endra','Arken']
+  }
+};
+
+// ── SHOCK EVENTS ────────────────────────────────────────────────────
+const SHOCK_EVENTS = {
+  earthquake: { icon:'🌍', name:'Major Earthquake', type:'CATASTROPHIC', desc:'A 6.8 magnitude earthquake strikes the region. All infrastructure systems take immediate damage. Response capacity is overwhelmed.', impacts:{transport:-12,housing:-15,energy:-18,health:-8,economy:-10,education:-6}, hcHit:-8, trustHit:-5, govHit:-3 },
+  wildfire: { icon:'🔥', name:'Wildfire Season', type:'NATURAL DISASTER', desc:'Wildfires reach urban boundaries. Evacuations strain housing and transport. Air quality devastates health. Grid infrastructure threatened.', impacts:{energy:-14,housing:-12,health:-10,transport:-8,economy:-6,education:-4}, hcHit:-6, trustHit:-3, govHit:-2 },
+  flood: { icon:'🌊', name:'Catastrophic Flooding', type:'NATURAL DISASTER', desc:'Record rainfall overwhelms drainage. Low-lying districts submerged. Power substations offline. Water contamination risk.', impacts:{housing:-16,energy:-12,transport:-14,health:-8,economy:-8,education:-4}, hcHit:-7, trustHit:-4, govHit:-2 },
+  pandemic: { icon:'🦠', name:'Public Health Emergency', type:'CATASTROPHIC', desc:'A fast-spreading illness strains hospitals to capacity. Lockdowns crater the economy. Remote systems become critical infrastructure.', impacts:{health:-20,economy:-16,education:-12,housing:-6,transport:-8,energy:-4}, hcHit:-10, trustHit:-8, govHit:-4 },
+  cyberattack: { icon:'💻', name:'Infrastructure Cyberattack', type:'TARGETED', desc:'A coordinated cyberattack targets city systems. Grid control compromised. Traffic management offline. Financial systems disrupted.', impacts:{energy:-16,transport:-10,economy:-14,health:-6,housing:-4,education:-2}, hcHit:-6, trustHit:-6, govHit:-8 },
+  protest: { icon:'✊', name:'Civil Unrest', type:'SOCIAL CRISIS', desc:'Widespread protests erupt over inequality and governance failures. Transit disrupted. Property damage in commercial districts. Trust in institutions plummets.', impacts:{transport:-10,economy:-12,education:-6,housing:-4,health:-4,energy:-2}, hcHit:-5, trustHit:-15, govHit:-6 },
+  drought: { icon:'☀️', name:'Extended Drought', type:'NATURAL DISASTER', desc:'Three months without meaningful rainfall. Water rationing enacted. Agricultural economy devastated. Energy demand spikes from cooling.', impacts:{energy:-14,economy:-16,health:-8,housing:-6,transport:-4,education:-4}, hcHit:-6, trustHit:-4, govHit:-2 },
+  tornado: { icon:'🌪', name:'Tornado Outbreak', type:'NATURAL DISASTER', desc:'Multiple tornadoes touch down across the region. Widespread structural damage. Power lines down. Emergency services stretched thin.', impacts:{housing:-18,energy:-14,transport:-12,health:-8,economy:-8,education:-6}, hcHit:-8, trustHit:-3, govHit:-2 },
+  heatwave: { icon:'🌡', name:'Extreme Heat Wave', type:'NATURAL DISASTER', desc:'Temperatures exceed 115\u00B0F for 5 consecutive days. Grid demand surges beyond capacity. Vulnerable populations at lethal risk.', impacts:{energy:-16,health:-14,housing:-10,transport:-6,economy:-8,education:-4}, hcHit:-7, trustHit:-3, govHit:-1 },
+  transit_strike: { icon:'🚫', name:'Transit Worker Strike', type:'SOCIAL CRISIS', desc:'City transit workers walk off the job over safety conditions. Commuters stranded. Economy disrupted. Government credibility tested.', impacts:{transport:-20,economy:-14,education:-8,health:-4,housing:-2,energy:-2}, hcHit:-5, trustHit:-8, govHit:-5 },
+  employer_collapse: { icon:'🏭', name:'Major Employer Shutdown', type:'ECONOMIC CRISIS', desc:'The region\u2019s largest employer announces permanent closure. 3,000 jobs eliminated. Tax base collapses. Population exodus begins.', impacts:{economy:-22,education:-10,housing:-8,transport:-6,health:-6,energy:-4}, hcHit:-8, trustHit:-6, govHit:-4 },
+  ice_storm: { icon:'🧊', name:'Severe Ice Storm', type:'NATURAL DISASTER', desc:'Freezing rain coats the region. Power lines collapse under ice weight. Roads impassable. Heating systems fail across housing stock.', impacts:{energy:-18,transport:-16,housing:-12,health:-10,economy:-6,education:-8}, hcHit:-8, trustHit:-2, govHit:-2 },
+  school_crisis: { icon:'🏫', name:'School System Crisis', type:'SOCIAL CRISIS', desc:'Multiple school closures due to infrastructure failures. Parents pulled from workforce. Education pipeline disrupted. Community trust shaken.', impacts:{education:-18,economy:-8,health:-4,housing:-2,transport:-2,energy:-2}, hcHit:-4, trustHit:-8, govHit:-4 },
+  pipeline_leak: { icon:'⚠️', name:'Chemical Pipeline Leak', type:'ENVIRONMENTAL', desc:'Industrial pipeline rupture contaminates groundwater in three districts. Evacuation ordered. Long-term health monitoring required.', impacts:{health:-14,housing:-12,energy:-6,economy:-8,transport:-4,education:-4}, hcHit:-6, trustHit:-10, govHit:-6 },
+  isolation: { icon:'🛤', name:'Access Route Severed', type:'INFRASTRUCTURE', desc:'The primary highway and rail connection to the region is severed by a landslide. Supply chains disrupted. Medical transport delayed.', impacts:{transport:-18,health:-12,economy:-14,energy:-6,housing:-4,education:-4}, hcHit:-6, trustHit:-4, govHit:-3 },
+  bridge_failure: { icon:'🌉', name:'Critical Bridge Collapse', type:'INFRASTRUCTURE', desc:'A major bridge fails during rush hour. Casualties reported. Alternate routes overwhelmed. Emergency response rerouted.', impacts:{transport:-20,economy:-10,health:-8,housing:-4,energy:-2,education:-2}, hcHit:-7, trustHit:-6, govHit:-5 },
+};
+
+// Select a shock event for the current game based on region
+let pendingShock = null;
+let shockDelivered = false;
+
+function selectShockForGame() {
+  const cfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
+  const pool = cfg.shockPool;
+  // 70% chance of a shock occurring each game
+  if (Math.random() < 0.70) {
+    const key = pool[Math.floor(Math.random() * pool.length)];
+    pendingShock = { key, ...SHOCK_EVENTS[key] };
+    // Deliver between turn 3 and turn 8
+    pendingShock.deliverTurn = 3 + Math.floor(Math.random() * 6);
+  } else {
+    pendingShock = null;
+  }
+  shockDelivered = false;
+}
+
+// Randomize starting health within a band instead of flat value
+function randomizeStartHealth(base) {
+  const variance = Math.floor(Math.random() * 15) - 7; // -7 to +7
+  return Math.max(10, Math.min(95, base + variance));
+}
+
+// ── GLOBAL CONDITIONS ───────────────────────────────────────────────
+// Persistent external pressures lasting 3-5 turns that modify game environment
+const GLOBAL_CONDITIONS = {
+  // ECONOMIC
+  tariff_war: { icon:'📦', name:'Trade War & Tariffs', cat:'ECONOMIC', duration:[3,5], desc:'Import tariffs spike costs across all sectors. Economy decisions cost 20% more. Supply chain instability compounds energy and transport strain.', effects:{economyDeltaMod:-0.20, energyDeltaMod:-0.08, govDecay:-1} },
+  inflation: { icon:'📈', name:'Inflation Surge', cat:'ECONOMIC', duration:[3,4], desc:'Consumer prices rise 8%+ annualized. Housing affordability collapses. Healthcare costs compound. Every budget-tagged decision costs more.', effects:{housingDeltaMod:-0.15, healthDeltaMod:-0.10, trustPerTurn:-2} },
+  recession: { icon:'📉', name:'National Recession', cat:'ECONOMIC', duration:[4,5], desc:'GDP contracts for consecutive quarters. Tax revenue drops. Unemployment rises. Recovery decisions become critical.', effects:{economyDeltaMod:-0.25, educationDeltaMod:-0.10, govPerTurn:-2, hcPerTurn:-1} },
+  supply_chain: { icon:'🚢', name:'Supply Chain Disruption', cat:'ECONOMIC', duration:[3,4], desc:'Global logistics breakdown delays infrastructure materials. Construction timelines double. Energy components backordered.', effects:{energyDeltaMod:-0.15, housingDeltaMod:-0.12, transportDeltaMod:-0.10} },
+  crypto_crash: { icon:'💰', name:'Digital Asset Collapse', cat:'ECONOMIC', duration:[2,3], desc:'Cryptocurrency markets crash 70%. Digital economy zones lose anchor tenants. Tech workforce layoffs accelerate.', effects:{economyDeltaMod:-0.18, educationDeltaMod:-0.08} },
+
+  // GEOPOLITICAL
+  armed_conflict: { icon:'⚔️', name:'Regional Armed Conflict', cat:'GEOPOLITICAL', duration:[4,5], desc:'Armed conflict disrupts global energy markets and supply chains. Fuel costs spike. Defense spending diverts domestic funding.', effects:{energyDeltaMod:-0.20, economyDeltaMod:-0.15, govPerTurn:-1, trustPerTurn:-2} },
+  refugee_influx: { icon:'🏕', name:'Refugee & Migration Surge', cat:'GEOPOLITICAL', duration:[3,5], desc:'Rapid population influx strains housing, health, and education capacity. Social cohesion tested. Federal support slow.', effects:{housingDeltaMod:-0.15, healthDeltaMod:-0.12, educationDeltaMod:-0.10, trustPerTurn:-3} },
+  sanctions: { icon:'🚫', name:'International Sanctions', cat:'GEOPOLITICAL', duration:[3,4], desc:'Trade sanctions limit energy imports and technology transfers. Domestic alternatives needed at higher cost.', effects:{energyDeltaMod:-0.18, economyDeltaMod:-0.12, transportDeltaMod:-0.08} },
+
+  // HEALTHCARE / SOCIAL
+  healthcare_costs: { icon:'💊', name:'Healthcare Cost Crisis', cat:'SOCIAL', duration:[4,5], desc:'Healthcare spending grows 12% year-over-year. Insurance markets destabilize. Employers cut coverage. Emergency rooms overwhelmed.', effects:{healthDeltaMod:-0.20, economyDeltaMod:-0.10, trustPerTurn:-2} },
+  opioid_crisis: { icon:'⚕️', name:'Addiction & Mental Health Crisis', cat:'SOCIAL', duration:[3,5], desc:'Substance abuse and mental health emergencies surge. Emergency services strained. Workforce participation drops. Families destabilized.', effects:{healthDeltaMod:-0.18, economyDeltaMod:-0.12, housingDeltaMod:-0.08, trustPerTurn:-3} },
+  aging_population: { icon:'👴', name:'Aging Population Surge', cat:'SOCIAL', duration:[4,5], desc:'Retiree population spikes. Healthcare demand outpaces supply. Labor shortage compounds. Social security strain redirects funding.', effects:{healthDeltaMod:-0.15, economyDeltaMod:-0.12, educationDeltaMod:-0.08} },
+  misinfo_campaign: { icon:'📱', name:'Misinformation Campaign', cat:'SOCIAL', duration:[2,4], desc:'Coordinated disinformation erodes public trust in institutions. Vaccine hesitancy rises. Policy compliance drops. Social cohesion fractures.', effects:{trustPerTurn:-5, govPerTurn:-3, healthDeltaMod:-0.10} },
+
+  // FEDERAL / REGULATORY
+  funding_cuts: { icon:'✂️', name:'Federal Funding Cuts', cat:'FEDERAL', duration:[3,5], desc:'Federal block grants reduced 30%. Infrastructure, education, and health programs lose matching funds. Cities absorb the gap or cut services.', effects:{govDecay:-3, educationDeltaMod:-0.15, healthDeltaMod:-0.10, transportDeltaMod:-0.10} },
+  climate_regulation: { icon:'🌿', name:'New Climate Mandates', cat:'FEDERAL', duration:[3,4], desc:'Aggressive climate regulations require rapid infrastructure transition. Compliance costs high but long-term resilience improves.', effects:{energyDeltaMod:-0.12, economyDeltaMod:-0.08, transportDeltaMod:-0.10, trustPerTurn:1} },
+  immigration_shift: { icon:'🛂', name:'Immigration Policy Shift', cat:'FEDERAL', duration:[3,4], desc:'Immigration enforcement changes disrupt labor markets. Agricultural and construction workforce gaps widen. Community trust fractures along demographic lines.', effects:{economyDeltaMod:-0.15, housingDeltaMod:-0.08, trustPerTurn:-4} },
+  election_uncertainty: { icon:'🗳', name:'National Election Uncertainty', cat:'FEDERAL', duration:[2,3], desc:'Contested national election creates policy paralysis. Federal agencies delay approvals. Investment freezes. Markets volatile.', effects:{govPerTurn:-4, economyDeltaMod:-0.10, trustPerTurn:-3} },
+
+  // TECHNOLOGY
+  ai_displacement: { icon:'🤖', name:'AI Job Displacement Wave', cat:'TECHNOLOGY', duration:[4,5], desc:'Rapid AI adoption eliminates 15% of mid-skill positions. Reskilling demand spikes. Income inequality widens. Social unrest risk rises.', effects:{economyDeltaMod:-0.20, educationDeltaMod:-0.15, trustPerTurn:-3} },
+  av_disruption: { icon:'🚗', name:'Autonomous Vehicle Disruption', cat:'TECHNOLOGY', duration:[3,4], desc:'Self-driving vehicles disrupt transit workers, insurance, and urban design. Infrastructure requires rapid adaptation.', effects:{transportDeltaMod:-0.18, economyDeltaMod:-0.10, educationDeltaMod:-0.08} },
+  renewable_breakthrough: { icon:'☀️', name:'Renewable Energy Breakthrough', cat:'TECHNOLOGY', duration:[3,4], desc:'Major cost reduction in solar+storage makes fossil infrastructure stranded. Transition creates opportunity but disrupts existing energy workforce.', effects:{energyDeltaMod:0.15, economyDeltaMod:-0.08, educationDeltaMod:-0.10} },
+
+  // ENVIRONMENTAL
+  climate_migration: { icon:'🌡', name:'Climate Migration Pressure', cat:'ENVIRONMENTAL', duration:[4,5], desc:'Populations relocate from climate-vulnerable regions. Receiving cities face rapid housing, health, and education demand surges.', effects:{housingDeltaMod:-0.18, healthDeltaMod:-0.10, educationDeltaMod:-0.10, transportDeltaMod:-0.08} },
+  water_scarcity: { icon:'💧', name:'Water Scarcity Emergency', cat:'ENVIRONMENTAL', duration:[3,5], desc:'Aquifer depletion and drought reduce municipal water supply. Rationing enacted. Agriculture and industry face allocation conflicts.', effects:{healthDeltaMod:-0.12, economyDeltaMod:-0.15, housingDeltaMod:-0.10, trustPerTurn:-2} },
+};
+
+let activeConditions = []; // [{key, ...data, turnsLeft}]
+
+function selectConditionsForGame() {
+  const allKeys = Object.keys(GLOBAL_CONDITIONS);
+  // Shuffle and pick 1-2 conditions
+  const count = Math.random() < 0.4 ? 2 : 1;
+  const shuffled = allKeys.sort(() => Math.random() - 0.5);
+  activeConditions = [];
+  for (let i = 0; i < count && i < shuffled.length; i++) {
+    const key = shuffled[i];
+    const cond = GLOBAL_CONDITIONS[key];
+    const dur = cond.duration[0] + Math.floor(Math.random() * (cond.duration[1] - cond.duration[0] + 1));
+    activeConditions.push({ key, ...cond, turnsLeft: dur });
+  }
+}
+
+function applyConditionEffects() {
+  activeConditions.forEach(c => {
+    if (c.effects.trustPerTurn) trust = Math.max(0, Math.min(100, trust + c.effects.trustPerTurn));
+    if (c.effects.govPerTurn) governance = Math.max(0, Math.min(100, governance + c.effects.govPerTurn));
+    if (c.effects.govDecay) governance = Math.max(0, governance + c.effects.govDecay);
+    if (c.effects.hcPerTurn) heartCore = Math.max(0, heartCore + c.effects.hcPerTurn);
+  });
+}
+
+function getConditionDeltaMod(domainKey) {
+  let mod = 0;
+  const modKey = domainKey + 'DeltaMod';
+  activeConditions.forEach(c => {
+    if (c.effects[modKey]) mod += c.effects[modKey];
+  });
+  return mod; // can be negative (penalty) or positive (bonus)
+}
+
+function tickConditions() {
+  activeConditions.forEach(c => c.turnsLeft--);
+  const expiring = activeConditions.filter(c => c.turnsLeft <= 0);
+  activeConditions = activeConditions.filter(c => c.turnsLeft > 0);
+  expiring.forEach(c => showToast(c.icon + ' ' + c.name + ' has ended'));
+}
+
+function renderConditionsBar() {
+  const bar = document.getElementById('conditions-bar');
+  if (!bar) return;
+  if (activeConditions.length === 0) { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  bar.innerHTML = '<div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">GLOBAL CONDITIONS</div>' +
+    activeConditions.map(c => {
+      const catCol = c.cat === 'ECONOMIC' ? 'var(--amber)' : c.cat === 'GEOPOLITICAL' ? 'var(--red)' : c.cat === 'SOCIAL' ? 'var(--cyan)' : c.cat === 'TECHNOLOGY' ? 'var(--purple)' : c.cat === 'ENVIRONMENTAL' ? 'var(--green)' : 'var(--amber)';
+      return '<div style="background:var(--panel);border:1px solid var(--border);padding:10px 12px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;">' +
+        '<div style="font-size:20px;flex-shrink:0;">' + c.icon + '</div>' +
+        '<div style="flex:1;">' +
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
+            '<span style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">' + c.name + '</span>' +
+            '<span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:' + catCol + ';padding:1px 5px;border:1px solid ' + catCol + ';opacity:.7;">' + c.cat + '</span>' +
+          '</div>' +
+          '<div style="font-size:10px;color:var(--text-dim);line-height:1.5;">' + c.desc + '</div>' +
+        '</div>' +
+        '<div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);white-space:nowrap;flex-shrink:0;">' + c.turnsLeft + ' TURN' + (c.turnsLeft > 1 ? 'S' : '') + '</div>' +
+      '</div>';
+    }).join('');
+}
 
 function generateCityName() {
   const name = CITY_NAMES[Math.floor(Math.random() * CITY_NAMES.length)];
@@ -2739,6 +2996,25 @@ function selectStart(s){cityStart=s;}
 // ── CITY START SCREEN ─────────────────────────────────────────────────
 let cityStartMode = null;
 
+function selectCityRegion(region) {
+  cityRegion = region;
+  ['urban','suburban','rural'].forEach(r => {
+    const el = document.getElementById('cr-' + r);
+    if (el) el.classList.toggle('sel', r === region);
+  });
+  // Update city name pool to match region
+  const cfg = REGIONAL_CONFIG[region];
+  if (cfg) {
+    const nameInput = document.getElementById('city-name-input');
+    if (nameInput && !nameInput.value.trim()) {
+      const name = cfg.names[Math.floor(Math.random() * cfg.names.length)];
+      nameInput.value = name;
+      cityName = name;
+      updateCityNamePreview();
+    }
+  }
+}
+
 function selectCityStartMode(mode) {
   cityStartMode = mode;
   // Toggle tile selection
@@ -2861,6 +3137,7 @@ function startGame(){
   };
 
   const cfg=states[cityStart]||states.strained;
+  const regionCfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
 
   // Set heartCore from selected state
   heartCore=cfg.hcVal;
@@ -2868,19 +3145,40 @@ function startGame(){
   committedDomains = new Set();
   turnSpillovers = [];
   turnCascades = [];
-  // Governance and trust scale with city starting state
-  governance = cityStart === 'stable' ? 85 : cityStart === 'critical' ? 55 : 72;
-  trust = cityStart === 'stable' ? 80 : cityStart === 'critical' ? 40 : 64;
+
+  // Governance and trust scale with city starting state + regional modifier
+  governance = (cityStart === 'stable' ? 85 : cityStart === 'critical' ? 55 : 72) + regionCfg.govBase;
+  trust = (cityStart === 'stable' ? 80 : cityStart === 'critical' ? 40 : 64) + regionCfg.trustBase;
+  governance = Math.max(20, Math.min(100, governance));
+  trust = Math.max(10, Math.min(100, trust));
+
+  // Select shock event for this game
+  selectShockForGame();
+  // Select global conditions for this game
+  selectConditionsForGame();
+
+  // Apply randomized starting health within band (base ± 7)
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  domKeys.forEach(key => {
+    const baseHealth = cfg.domainHealth[key];
+    const randomHealth = randomizeStartHealth(baseHealth);
+    if(domains[key]) domains[key].health = randomHealth;
+    if(domains[key]) domains[key].status = cfg.domainStatus[key];
+    // Update status based on actual randomized health
+    if (randomHealth >= 80) domains[key].status = 'STABLE';
+    else if (randomHealth >= 55) domains[key].status = 'MODERATE';
+    else if (randomHealth >= 30) domains[key].status = 'STRAINED';
+    else domains[key].status = 'CRITICAL';
+  });
   hcBeforeTurn = cfg.hcVal;
 
-  // Apply domain health + status + color + warn from selected start state
-  Object.keys(cfg.domainHealth).forEach(key=>{
-    if(domains[key]) domains[key].health=cfg.domainHealth[key];
-    if(domains[key]) domains[key].status=cfg.domainStatus[key];
+  // Update public display state from randomized health
+  domKeys.forEach(key => {
     if(domainPublic[key]){
-      domainPublic[key].color=cfg.domainColor[key];
-      domainPublic[key].status=cfg.domainStatus[key];
-      domainPublic[key].warn=cfg.domainWarn[key];
+      const h = domains[key].health;
+      domainPublic[key].color = h >= 80 ? 'g' : h >= 55 ? 'c' : h >= 30 ? 'a' : 'r';
+      domainPublic[key].status = domains[key].status;
+      domainPublic[key].warn = null;
     }
   });
 
@@ -2919,6 +3217,7 @@ function startGame(){
   updateManageButton();
   nav('so');
   renderDSB();
+  renderConditionsBar();
   startVisualHeartbeat();
 }
 
@@ -3330,8 +3629,9 @@ function confirmDecision(){
     }
     if(delta===0) delta=8;
 
-    // Apply governance modifier to primary effect
-    const effectiveDelta = Math.round(delta * govMod);
+    // Apply governance modifier + global condition modifier to primary effect
+    const condMod = getConditionDeltaMod(curDomain);
+    const effectiveDelta = Math.round(delta * govMod * (1 + condMod));
     d.health=Math.min(100,Math.max(0,d.health+effectiveDelta));
     if(effectiveDelta>0) heartCore=Math.min(100,heartCore+Math.floor(effectiveDelta/6));
     updateDomainStatus(curDomain);
@@ -4363,6 +4663,56 @@ function buildRosterCard(p) {
 function closeRoster() {
   const overlay = document.getElementById('roster-overlay');
   if (overlay) overlay.style.display = 'none';
+}
+
+function deliverShock(shock) {
+  const overlay = document.getElementById('shock-overlay');
+  if (!overlay) { nav('so'); return; }
+  overlay.style.display = 'flex';
+
+  document.getElementById('shock-icon').textContent = shock.icon;
+  document.getElementById('shock-type').textContent = shock.type;
+  document.getElementById('shock-name').textContent = shock.name;
+  document.getElementById('shock-desc').textContent = shock.desc;
+
+  const domainIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
+  const domainShort = {transport:'Transport',housing:'Housing',energy:'Energy',health:'Health',economy:'Economy',education:'Education'};
+
+  // Apply impacts
+  const impactLines = [];
+  Object.keys(shock.impacts).forEach(key => {
+    const delta = shock.impacts[key];
+    if (delta !== 0 && domains[key]) {
+      domains[key].health = Math.max(0, domains[key].health + delta);
+      updateDomainStatus(key);
+      impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(239,68,68,.12);"><span style="font-size:11px;color:var(--text-dim);">' + domainIcons[key] + ' ' + domainShort[key] + '</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + delta + '</span></div>');
+    }
+  });
+
+  // Apply HC, trust, governance hits
+  heartCore = Math.max(0, heartCore + shock.hcHit);
+  trust = Math.max(0, trust + shock.trustHit);
+  governance = Math.max(0, governance + shock.govHit);
+
+  impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;margin-top:6px;border-top:1px solid rgba(239,68,68,.2);"><span style="font-size:11px;color:var(--red);">Heart Core</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.hcHit + '</span></div>');
+  if (shock.trustHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:11px;color:var(--cyan);">Trust</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.trustHit + '</span></div>');
+  if (shock.govHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:11px;color:var(--purple);">Governance</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.govHit + '</span></div>');
+
+  document.getElementById('shock-impacts').innerHTML = '<div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">IMMEDIATE IMPACT</div>' + impactLines.join('');
+  document.getElementById('shock-meta').textContent = 'Turn ' + turnNumber + ' \u00B7 ' + (cityName || 'The City') + ' \u00B7 ' + (REGIONAL_CONFIG[cityRegion] || {label:'Urban'}).label;
+
+  // Update displays
+  renderDomainGrid();
+  renderDSB();
+}
+
+function dismissShock() {
+  const overlay = document.getElementById('shock-overlay');
+  if (overlay) overlay.style.display = 'none';
+  if (heartCore <= 0) { populateCollapseScreen(); nav('scol'); return; }
+  renderDomainContext();
+  updateManageButton();
+  nav('so');
 }
 
 function confirmLeaveGame() {
