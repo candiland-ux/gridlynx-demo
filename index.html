@@ -1606,7 +1606,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 <div id="s-victory-other" class="screen" style="flex-direction:column;background:#050508;position:relative;overflow:hidden;">
   <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(245,158,11,.08) 0%,transparent 60%);pointer-events:none;"></div>
 
-  <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;">
+  <div style="position:relative;z-index:2;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 24px;">
 
     <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;opacity:.8;">Game Over</div>
     <div style="font-family:var(--fd);font-size:32px;font-weight:700;color:var(--text);letter-spacing:3px;line-height:1;">DOMAIN OBJECTIVE<br>ACHIEVED</div>
@@ -1630,8 +1630,52 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div id="vico-your-result" style="font-size:12px;color:var(--text-dim);line-height:1.6;"></div>
     </div>
 
+    <!-- Proximity indicator (FREE) -->
+    <div style="background:var(--panel);border:1px solid var(--border);padding:14px;max-width:320px;width:100%;text-align:left;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:2px;">HOW CLOSE WERE YOU?</div>
+        <div style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--text-muted);padding:1px 5px;border:1px solid var(--border);">FREE</div>
+      </div>
+      <!-- Progress ring -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div id="vico-ring" style="width:64px;height:64px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;">
+          <div id="vico-pct" style="position:relative;z-index:1;font-family:var(--fd);font-size:20px;font-weight:700;color:var(--cyan);"></div>
+        </div>
+        <div style="flex:1;">
+          <div id="vico-proximity-text" style="font-size:12px;color:var(--text-dim);line-height:1.6;"></div>
+          <div id="vico-turns-needed" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:6px;letter-spacing:1px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRO: Decision breakdown (gated) -->
+    <div style="max-width:320px;width:100%;position:relative;overflow:hidden;margin-bottom:12px;">
+      <!-- PRO blur overlay -->
+      <div style="position:absolute;inset:0;z-index:2;background:rgba(10,10,15,.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;">
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--amber);margin-bottom:6px;">🔒 GRIDLYNX PRO</div>
+        <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">Full Post-Game Breakdown</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.5;max-width:240px;margin-bottom:12px;">See which turns mattered, where your inflection point was, and what the winner did differently.</div>
+        <button onclick="showToast('GRIDLYNX Pro — available at launch')" style="background:var(--amber-glow);border:1px solid var(--amber);color:var(--amber);font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:2px;padding:8px 20px;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">UPGRADE TO PRO</button>
+      </div>
+      <!-- Blurred PRO content -->
+      <div style="opacity:.4;">
+        <div style="background:var(--panel);border:1px solid var(--border);padding:14px;margin-bottom:8px;text-align:left;">
+          <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:8px;">INFLECTION POINT</div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Turn 5 was your critical moment. You chose Maintain Current Systems instead of Emergency Load Balancing. That decision cost approximately 3 turns of progress.</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);padding:14px;margin-bottom:8px;text-align:left;">
+          <div style="font-family:var(--fm);font-size:8px;color:var(--green);letter-spacing:2px;margin-bottom:8px;">WINNER'S VISIBLE MOVES</div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Turn 3: Density Adjustment Program (+12)<br>Turn 5: Affordable Housing Investment (+9)<br>Turn 7: Smart Home Energy Nodes (+6)<br><span style="color:var(--text-muted);font-style:italic;">2 turns used private channel — hidden</span></div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);padding:14px;text-align:left;">
+          <div style="font-family:var(--fm);font-size:8px;color:var(--purple);letter-spacing:2px;margin-bottom:8px;">WHAT WOULD HAVE WON</div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">At your Turn 5 pace, you needed 2 more turns. Emergency Load Balancing on Turn 5 + Microgrid Deployment on Turn 6 would have closed by Turn 8.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- City survived banner -->
-    <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);padding:14px;max-width:320px;width:100%;text-align:left;">
+    <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);padding:14px;max-width:320px;width:100%;text-align:left;margin-bottom:16px;">
       <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;">THE CITY SURVIVED</div>
       <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#fcd34d,#d97706,#92400e);box-shadow:0 0 16px rgba(245,158,11,.5);flex-shrink:0;"></div>
@@ -1642,7 +1686,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       </div>
     </div>
 
-    <div style="margin-top:20px;display:flex;gap:10px;">
+    <div style="display:flex;gap:10px;">
       <button class="btn btn-s" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">↩ MENU</button>
       <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">NEW GAME</button>
     </div>
@@ -3634,9 +3678,22 @@ function startEkgFlatline() {
 }
 
 function simulateVictoryWinner() {
+  // Set realistic win state
+  heartCore = 58 + Math.floor(Math.random() * 25); // 58-82
+  turnNumber = 7 + Math.floor(Math.random() * 4); // 7-10
+  cityName = cityName || 'Nova Ridge';
+
   const d = domains[myDomain] || domains.energy;
   d.health = 100;
   d.status = 'THRIVING';
+
+  // Other domains at plausible mid-game values
+  const otherHealth = {transport:62,housing:55,energy:48,health:71,economy:59,education:44};
+  Object.keys(otherHealth).forEach(key => {
+    if (key !== (myDomain || 'energy') && domains[key]) {
+      domains[key].health = otherHealth[key] + Math.floor(Math.random() * 12 - 6);
+    }
+  });
 
   const avatar = document.getElementById('vic-avatar');
   const name = document.getElementById('vic-name');
@@ -3654,12 +3711,23 @@ function simulateVictoryWinner() {
   if (health) health.textContent = '100';
   if (hc) hc.textContent = heartCore;
   if (turn) turn.textContent = turnNumber;
-  if (sub) sub.textContent = (cityName || 'The city') + ' endures — because of you.';
+  if (sub) sub.textContent = cityName + ' endures — because of you.';
 
   nav('s-victory-winner');
 }
 
 function simulateVictoryOther() {
+  // Fully reset game state — no leakage from other simulations
+  heartCore = 52 + Math.floor(Math.random() * 30); // 52-81
+  turnNumber = 8 + Math.floor(Math.random() * 3); // 8-10
+  cityName = cityName || 'Nova Ridge';
+
+  // Reset ALL domain health to mid-game values
+  const midGame = {transport:62,housing:51,energy:47,health:68,economy:55,education:44};
+  Object.keys(midGame).forEach(key => {
+    if (domains[key]) domains[key].health = midGame[key] + Math.floor(Math.random() * 12 - 6);
+  });
+
   const winnerNames = ['Shadow Wolf','Neon Viper','Iron Lynx','Circuit Fox'];
   const winnerEmojis = ['🐺','🐍','🦊','🐉'];
   const winnerDomains = ['Transportation & Access','Housing & Living','Health, Safety & Care','Economy & Work'];
@@ -3676,20 +3744,46 @@ function simulateVictoryOther() {
   if (domain) domain.textContent = winnerDomains[idx].toUpperCase();
 
   const d = domains[myDomain] || domains.energy;
+  const yourHealth = d.health;
   if (yourResult) {
+    const col = yourHealth >= 70 ? 'var(--green)' : yourHealth >= 40 ? 'var(--amber)' : 'var(--red)';
     yourResult.innerHTML = '<strong style="color:var(--text)">' + (playerProfile.name || 'You') + '</strong> — ' +
       (d.name || 'Energy & Environment') + '<br>' +
-      'Domain health: <span style="color:' + (d.health >= 70 ? 'var(--green)' : d.health >= 40 ? 'var(--amber)' : 'var(--red)') + '">' + d.health + '/100</span>' +
+      'Domain health: <span style="color:' + col + '">' + yourHealth + '/100</span>' +
       '<br><span style="color:var(--text-muted)">Win condition was not met before another player achieved theirs.</span>';
   }
   if (hcEl) hcEl.textContent = heartCore + '/100';
+
+  // Populate proximity indicator
+  const pct = Math.min(Math.round(yourHealth), 99); // never show 100 if you didn't win
+  const ring = document.getElementById('vico-ring');
+  const pctEl = document.getElementById('vico-pct');
+  const proxText = document.getElementById('vico-proximity-text');
+  const turnsNeeded = document.getElementById('vico-turns-needed');
+  const ringCol = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--cyan)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
+
+  if (ring) ring.style.background = 'conic-gradient(' + ringCol + ' 0% ' + pct + '%, var(--bg3) ' + pct + '%)';
+  if (ring) ring.insertAdjacentHTML('afterbegin', '<div style="position:absolute;inset:8px;border-radius:50%;background:#050508;"></div>');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  const turnsLeft = pct >= 90 ? 1 : pct >= 75 ? 2 : pct >= 60 ? 3 : pct >= 40 ? 5 : 7;
+  if (proxText) {
+    if (pct >= 85) {
+      proxText.textContent = 'You were nearly there. One or two stronger decisions would have closed it.';
+    } else if (pct >= 65) {
+      proxText.textContent = 'Solid progress, but the winner built faster. Your pace needed acceleration in mid-game.';
+    } else {
+      proxText.textContent = 'Significant distance from your win condition. Early turns may have been spent recovering instead of building.';
+    }
+  }
+  if (turnsNeeded) turnsNeeded.textContent = 'EST. ' + turnsLeft + ' MORE TURN' + (turnsLeft > 1 ? 'S' : '') + ' NEEDED AT YOUR PACE';
 
   nav('s-victory-other');
 }
 
 function simulateCollapse() {
   heartCore = 0;
-  turnNumber = turnNumber > 1 ? turnNumber : 7;
+  turnNumber = 6 + Math.floor(Math.random() * 3); // 6-8
   cityName = cityName || 'Nova Ridge';
 
   // Degrade domains to tell a realistic cascade story
