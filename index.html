@@ -1183,37 +1183,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
           <div style="display:flex;flex-direction:column;gap:10px;">
 
             <!-- Stable -->
-            <div class="cs-state-tile" id="css-stable" onclick="event.stopPropagation();selectCityState('stable')" style="padding:14px 16px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;">
+            <div class="cs-state-tile" id="css-steady" onclick="event.stopPropagation();selectCityState('steady')" style="padding:14px 16px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;">
               <div style="display:flex;align-items:center;gap:14px;">
                 <div id="css-orb-stable" style="width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#6ee7b7,#10b981,#065f46);box-shadow:0 0 14px rgba(16,185,129,.7);flex-shrink:0;transition:all .3s;"></div>
                 <div style="flex:1;">
-                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">Stable</div>
+                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">Steady</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 85. Systems under control. A slow burn — pressure builds as the game progresses.</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);">85</div>
               </div>
             </div>
 
-            <!-- Strained -->
-            <div class="cs-state-tile" id="css-strained" onclick="event.stopPropagation();selectCityState('strained')" style="padding:14px 16px;border:1px solid var(--amber-dim);background:rgba(245,158,11,.05);cursor:pointer;transition:all .2s;">
+            <!-- Volatile -->
+            <div class="cs-state-tile" id="css-volatile" onclick="event.stopPropagation();selectCityState('volatile')" style="padding:14px 16px;border:1px solid var(--amber-dim);background:rgba(245,158,11,.05);cursor:pointer;transition:all .2s;">
               <div style="display:flex;align-items:center;gap:14px;">
                 <div id="css-orb-strained" style="width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#fcd34d,#d97706,#92400e);box-shadow:0 0 14px rgba(245,158,11,.8);flex-shrink:0;animation:hcPulse 1.8s ease-in-out infinite;"></div>
                 <div style="flex:1;">
-                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--amber);margin-bottom:2px;">Strained</div>
-                  <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 65. Two domains already degrading. The city needs help immediately. Recommended for most groups.</div>
+                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--amber);margin-bottom:2px;">Volatile</div>
+                  <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 65. Systems under pressure. Mistakes cost more. Recommended for most groups.</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:1px;margin-top:4px;">RECOMMENDED</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--amber);">65</div>
               </div>
             </div>
 
-            <!-- Critical -->
-            <div class="cs-state-tile" id="css-critical" onclick="event.stopPropagation();selectCityState('critical')" style="padding:14px 16px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.04);cursor:pointer;transition:all .2s;">
+            <!-- Crisis -->
+            <div class="cs-state-tile" id="css-crisis" onclick="event.stopPropagation();selectCityState('crisis')" style="padding:14px 16px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.04);cursor:pointer;transition:all .2s;">
               <div style="display:flex;align-items:center;gap:14px;">
                 <div id="css-orb-critical" style="width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#fca5a5,#ef4444,#7f1d1d);box-shadow:0 0 14px rgba(239,68,68,.9);flex-shrink:0;animation:hcPulse 0.9s ease-in-out infinite;"></div>
                 <div style="flex:1;">
-                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--red);margin-bottom:2px;">Critical</div>
-                  <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 40. The city is already failing. Every turn counts from the start. For experienced players only.</div>
+                  <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--red);margin-bottom:2px;">Crisis</div>
+                  <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 40. The city is breaking. Every turn counts from the start. For experienced players only.</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:1px;margin-top:4px;">EXPERIENCED PLAYERS</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--red);">40</div>
@@ -1968,7 +1968,7 @@ const domains={
       {name:'Procurement Redirect',effect:'Reroute a supply contract to a vendor with faster delivery, bypassing standard approval. Equipment arrives this turn instead of next.',gain:'Health +7, Equipment 1 turn early',city:'Off-contract procurement creates audit exposure — surfaces in Turn End if another player calls review'}
     ],
     sp:[{d:'Community & Trust',e:'Visible care investment increases perceived government legitimacy',dir:'pos'}]},
-  economy:{name:'Economy & Work',icon:'📊',color:'c',cv:'var(--cyan)',health:66,status:'MODERATE',
+  economy:{name:'Economy & Work',icon:'📊',color:'c',cv:'var(--cyan)',health:66,status:'PRESSURED',
     win:'Grow economy score to ≥ 80 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Businesses, labor markets, automation, AI-managed businesses, gig economy, and digital asset streams.',
     decisions:[{name:'Workforce Automation Transition',effect:'Support businesses automating mid-skill roles. Boosts productivity but displaces workers.',tags:[{l:'Economy +14',c:'p'},{l:'Jobs displaced',c:'m'},{l:'Education dependency',c:'w'}]},{name:'Gig Economy Protections',effect:'Establish minimum protections for platform and gig workers. Reduces income volatility, improves trust.',tags:[{l:'Economy +6',c:'p'},{l:'Trust +9',c:'p'},{l:'Business friction',c:'w'}]},{name:'Digital Asset Economy Zone',effect:'Establish a licensed digital asset and AI business zone. High energy cost creates tension with Energy domain.',tags:[{l:'Economy +16',c:'p'},{l:'Energy strain +8',c:'m'},{l:'Tax revenue +',c:'p'}]}],
@@ -1992,7 +1992,7 @@ const domains={
     sp:[{d:'Economy & Work',e:'Skilled labor shortages compound automation displacement',dir:'neg'},{d:'Energy & Environment',e:'Trained technicians accelerate microgrid deployment',dir:'pos'}]}
 };
 
-let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='strained',selectedMode='hybrid',myDomain=null;
+let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='volatile',selectedMode='hybrid',myDomain=null;
 let heartCore=65,turnNumber=1;
 let committedDomains = new Set();
 let usedDecisions = {}; // {domainKey: {decName: turnsLeft}} — cooldown, not permanent
@@ -3335,7 +3335,7 @@ function selectCityStartMode(mode) {
     if (mode === 'city') {
       // Weighted random — strained is most likely, stable is rare
       const roll = Math.random();
-      cityStart = roll < 0.15 ? 'stable' : roll < 0.65 ? 'strained' : 'critical';
+      cityStart = roll < 0.15 ? 'steady' : roll < 0.65 ? 'volatile' : 'crisis';
       // Animate the sealed orb
       const orb = document.getElementById('cs-sealed-orb');
       if (orb) {
@@ -3369,7 +3369,7 @@ function selectCityStartMode(mode) {
 function selectCityState(state) {
   cityStart = state;
   // Highlight selected tile
-  ['stable','strained','critical'].forEach(s => {
+  ['steady','volatile','crisis'].forEach(s => {
     const el = document.getElementById('css-' + s);
     if (!el) return;
     if (s === state) {
@@ -3400,7 +3400,7 @@ function launchGame() {
   if (cityHeader) cityHeader.textContent = cityName;
 
   if (cityStartMode === 'city') {
-    const stateNames = {stable:'STABLE — HC 85', strained:'STRAINED — HC 65', critical:'CRITICAL — HC 40'};
+    const stateNames = {steady:'STEADY — HC 85', volatile:'VOLATILE — HC 65', crisis:'CRISIS — HC 40'};
     showToast(cityName + ' starts ' + (stateNames[cityStart] || 'STRAINED'));
     setTimeout(() => startGame(), 1200);
   } else {
@@ -3414,7 +3414,7 @@ function startGame(){
 
   // Starting state configs — all domains start at same health as Heart Core
   const states={
-    stable:{
+    steady:{
       hcVal:85, hcColor:'var(--green)', hcSub:'City systems healthy. Maintain momentum.',
       pillClass:'pg', pillLabel:'✓ STABLE', alerts:0,
       domainHealth:{transport:85,housing:85,energy:85,health:85,economy:85,education:85},
@@ -3422,15 +3422,15 @@ function startGame(){
       domainColor:{transport:'g',housing:'g',energy:'g',health:'g',economy:'g',education:'g'},
       domainWarn:{transport:null,housing:null,energy:null,health:null,economy:null,education:null}
     },
-    strained:{
+    volatile:{
       hcVal:65, hcColor:'var(--amber)', hcSub:'Moderate pressure across all systems.',
       pillClass:'pa', pillLabel:'⚠ STRAINED', alerts:2,
       domainHealth:{transport:65,housing:65,energy:65,health:65,economy:65,education:65},
-      domainStatus:{transport:'MODERATE',housing:'MODERATE',energy:'MODERATE',health:'MODERATE',economy:'MODERATE',education:'MODERATE'},
+      domainStatus:{transport:'PRESSURED',housing:'PRESSURED',energy:'PRESSURED',health:'PRESSURED',economy:'PRESSURED',education:'PRESSURED'},
       domainColor:{transport:'c',housing:'c',energy:'c',health:'c',economy:'c',education:'c'},
       domainWarn:{transport:null,housing:null,energy:null,health:null,economy:null,education:null}
     },
-    critical:{
+    crisis:{
       hcVal:40, hcColor:'var(--red)', hcSub:'City under severe strain. Collapse risk elevated.',
       pillClass:'pr', pillLabel:'🔴 CRITICAL', alerts:4,
       domainHealth:{transport:40,housing:40,energy:40,health:40,economy:40,education:40},
@@ -3440,7 +3440,7 @@ function startGame(){
     }
   };
 
-  const cfg=states[cityStart]||states.strained;
+  const cfg=states[cityStart]||states.volatile;
   const regionCfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
 
   // Set heartCore from selected state
@@ -3452,8 +3452,8 @@ function startGame(){
   turnCascades = [];
 
   // Governance and trust scale with city starting state + regional modifier
-  governance = (cityStart === 'stable' ? 85 : cityStart === 'critical' ? 55 : 72) + regionCfg.govBase;
-  trust = (cityStart === 'stable' ? 80 : cityStart === 'critical' ? 40 : 64) + regionCfg.trustBase;
+  governance = (cityStart === 'steady' ? 85 : cityStart === 'crisis' ? 55 : 72) + regionCfg.govBase;
+  trust = (cityStart === 'steady' ? 80 : cityStart === 'crisis' ? 40 : 64) + regionCfg.trustBase;
   governance = Math.max(20, Math.min(100, governance));
   trust = Math.max(10, Math.min(100, trust));
 
@@ -3471,7 +3471,7 @@ function startGame(){
     if(domains[key]) domains[key].status = cfg.domainStatus[key];
     // Update status based on actual randomized health
     if (randomHealth >= 80) domains[key].status = 'STABLE';
-    else if (randomHealth >= 55) domains[key].status = 'MODERATE';
+    else if (randomHealth >= 55) domains[key].status = 'PRESSURED';
     else if (randomHealth >= 30) domains[key].status = 'STRAINED';
     else domains[key].status = 'CRITICAL';
   });
@@ -3500,8 +3500,8 @@ function startGame(){
   if(orbEl){
     const orbStyles={
       stable:  {bg:'radial-gradient(circle at 40% 35%,#6ee7b7,#10b981,#065f46)', shadow:'0 0 24px rgba(16,185,129,.7),0 0 48px rgba(16,185,129,.3)'},
-      strained:{bg:'radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e)',  shadow:'0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3)'},
-      critical:{bg:'radial-gradient(circle at 40% 35%,#fca5a5,#ef4444,#7f1d1d)',  shadow:'0 0 24px rgba(239,68,68,.8),0 0 48px rgba(239,68,68,.4)'}
+      volatile:{bg:'radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e)',  shadow:'0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3)'},
+      crisis:{bg:'radial-gradient(circle at 40% 35%,#fca5a5,#ef4444,#7f1d1d)',  shadow:'0 0 24px rgba(239,68,68,.8),0 0 48px rgba(239,68,68,.4)'}
     };
     const os=orbStyles[cityStart]||orbStyles.strained;
     orbEl.style.background=os.bg;
@@ -3535,7 +3535,7 @@ const domainPublic={
   housing:  {icon:'🏘',name:'Housing & Living',sub:'Shelter, density, smart homes',color:'a',status:'STRAINED',warn:'⚠ Overcrowding building'},
   energy:   {icon:'⚡',name:'Energy & Environment',sub:'Grid, renewables, V2G',color:'r',status:'CRITICAL',warn:'🔴 Cascade risk — act now'},
   health:   {icon:'🏥',name:'Health, Safety & Care',sub:'Emergency, telehealth',color:'g',status:'STABLE',warn:null},
-  economy:  {icon:'📊',name:'Economy & Work',sub:'Labor, automation, AI biz',color:'c',status:'MODERATE',warn:null},
+  economy:  {icon:'📊',name:'Economy & Work',sub:'Labor, automation, AI biz',color:'c',status:'PRESSURED',warn:null},
   education:{icon:'🎓',name:'Education & Skills',sub:'Reskilling, AI literacy',color:'a',status:'STRAINED',warn:'⚠ Skills mismatch emerging'}
 };
 
@@ -3892,7 +3892,7 @@ function openDomain(key){
     </div>` : '';
 
   // Tier context label
-  const tierLabels={thriving:'Expansion &amp; Influence Options',stable:'Optimization Decisions',moderate:'Investment Decisions',strained:'Recovery Decisions',critical:'Emergency Actions Only'};
+  const tierLabels={thriving:'Expansion &amp; Influence Options',stable:'Optimization Decisions',moderate:'Investment Decisions — Pressured',strained:'Recovery Decisions',critical:'Emergency Actions Only'};
   const tierColors={thriving:'var(--green)',stable:'var(--cyan)',moderate:'var(--amber)',strained:'var(--amber)',critical:'var(--red)'};
 
   // Store available decisions globally so confirmDecision can access them
@@ -4031,7 +4031,7 @@ function updateDomainStatus(key) {
   const d = domains[key];
   if (d.health >= 100) d.status = 'THRIVING';
   else if (d.health >= 80) d.status = 'STABLE';
-  else if (d.health >= 55) d.status = 'MODERATE';
+  else if (d.health >= 55) d.status = 'PRESSURED';
   else if (d.health >= 30) d.status = 'STRAINED';
   else d.status = 'CRITICAL';
 }
@@ -4379,32 +4379,39 @@ function renderDomainContext() {
 
 function renderDSB(){
   if(!myDomain) return;
-  const d=domains[myDomain];
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
   const hcCol=heartCore>=80?'var(--green)':heartCore>=55?'var(--amber)':'var(--red)';
-  const myCol=d.health>=80?'var(--green)':d.health>=55?'var(--amber)':'var(--red)';
-  const hcStatus=heartCore>=80?'STABLE':heartCore>=55?'MODERATE':heartCore>=30?'STRAINED':'CRITICAL';
-  const myStatus=d.health>=100?'THRIVING':d.health>=80?'STABLE':d.health>=55?'MODERATE':d.health>=30?'STRAINED':'CRITICAL';
-  const myWin=d.health>=100?'DOMAIN COMPLETE':'YOUR WIN OBJECTIVE';
-  const domLabel=d.name.length>20?d.name.split(' ').slice(0,2).join(' '):d.name;
-  const inner=`
+  const hcStatus=heartCore>=80?'STABLE':heartCore>=55?'PRESSURED':heartCore>=30?'STRAINED':'CRITICAL';
+
+  let inner=`
     <div class="dsb-half">
-      <div class="dsb-label city">❤ Heart Core — City Vitality</div>
+      <div class="dsb-label city">\u2764 Heart Core \u2014 City Vitality</div>
       <div class="dsb-row">
         <div class="dsb-val" style="color:${hcCol}">${heartCore}</div>
         <div class="dsb-bar"><div class="dsb-fill" style="width:${heartCore}%;background:${hcCol}"></div></div>
         <div style="font-family:var(--fm);font-size:8px;color:${hcCol}">/100</div>
       </div>
-      <div class="dsb-status" style="color:${hcCol}">${hcStatus} — SHARED OBJECTIVE</div>
-    </div>
-    <div class="dsb-half">
-      <div class="dsb-label mine">◆ ${domLabel} — Mine</div>
-      <div class="dsb-row">
-        <div class="dsb-val" style="color:${myCol}">${d.health}</div>
-        <div class="dsb-bar"><div class="dsb-fill" style="width:${d.health}%;background:${myCol}"></div></div>
-        <div style="font-family:var(--fm);font-size:8px;color:${myCol}">/100</div>
-      </div>
-      <div class="dsb-status" style="color:${myCol}">${myStatus} — ${myWin}</div>
+      <div class="dsb-status" style="color:${hcCol}">${hcStatus} \u2014 SHARED OBJECTIVE</div>
     </div>`;
+
+  myDoms.forEach(key => {
+    const d = domains[key];
+    if (!d) return;
+    const col = d.health>=80?'var(--green)':d.health>=55?'var(--amber)':'var(--red)';
+    const status = d.health>=100?'THRIVING':d.health>=80?'STABLE':d.health>=55?'PRESSURED':d.health>=30?'STRAINED':'CRITICAL';
+    const label = d.name.length>20?d.name.split(' ').slice(0,2).join(' '):d.name;
+    inner += `
+    <div class="dsb-half">
+      <div class="dsb-label mine">\u25C6 ${label} \u2014 Mine</div>
+      <div class="dsb-row">
+        <div class="dsb-val" style="color:${col}">${d.health}</div>
+        <div class="dsb-bar"><div class="dsb-fill" style="width:${d.health}%;background:${col}"></div></div>
+        <div style="font-family:var(--fm);font-size:8px;color:${col}">/100</div>
+      </div>
+      <div class="dsb-status" style="color:${col}">${status}${myDoms.length>1?' \u2014 WIN ANY ONE':' \u2014 YOUR WIN OBJECTIVE'}</div>
+    </div>`;
+  });
+
   ['dsb-so','dsb-sd','dsb-sc2','dsb-si','dsb-str','dsb-sgov','dsb-sev','dsb-ste'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.innerHTML=inner;
@@ -5223,7 +5230,7 @@ function showBriefing() {
 
   const regionCfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
   document.getElementById('briefing-city').textContent = cityName || 'The City';
-  document.getElementById('briefing-region').textContent = regionCfg.icon + ' ' + regionCfg.label.toUpperCase() + ' \u00B7 ' + (cityStart || 'strained').toUpperCase() + ' \u00B7 TURN 1 OF ~' + maxTurns;
+  document.getElementById('briefing-region').textContent = regionCfg.icon + ' ' + regionCfg.label.toUpperCase() + ' \u00B7 ' + (cityStart || 'volatile').toUpperCase() + ' \u00B7 TURN 1 OF ~' + maxTurns;
 
   const condEl = document.getElementById('briefing-conditions');
   if (condEl) {
@@ -5328,7 +5335,7 @@ function renderGovTrust() {
   const govLabel = document.getElementById('gov-value-label');
   const govEffect = document.getElementById('gov-effect-line');
   if (govBar) govBar.style.width = governance + '%';
-  const govStatus = governance >= 75 ? 'STABLE' : governance >= 55 ? 'MODERATE' : governance >= 35 ? 'STRAINED' : 'CRITICAL';
+  const govStatus = governance >= 75 ? 'STABLE' : governance >= 55 ? 'PRESSURED' : governance >= 35 ? 'STRAINED' : 'CRITICAL';
   if (govLabel) govLabel.textContent = governance + ' \u2014 ' + govStatus;
   if (govEffect) govEffect.textContent = 'Decisions land at ' + governance + '% strength \u00B7 Decaying ' + (-2) + '/turn \u00B7 TAP TO VIEW \u2192';
 
@@ -5337,7 +5344,7 @@ function renderGovTrust() {
   const trustLabel = document.getElementById('trust-value-label');
   const trustEffect = document.getElementById('trust-effect-line');
   if (trustBar) trustBar.style.width = trust + '%';
-  const trustStatus = trust >= 70 ? 'STABLE' : trust >= 45 ? 'MODERATE' : trust >= 25 ? 'STRAINED' : 'CRITICAL';
+  const trustStatus = trust >= 70 ? 'STABLE' : trust >= 45 ? 'PRESSURED' : trust >= 25 ? 'STRAINED' : 'CRITICAL';
   const volLabel = trust < 40 ? 'High volatility (\u00B130%)' : trust < 60 ? 'Moderate volatility (\u00B115%)' : 'Stable \u2014 no volatility';
   if (trustLabel) trustLabel.textContent = trust + ' \u2014 ' + trustStatus;
   if (trustEffect) trustEffect.textContent = volLabel + ' \u00B7 TAP TO VIEW \u2192';
