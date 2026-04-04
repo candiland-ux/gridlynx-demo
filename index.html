@@ -119,7 +119,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .hcp{margin:16px 20px;padding:18px;background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden;}
 .hcp::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(245,158,11,.06),transparent 70%);pointer-events:none;}
 .hcr{display:flex;align-items:center;gap:18px;}
-.hcorb{width:60px;height:60px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3);animation:hpa 2.2s ease-in-out infinite;cursor:pointer;}
+.hcorb{width:60px;height:60px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3);cursor:pointer;transition:box-shadow .15s,transform .12s;}
 @keyframes hpa{0%,100%{box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3)}50%{box-shadow:0 0 32px rgba(245,158,11,.9),0 0 64px rgba(245,158,11,.4)}}
 .hci{flex:1;}
 .hcl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;}
@@ -1262,6 +1262,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div class="hcbw">
         <div class="hcbl"><span>CRITICAL</span><span>STRAINED</span><span>STABLE</span><span>THRIVING</span></div>
         <div class="hcb"><div class="hcbf" id="hc-bar"></div></div>
+      </div>
+      <!-- Visual heartbeat indicator -->
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div id="hc-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:var(--amber);opacity:.6;transition:all .1s;"></div>
+          <div id="hc-pulse-dot2" style="width:6px;height:6px;border-radius:50%;background:var(--amber);opacity:.3;transition:all .1s;"></div>
+        </div>
+        <div id="hc-bpm-label" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;">-- BPM</div>
+        <div style="flex:1;height:20px;position:relative;overflow:hidden;">
+          <svg id="hc-ekg-mini" viewBox="0 0 200 20" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+            <polyline id="hc-ekg-line" fill="none" stroke="var(--amber)" stroke-width="1.2" stroke-linecap="round" opacity=".5" points="0,10"/>
+          </svg>
+        </div>
       </div>
     </div>
     <div class="sl" id="domains-label">CIVIC DOMAINS</div>
@@ -2906,6 +2919,7 @@ function startGame(){
   updateManageButton();
   nav('so');
   renderDSB();
+  startVisualHeartbeat();
 }
 
 const domainPublic={
@@ -3750,6 +3764,102 @@ function updateHeartbeatSpeed(newHcVal) {
   if (!soundEnabled) return;
   lastHcVal = newHcVal;
   // Interval will auto-adjust on next beat since beat() reads live hc-value
+}
+
+// ── VISUAL HEARTBEAT ────────────────────────────────────────────────
+let visualPulseRunning = false;
+let miniEkgX = 0;
+let miniEkgPoints = [];
+
+function startVisualHeartbeat() {
+  if (visualPulseRunning) return;
+  visualPulseRunning = true;
+  let ekgSpikeNow = false;
+
+  // ── BEAT LOOP: fires at exact heartbeat interval (matches sound) ──
+  function beat() {
+    if (!visualPulseRunning) return;
+    const hcvEl = document.getElementById('hc-value');
+    const hcVal = hcvEl ? parseInt(hcvEl.textContent) : 65;
+    const interval = getHeartbeatInterval(hcVal);
+    const bpm = Math.round(60000 / interval);
+    const col = hcVal >= 70 ? 'var(--green)' : hcVal >= 50 ? 'var(--amber)' : hcVal >= 30 ? 'var(--amber)' : 'var(--red)';
+
+    // BPM label
+    const bpmLabel = document.getElementById('hc-bpm-label');
+    if (bpmLabel) { bpmLabel.textContent = bpm + ' BPM'; bpmLabel.style.color = col; }
+
+    // Orb pulse — LUB
+    const orb = document.getElementById('hcorb');
+    if (orb) {
+      const intensity = hcVal >= 70 ? .7 : hcVal >= 50 ? .8 : hcVal >= 30 ? .9 : 1;
+      const spread = hcVal >= 70 ? 48 : hcVal >= 50 ? 56 : hcVal >= 30 ? 64 : 72;
+      orb.style.boxShadow = '0 0 32px rgba(245,158,11,' + intensity + '), 0 0 ' + spread + 'px rgba(245,158,11,' + (intensity * .5) + ')';
+      orb.style.transform = 'scale(1.08)';
+      // DUB — contract
+      setTimeout(() => { if (orb) { orb.style.transform = 'scale(1.03)'; } }, 160);
+      setTimeout(() => { if (orb) { orb.style.boxShadow = '0 0 20px rgba(245,158,11,.4), 0 0 40px rgba(245,158,11,.15)'; orb.style.transform = 'scale(1)'; } }, 320);
+    }
+
+    // Dot pulse — LUB then DUB
+    const dot1 = document.getElementById('hc-pulse-dot');
+    const dot2 = document.getElementById('hc-pulse-dot2');
+    if (dot1) { dot1.style.opacity = '1'; dot1.style.transform = 'scale(1.6)'; dot1.style.background = col;
+      setTimeout(() => { if(dot1){dot1.style.opacity = '.4'; dot1.style.transform = 'scale(1)';} }, 250); }
+    if (dot2) { setTimeout(() => { if(dot2){dot2.style.opacity = '.9'; dot2.style.transform = 'scale(1.4)'; dot2.style.background = col;}
+      setTimeout(() => { if(dot2){dot2.style.opacity = '.2'; dot2.style.transform = 'scale(1)';} }, 200); }, 160); }
+
+    // Trigger EKG spike
+    ekgSpikeNow = true;
+
+    // Schedule next beat at the real interval
+    setTimeout(beat, interval);
+  }
+
+  // ── EKG TRACE LOOP: draws continuously, spikes on beat ──
+  function drawTrace() {
+    if (!visualPulseRunning) return;
+    const hcvEl = document.getElementById('hc-value');
+    const hcVal = hcvEl ? parseInt(hcvEl.textContent) : 65;
+    const col = hcVal >= 70 ? 'var(--green)' : hcVal >= 50 ? 'var(--amber)' : hcVal >= 30 ? 'var(--amber)' : 'var(--red)';
+
+    const line = document.getElementById('hc-ekg-line');
+    if (line) {
+      miniEkgX += 1.2;
+      if (miniEkgX > 200) { miniEkgX = 0; miniEkgPoints = []; }
+
+      let y = 10; // flat baseline
+      if (ekgSpikeNow) {
+        // Draw the QRS complex spike over several frames
+        ekgSpikeNow = false;
+        // Queue spike points
+        const spikeFrames = [
+          {dx:1.2, y:10}, {dx:1.2, y:4}, {dx:1.2, y:2}, // P wave up
+          {dx:1.2, y:17}, {dx:1.2, y:18}, // QRS down
+          {dx:1.2, y:5}, {dx:1.2, y:8}, // QRS up
+          {dx:1.2, y:10} // return to baseline
+        ];
+        spikeFrames.forEach(f => {
+          miniEkgX += f.dx;
+          if (miniEkgX > 200) { miniEkgX = 0; miniEkgPoints = []; }
+          miniEkgPoints.push(Math.round(miniEkgX*10)/10 + ',' + Math.round(f.y*10)/10);
+        });
+      } else {
+        // Flat baseline with tiny noise
+        y = 10 + (Math.random() - 0.5) * 0.6;
+        miniEkgPoints.push(Math.round(miniEkgX*10)/10 + ',' + Math.round(y*10)/10);
+      }
+
+      if (miniEkgPoints.length > 100) miniEkgPoints.shift();
+      line.setAttribute('points', miniEkgPoints.join(' '));
+      line.setAttribute('stroke', col);
+    }
+
+    setTimeout(drawTrace, 50); // smooth 20fps trace
+  }
+
+  beat();
+  drawTrace();
 }
 
 // Hook into existing hc update function
