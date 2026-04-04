@@ -504,7 +504,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
     <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:rgba(245,158,11,.55);text-transform:uppercase;margin-bottom:8px;">A Game of Power &amp; Crisis</div>
     <div style="font-family:var(--fd);font-size:clamp(56px,16vw,82px);font-weight:700;letter-spacing:6px;color:#e2e8f0;line-height:.9;text-shadow:0 0 40px rgba(245,158,11,.4),0 0 80px rgba(245,158,11,.18);">GRID<span style="color:var(--amber)">LYNX</span></div>
-    <div style="font-family:var(--fb);font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:12px;font-weight:300;line-height:1.7;">Manage your domain. Suspect everyone.<br>Survive the city you're all building.</div>
+    <div style="font-family:var(--fb);font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:12px;font-weight:300;line-height:1.7;">Manage your domain. Suspect everyone.<br>Win before the city breaks.</div>
 
     <div style="width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:16px auto;opacity:.4;"></div>
 
@@ -1925,7 +1925,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 <script>
 const domains={
   transport:{name:'Transportation & Access',icon:'🚇',color:'g',cv:'var(--green)',health:84,status:'STABLE',
-    win:'Achieve city-wide mobility score ≥ 90 with at least one aerial corridor licensed and operational.',
+    win:'Reach mobility score ≥ 85 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Roads, transit networks, EV infrastructure, aerial corridors, drones, and tele-services that reduce travel demand.',
     decisions:[{name:'Expand EV Charging Network',effect:'Deploy 200 new EV charging stations across underserved districts. Supports V2G integration with Energy domain.',tags:[{l:'Transport +12',c:'p'},{l:'Energy synergy',c:'i'},{l:'Equity +6',c:'p'}]},{name:'Fast-Track eVTOL Corridors',effect:'Approve aerial mobility licensing for flying taxi routes. Accelerates economy but creates airspace governance friction.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}]},{name:'Drone Delivery Infrastructure',effect:'Build out drone delivery infrastructure to reduce freight congestion on surface roads.',tags:[{l:'Transport +8',c:'p'},{l:'Economy +5',c:'p'},{l:'Airspace rules needed',c:'w'}]},{name:'Maintain Current Systems',effect:'No new investment. System holds at current capacity.',tags:[{l:'Stable',c:'i'},{l:'No cost',c:'p'}]}],
     pass:'Delay transit decisions. Congestion compounds — access inequality increases.',
@@ -1936,7 +1936,7 @@ const domains={
     ],
     sp:[{d:'Economy & Work',e:'Access inequality reduces labor mobility',dir:'neg'},{d:'Housing & Living',e:'Commute burden on distant residents increases',dir:'neg'}]},
   housing:{name:'Housing & Living Systems',icon:'🏘',color:'a',cv:'var(--amber)',health:58,status:'STRAINED',
-    win:'Reach housing health ≥ 85 with zero active overcrowding alerts and at least one smart home energy program deployed.',
+    win:'Reach housing health ≥ 82 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Residential systems, affordable housing, smart home energy nodes, in-home care, and shelter-in-place survivability.',
     decisions:[{name:'Density Adjustment Program',effect:'Upzone targeted districts to increase housing capacity. Short-term displacement pressure, long-term supply relief.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}]},{name:'Affordable Housing Investment',effect:'Commit funds to below-market-rate units. Reduces overcrowding and improves equity perception.',tags:[{l:'Housing +9',c:'p'},{l:'Equity +11',c:'p'},{l:'Budget −14',c:'m'}]},{name:'Smart Home Energy Nodes',effect:'Subsidize V2H (vehicle-to-home) installations. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'},{l:'Expensive',c:'w'}]},{name:'Maintain Housing Stock',effect:'Prevent further deterioration. Holds current score.',tags:[{l:'Prevents strain',c:'i'}]}],
     pass:'Avoid housing decisions. Overcrowding increases — survivability in next crisis drops.',
@@ -1947,7 +1947,7 @@ const domains={
     ],
     sp:[{d:'Health, Safety & Care',e:'Overcrowded households increase disease spread risk',dir:'neg'},{d:'Energy & Environment',e:'V2H capacity reduces grid pressure when deployed',dir:'pos'}]},
   energy:{name:'Energy & Environment',icon:'⚡',color:'r',cv:'var(--red)',health:41,status:'CRITICAL',
-    win:'Stabilize the grid at ≥ 80 health with at least 2 neighborhood microgrids operational and no active cascade warnings.',
+    win:'Stabilize the grid at ≥ 80 health while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Power grid, renewables, V2G systems, microgrids, water treatment, stormwater, and climate resilience programs.',
     decisions:[{name:'Emergency Load Balancing',effect:'Stabilize the eastern microgrid through emergency load redistribution. Prevents cascade this turn — buys two rounds.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget −10',c:'m'}]},{name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar + battery storage in three priority districts. Long-term resilience investment.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}]},{name:'Temporary Power Purchase',effect:'Buy power from regional grid to cover shortfall. Fast, expensive, prevents immediate crisis.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget −18',c:'m'}]},{name:'Maintain Grid Integrity Only',effect:'Minimal intervention — patch known failure points without structural improvement.',tags:[{l:'Energy +4',c:'p'},{l:'Cascade risk remains',c:'m'}]}],
     pass:'Delay energy decisions. System volatility increases — cascade failure likely next turn.',
@@ -1958,7 +1958,7 @@ const domains={
     ],
     sp:[{d:'Housing & Living',e:'Power outages compromise smart homes and in-home care',dir:'neg'},{d:'Health, Safety & Care',e:'Hospital backup power strained — response time increases',dir:'neg'},{d:'Economy & Work',e:'Data center outages disrupt digital economy operations',dir:'neg'}]},
   health:{name:'Health, Safety & Care',icon:'🏥',color:'g',cv:'var(--green)',health:79,status:'STABLE',
-    win:'Sustain health score ≥ 85 with telehealth covering 60%+ of districts and no burnout alerts active.',
+    win:'Sustain health score ≥ 82 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Hospitals, emergency services, fire, police, public health, mental health, remote care, and caregiver workforce.',
     decisions:[{name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person hospital load. Shifts care from institutions to homes.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}]},{name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to high-stress districts following energy brownouts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}]},{name:'Maintain Emergency Readiness',effect:'Maintain current staffing and equipment. System holds.',tags:[{l:'Stable',c:'i'}]}],
     pass:'Delay care decisions. Burnout accelerates — response time degrades next crisis.',
@@ -1969,7 +1969,7 @@ const domains={
     ],
     sp:[{d:'Community & Trust',e:'Visible care investment increases perceived government legitimacy',dir:'pos'}]},
   economy:{name:'Economy & Work',icon:'📊',color:'c',cv:'var(--cyan)',health:66,status:'MODERATE',
-    win:'Grow economy score to ≥ 80 with a full workforce transition program active and no capital flight warnings.',
+    win:'Grow economy score to ≥ 80 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Businesses, labor markets, automation, AI-managed businesses, gig economy, and digital asset streams.',
     decisions:[{name:'Workforce Automation Transition',effect:'Support businesses automating mid-skill roles. Boosts productivity but displaces workers.',tags:[{l:'Economy +14',c:'p'},{l:'Jobs displaced',c:'m'},{l:'Education dependency',c:'w'}]},{name:'Gig Economy Protections',effect:'Establish minimum protections for platform and gig workers. Reduces income volatility, improves trust.',tags:[{l:'Economy +6',c:'p'},{l:'Trust +9',c:'p'},{l:'Business friction',c:'w'}]},{name:'Digital Asset Economy Zone',effect:'Establish a licensed digital asset and AI business zone. High energy cost creates tension with Energy domain.',tags:[{l:'Economy +16',c:'p'},{l:'Energy strain +8',c:'m'},{l:'Tax revenue +',c:'p'}]}],
     pass:'Avoid economic decisions. Income shocks compound — capital flight risk increases.',
@@ -1980,7 +1980,7 @@ const domains={
     ],
     sp:[{d:'Education & Skills',e:'Automation displacement requires parallel reskilling investment',dir:'neg'},{d:'Energy & Environment',e:'Digital asset zones increase grid load significantly',dir:'neg'}]},
   education:{name:'Education & Skills',icon:'🎓',color:'a',cv:'var(--amber)',health:61,status:'STRAINED',
-    win:'Achieve education score ≥ 80 with AI literacy program active citywide and reskilling centers operational in at least 3 districts.',
+    win:'Achieve education score ≥ 80 while Heart Core holds above 25. Cannot win before Turn 4.',
     desc:'Schools, universities, vocational training, AI literacy, workforce reskilling, and continuous learning infrastructure.',
     decisions:[{name:'AI & Digital Literacy Program',effect:'City-wide initiative to build AI literacy across all age groups.',tags:[{l:'Education +12',c:'p'},{l:'Economy prep',c:'i'},{l:'3-turn payoff',c:'w'}]},{name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling intensive programs for workers displaced by automation.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'},{l:'Budget −12',c:'m'}]},{name:'Energy & Climate Workforce',effect:'Train new cohort of microgrid technicians and climate resilience workers.',tags:[{l:'Education +8',c:'p'},{l:'Energy support +6',c:'p'}]}],
     pass:'Skip education investment. Skills mismatch deepens — long-term economic decline accelerates.',
@@ -2036,20 +2036,19 @@ function recalcMaxTurns() {
 }
 
 function checkWinConditions() {
-  // Check each domain the player controls against its win condition threshold
+  // No wins before turn 4 — early game is about establishing position
+  if (turnNumber < 4) return false;
   const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
   for (const key of myDoms) {
     const d = domains[key];
     if (!d) continue;
-    // Simplified win check: domain health >= win threshold
-    const winThresholds = { transport: 90, housing: 85, energy: 80, health: 85, economy: 80, education: 80 };
-    const threshold = winThresholds[key] || 85;
+    // Thresholds require meaningful progress from any starting state
+    const winThresholds = { transport: 85, housing: 82, energy: 80, health: 82, economy: 80, education: 80 };
+    const threshold = winThresholds[key] || 80;
     if (d.health >= threshold) {
-      // Check no active cascades (clean win requirement)
-      const domKeys = ['transport','housing','energy','health','economy','education'];
-      const anyCascade = domKeys.some(k => domains[k].health <= 20);
-      if (!anyCascade) {
-        simulateVictoryWinner(); // trigger victory screen
+      const cityAlive = heartCore > 25;
+      if (cityAlive) {
+        simulateVictoryWinner();
         return true;
       }
     }
