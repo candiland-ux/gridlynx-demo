@@ -3895,11 +3895,12 @@ function openDomain(key){
   const tierLabels={thriving:'Expansion &amp; Influence Options',stable:'Optimization Decisions',moderate:'Investment Decisions',strained:'Recovery Decisions',critical:'Emergency Actions Only'};
   const tierColors={thriving:'var(--green)',stable:'var(--cyan)',moderate:'var(--amber)',strained:'var(--amber)',critical:'var(--red)'};
 
+  // Store available decisions globally so confirmDecision can access them
+  window._availDecs = availDecs;
+
   const decs=availDecs.map((dec,i)=>{
-    // Store original tierDecs index for confirmDecision
-    const origIdx = tierDecs.indexOf(dec);
     const tags=dec.tags.map(t=>`<span class="dt dt-${t.c}">${t.l}</span>`).join('');
-    return `<div class="dcard" id="dec${i}" onclick="selDec2(${origIdx})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
+    return `<div class="dcard" id="dec${i}" onclick="selDec2(${i})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
   }).join('');
 
   // Show message if all decisions in this tier have been used
@@ -4048,10 +4049,8 @@ function confirmDecision(){
   if(selDec===null){showToast('Select a decision first');return;}
   const d=domains[curDomain];
   const tier=getTier(d.health);
-  const baseDecs=(tieredDecisions[curDomain]&&tieredDecisions[curDomain][tier])||d.decisions;
-  const extras = (extraDecisions[curDomain] && extraDecisions[curDomain][tier]) || [];
-  const contextual = getContextualDecisions(curDomain);
-  const tierDecs = [...baseDecs, ...extras, ...contextual];
+  // Use the same available decisions list that was shown to the player
+  const tierDecs = window._availDecs || d.decisions;
   const govMod = governance / 100;
 
   if(selDec==='pass'){
