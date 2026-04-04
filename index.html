@@ -1258,7 +1258,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="scroll">
     <div class="ovh">
-      <div class="ove" id="city-turn-label">City Dashboard — Turn 1 of 12</div>
+      <div class="ove" id="city-turn-label">City Dashboard — Turn 1</div>
       <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);margin-top:2px;" id="city-name-header"></div>
       <!-- Player domain context — shown when player controls 2+ domains -->
       <div id="domain-context-banner" style="display:none;margin:8px 0 4px;padding:10px 14px;background:rgba(245,158,11,.06);border-left:3px solid var(--amber);">
@@ -1282,6 +1282,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <button onclick="openRoster()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:9px 12px;cursor:pointer;transition:all .2s;">
           <span style="font-size:14px;">👥</span> PLAYER ROSTER
         </button>
+        <div onclick="nav('si')" style="display:flex;align-items:center;justify-content:center;gap:6px;background:var(--panel);border:1px solid rgba(245,158,11,.25);color:var(--amber);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:9px 12px;cursor:pointer;min-width:70px;">
+          <span style="font-size:12px;">🪙</span> <span id="inf-balance-display">50</span>
+        </div>
       </div>
     </div>
     <div class="hcp">
@@ -1292,7 +1295,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
           <div class="hcv" id="hc-value">73<span style="font-size:18px;color:var(--text-muted)">/100</span></div>
           <div class="hcs" id="hc-sub">Moderate pressure. Two domains degrading.</div>
         </div>
-        <div class="ti" id="hc-turn-indicator">TURN<span class="tn" id="hc-turn-num">1</span>of 12</div>
+        <div class="ti" id="hc-turn-indicator">TURN<span class="tn" id="hc-turn-num">1</span></div>
       </div>
       <div class="hcbw">
         <div class="hcbl"><span>CRITICAL</span><span>STRAINED</span><span>STABLE</span><span>THRIVING</span></div>
@@ -1318,7 +1321,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <div class="dg" id="domain-grid"></div>
     <div class="sl">SHARED GLOBAL LAYERS</div>
     <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px;">
-      <div style="background:var(--panel);border:1px solid rgba(139,92,246,.3);padding:14px;cursor:pointer;" onclick="nav('str')">
+      <div style="background:var(--panel);border:1px solid rgba(139,92,246,.3);padding:14px;cursor:pointer;" onclick="nav('sgov')">
         <div style="display:flex;align-items:center;gap:12px;">
           <div style="font-size:22px;">⚖️</div>
           <div style="flex:1;">
@@ -1486,6 +1489,34 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   <div class="ab">
     <button class="btn btn-s" onclick="nav('sa')">🔎 CALL AUDIT</button>
     <button class="btn btn-p" onclick="beginNextTurn()">BEGIN NEXT TURN →</button>
+  </div>
+</div>
+
+<!-- GOVERNANCE -->
+<div id="sgov" class="screen">
+  <div class="tb">
+    <button class="bk" onclick="nav('so')">← CITY</button>
+    <div class="tbm">GOVERNANCE</div>
+  <div class="dsb" id="dsb-sgov"></div>
+    <div></div>
+  </div>
+  <div class="scroll">
+    <div class="trb">
+      <div class="trg" style="background:conic-gradient(var(--purple) 0% 72%,var(--bg3) 72%);"><div class="trgv" id="gov-detail-value" style="color:var(--purple);">72</div></div>
+      <div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;">GOVERNANCE EFFECTIVENESS</div>
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);" id="gov-detail-label">Moderate Capacity</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;" id="gov-detail-desc">Institutional machinery functioning but under strain.</div>
+      </div>
+    </div>
+    <div class="sl" style="padding-top:0;">GOVERNANCE FACTORS</div>
+    <div id="gov-factors-live"></div>
+    <div style="padding:12px 20px;">
+      <div style="background:var(--panel);border:1px solid rgba(139,92,246,.2);padding:14px;">
+        <div style="font-family:var(--fm);font-size:8px;color:var(--purple);letter-spacing:2px;margin-bottom:8px;">HOW GOVERNANCE AFFECTS YOUR DECISIONS</div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.6;" id="gov-effect-detail">All decision deltas are multiplied by governance/100. At current level, a +18 decision lands as +13.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1951,6 +1982,80 @@ let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='str
 let heartCore=65,turnNumber=1;
 let committedDomains = new Set();
 let usedDecisions = {}; // {domainKey: Set of decision names already taken}
+let maxTurns = 12; // flexible — recalculated each turn
+
+function recalcMaxTurns() {
+  // Base 12, but flex based on game state
+  // Extend if city is healthy and no one near winning (slow game)
+  // Compress if city is collapsing (fast game)
+  let base = 12;
+  if (heartCore > 75 && turnNumber >= 10) base = Math.min(16, base + 2); // healthy city, extend
+  if (heartCore < 30) base = Math.min(base, turnNumber + 2); // collapsing, end soon
+  maxTurns = base;
+}
+
+function checkWinConditions() {
+  // Check each domain the player controls against its win condition threshold
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  for (const key of myDoms) {
+    const d = domains[key];
+    if (!d) continue;
+    // Simplified win check: domain health >= win threshold
+    const winThresholds = { transport: 90, housing: 85, energy: 80, health: 85, economy: 80, education: 80 };
+    const threshold = winThresholds[key] || 85;
+    if (d.health >= threshold) {
+      // Check no active cascades (clean win requirement)
+      const domKeys = ['transport','housing','energy','health','economy','education'];
+      const anyCascade = domKeys.some(k => domains[k].health <= 20);
+      if (!anyCascade) {
+        simulateVictoryWinner(); // trigger victory screen
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkStalemate() {
+  if (turnNumber >= maxTurns) {
+    // Game ends — score based on domain health, HC, and proximity to win
+    showStalemateScreen();
+    return true;
+  }
+  return false;
+}
+
+function showStalemateScreen() {
+  // Reuse the "other wins" screen but customize for stalemate
+  const vicoName = document.getElementById('vico-name');
+  const vicoAvatar = document.getElementById('vico-avatar');
+  const vicoDomain = document.getElementById('vico-domain');
+  const vicoResult = document.getElementById('vico-your-result');
+  const vicoHC = document.getElementById('vico-hc');
+
+  if (vicoName) vicoName.textContent = 'NO WINNER';
+  if (vicoName) vicoName.style.color = 'var(--amber)';
+  if (vicoAvatar) vicoAvatar.textContent = '⏱';
+  if (vicoDomain) vicoDomain.textContent = 'TURN LIMIT REACHED — GAME SCORED';
+  if (vicoHC) vicoHC.textContent = heartCore + '/100';
+
+  // Score summary
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  const avgHealth = myDoms.length > 0 ? Math.round(myDoms.reduce((sum, k) => sum + (domains[k]?.health || 0), 0) / myDoms.length) : 0;
+  if (vicoResult) vicoResult.innerHTML = 'Your domain health: <strong>' + avgHealth + '/100</strong><br>Heart Core: <strong>' + heartCore + '/100</strong><br>Turns played: <strong>' + turnNumber + '</strong><br><br>The city survived but no player achieved their domain objective. Score is based on final domain health and Heart Core preservation.';
+
+  // Populate proximity
+  const pctEl = document.getElementById('vico-pct');
+  const ring = document.getElementById('vico-ring');
+  const proxText = document.getElementById('vico-proximity-text');
+  const turnsNeeded = document.getElementById('vico-turns-needed');
+  if (pctEl) pctEl.textContent = avgHealth + '%';
+  if (ring) ring.style.background = 'conic-gradient(var(--amber) 0% ' + avgHealth + '%, var(--bg3) ' + avgHealth + '%)';
+  if (proxText) proxText.textContent = 'The city held together but no one closed their win condition. A longer game or bolder decisions might have changed the outcome.';
+  if (turnsNeeded) turnsNeeded.textContent = 'GAME SCORED ON SURVIVAL';
+
+  nav('s-victory-other');
+}
 let hcBeforeTurn = 65; // snapshot at turn start — display stays frozen until reveal
 
 function beginNextTurn(){
@@ -1964,6 +2069,7 @@ function beginNextTurn(){
   tickConditions();
 
   turnNumber++;
+  recalcMaxTurns();
   selDec=null;
   committedDomains = new Set();
   turnSpillovers = [];  // reset for new turn
@@ -1980,7 +2086,7 @@ function beginNextTurn(){
   const hcbar=document.getElementById('hc-bar');
   if(hcbar){const hcCol=heartCore>=80?'var(--green)':heartCore>=55?'var(--amber)':'var(--red)';hcbar.style.width=heartCore+'%';hcbar.style.background=hcCol;}
   const ctl=document.getElementById('city-turn-label');
-  if(ctl) ctl.textContent='City Dashboard — Turn ' + turnNumber + ' of 12';
+  if(ctl) ctl.textContent='City Dashboard — Turn ' + turnNumber + (maxTurns ? ' of ~' + maxTurns : '');
   const hcTurnNum = document.getElementById('hc-turn-num');
   if (hcTurnNum) hcTurnNum.textContent = turnNumber;
   const roundPill = document.getElementById('round-pill');
@@ -1997,7 +2103,19 @@ function beginNextTurn(){
   if (pendingShock && !shockDelivered && turnNumber >= pendingShock.deliverTurn) {
     shockDelivered = true;
     deliverShock(pendingShock);
-    return; // shock overlay handles navigation
+    return;
+  }
+
+  // Check win conditions and stalemate
+  if (checkWinConditions()) return;
+  if (checkStalemate()) return;
+
+  // Update turn label with flexible limit
+  const ctl2 = document.getElementById('city-turn-label');
+  if (ctl2) ctl2.textContent = 'City Dashboard — Turn ' + turnNumber + (maxTurns ? ' of ~' + maxTurns : '');
+  // Show final turn warning
+  if (turnNumber >= maxTurns - 1) {
+    showToast(turnNumber >= maxTurns ? '⏱ FINAL TURN — last chance to hit your objective' : '⏱ Approaching final turn');
   }
 
   nav('so');
@@ -2011,8 +2129,9 @@ function nav(id){
   if (target) target.classList.add('active');
   window.scrollTo(0,0);
   if(id==='so' && myDomain) renderDomainGrid();
-  if(id==='so') { renderConditionsBar(); refreshAlertPill(); renderGovTrust(); }
+  if(id==='so') { renderConditionsBar(); refreshAlertPill(); renderGovTrust(); const ib=document.getElementById('inf-balance-display'); if(ib) ib.textContent=infBal; }
   if(id==='str') renderGovTrust();
+  if(id==='sgov') renderGovTrust();
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
@@ -4091,7 +4210,7 @@ function renderDSB(){
       </div>
       <div class="dsb-status" style="color:${myCol}">${myStatus} — ${myWin}</div>
     </div>`;
-  ['dsb-so','dsb-sd','dsb-sc2','dsb-si','dsb-str','dsb-sev','dsb-ste'].forEach(id=>{
+  ['dsb-so','dsb-sd','dsb-sc2','dsb-si','dsb-str','dsb-sgov','dsb-sev','dsb-ste'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.innerHTML=inner;
   });
@@ -4991,6 +5110,7 @@ function dismissBriefing() {
 }
 
 function renderGovTrust() {
+  const col = v => v >= 70 ? 'var(--green)' : v >= 50 ? 'var(--cyan)' : v >= 35 ? 'var(--amber)' : 'var(--red)';
   // Dashboard gov card
   const govBar = document.getElementById('gov-bar-fill');
   const govLabel = document.getElementById('gov-value-label');
@@ -5025,7 +5145,6 @@ function renderGovTrust() {
     const equity = Math.min(100, Math.max(0, trust - 12 + Math.floor(Math.random() * 8)));
     const info = Math.min(100, Math.max(0, trust - 18 + Math.floor(Math.random() * 10)));
     const comply = Math.min(100, trust + 10 + Math.floor(Math.random() * 6));
-    const col = v => v >= 70 ? 'var(--green)' : v >= 50 ? 'var(--cyan)' : v >= 35 ? 'var(--amber)' : 'var(--red)';
     const factors = [
       { name: 'Social Cohesion', val: cohesion, desc: cohesion >= 60 ? 'Community networks active.' : 'Social bonds weakening.' },
       { name: 'Equity & Fairness', val: equity, desc: equity >= 50 ? 'Resource distribution perceived as adequate.' : 'Growing perception of unfair allocation.' },
@@ -5033,6 +5152,43 @@ function renderGovTrust() {
       { name: 'Compliance & Legitimacy', val: comply, desc: comply >= 65 ? 'Citizens following protocols.' : 'Increasing non-compliance with directives.' },
     ];
     tf.innerHTML = factors.map(f =>
+      '<div class="trf"><div class="tft"><div class="tfn">' + f.name + '</div><div class="tfv" style="color:' + col(f.val) + '">' + f.val + '</div></div><div class="tfb"><div class="tff" style="width:' + f.val + '%;background:' + col(f.val) + '"></div></div><div class="tfd">' + f.desc + '</div></div>'
+    ).join('');
+  }
+
+  // Governance detail screen
+  const gv = document.getElementById('gov-detail-value');
+  if (gv) gv.textContent = governance;
+  const gl = document.getElementById('gov-detail-label');
+  if (gl) gl.textContent = governance >= 75 ? 'Effective Governance' : governance >= 55 ? 'Moderate Capacity' : governance >= 35 ? 'Institutional Strain' : 'Governance Failure';
+  const gd = document.getElementById('gov-detail-desc');
+  if (gd) gd.textContent = governance >= 75 ? 'Institutions executing efficiently. Decisions land near full strength.' : governance >= 55 ? 'Institutional machinery functioning but under strain. Some policy friction.' : governance >= 35 ? 'Significant coordination failures. Decisions heavily degraded by bureaucratic friction.' : 'Institutional collapse. Decisions barely register. The city cannot execute.';
+
+  // Governance ring
+  const gvRing = gv ? gv.parentElement : null;
+  if (gvRing) gvRing.style.background = 'conic-gradient(var(--purple) 0% ' + governance + '%, var(--bg3) ' + governance + '%)';
+
+  // Governance effect description
+  const ge = document.getElementById('gov-effect-detail');
+  if (ge) {
+    const example = Math.round(18 * governance / 100);
+    ge.textContent = 'All decision deltas are multiplied by governance/100. At ' + governance + '%, a +18 decision lands as +' + example + '. Governance decays \u22122/turn from institutional entropy' + (activeConditions.some(c => c.effects.govPerTurn || c.effects.govDecay) ? ', plus additional drain from active global conditions.' : '.');
+  }
+
+  // Governance factors
+  const gf = document.getElementById('gov-factors-live');
+  if (gf) {
+    const capacity = Math.min(100, governance + Math.floor(Math.random() * 8) - 2);
+    const coordination = Math.min(100, Math.max(0, governance - 6 + Math.floor(Math.random() * 10)));
+    const resources = Math.min(100, Math.max(0, governance - 10 + Math.floor(Math.random() * 12)));
+    const transparency = Math.min(100, governance + 4 + Math.floor(Math.random() * 6));
+    const govFactors = [
+      { name: 'Institutional Capacity', val: capacity, desc: capacity >= 65 ? 'Agencies staffed and responsive.' : 'Staff shortages degrading execution.' },
+      { name: 'Cross-Sector Coordination', val: coordination, desc: coordination >= 55 ? 'Departments communicating effectively.' : 'Siloed operations. Left hand doesn\u2019t know what right is doing.' },
+      { name: 'Resource Allocation', val: resources, desc: resources >= 50 ? 'Budgets aligned with priorities.' : 'Funding mismatched to needs. Critical programs underfunded.' },
+      { name: 'Transparency & Accountability', val: transparency, desc: transparency >= 60 ? 'Decision processes visible to public.' : 'Opaque decision-making eroding legitimacy.' },
+    ];
+    gf.innerHTML = govFactors.map(f =>
       '<div class="trf"><div class="tft"><div class="tfn">' + f.name + '</div><div class="tfv" style="color:' + col(f.val) + '">' + f.val + '</div></div><div class="tfb"><div class="tff" style="width:' + f.val + '%;background:' + col(f.val) + '"></div></div><div class="tfd">' + f.desc + '</div></div>'
     ).join('');
   }
