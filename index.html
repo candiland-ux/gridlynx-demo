@@ -1693,6 +1693,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
+<!-- LEAVE GAME CONFIRMATION -->
+<div id="leave-confirm-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;">
+  <div style="background:var(--panel2);border:1px solid var(--border-bright);padding:24px;max-width:320px;width:90%;text-align:center;">
+    <div style="font-size:32px;margin-bottom:12px;">🚪</div>
+    <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;">Leave Game?</div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:6px;">AI will take control of your domain in <strong id="leave-ai-mode" style="color:var(--purple);">Neutral</strong> mode for the rest of the session. Other players will see that you left.</div>
+    <div style="font-size:11px;color:var(--red);margin-bottom:20px;">This cannot be undone.</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="dismissLeaveConfirm()" class="btn btn-s" style="flex:1;">STAY</button>
+      <button onclick="executeLeaveGame()" class="btn btn-r" style="flex:1;">LEAVE</button>
+    </div>
+  </div>
+</div>
+
 <!-- PLAYER ROSTER OVERLAY -->
 <div id="roster-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.8);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeRoster()">
   <div style="background:var(--panel2);width:100%;max-width:480px;max-height:85vh;border-top:1px solid var(--border-bright);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
@@ -3835,10 +3849,18 @@ function openRoster() {
   const domainNames = {energy:'Energy & Environment',transport:'Transportation & Access',housing:'Housing & Living',health:'Health, Safety & Care',economy:'Economy & Work',education:'Education & Skills'};
   const domainIcons = {energy:'⚡',transport:'🚇',housing:'🏘',health:'🏥',economy:'📊',education:'🎓'};
 
-  if (subtitle) subtitle.textContent = humanCount + ' PLAYERS' + (aiCount > 0 ? ' · ' + aiCount + ' AI' : '') + ' · ' + cityName;
+  // Determine your turn status
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  const myAllDone = myDoms.length > 0 && myDoms.every(k => committedDomains.has(k));
+
+  // Simulate other players' turn status (some done, some waiting)
+  const otherStatuses = simulatedPlayers.map(() => Math.random() > 0.4);
+
+  // Count submissions
+  let submitted = myAllDone ? 1 : 0;
+  let total = 1; // you
 
   // Build player cards
-  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
   let usedDomains = [...myDoms];
   const availDomains = domainKeys.filter(k => !usedDomains.includes(k));
 
@@ -3850,35 +3872,46 @@ function openRoster() {
     domains: myDoms.map(k => ({key:k, name:domainNames[k], icon:domainIcons[k]})),
     isYou: true,
     isHost: true,
-    vis: statsVisibility || 'public',
-    stats: {played:24,wins:14,winrate:'58%',hosted:9,bestSave:23,peakHC:97,favDomain:'Energy & Environment',favIcon:'⚡',favPlayed:11,favWins:7}
+    turnDone: myAllDone,
+    stats: {played:24,wins:14,winrate:'58%'}
   });
 
   // Other human players
   for (let i = 0; i < humanCount - 1 && i < simulatedPlayers.length; i++) {
     const p = simulatedPlayers[i];
+    const done = otherStatuses[i];
     const pDomains = [];
     for (let d = 0; d < cfg.each && availDomains.length > 0; d++) {
       const dk = availDomains.shift();
       usedDomains.push(dk);
       pDomains.push({key:dk, name:domainNames[dk], icon:domainIcons[dk]});
     }
+
+    // Demo: last other player shows as having left (if 3+ humans)
+    const hasLeft = (i === humanCount - 2) && humanCount >= 4;
+    if (!hasLeft && done) submitted++;
+    if (hasLeft) submitted++; // AI takeover always submits
+    total++;
+
     html += buildRosterCard({
       name: p.name, emoji: p.emoji, color: p.color,
       domains: pDomains, isYou: false, isHost: false,
-      vis: p.vis, stats: p.stats
+      turnDone: hasLeft ? true : done, stats: null,
+      leftGame: hasLeft, leftTurn: hasLeft ? Math.max(1, turnNumber - 2) : null
     });
   }
 
   // AI players
   if (aiCount > 0) {
+    submitted++; // AI always submits instantly
+    total++;
     const aiDomains = [];
     for (let d = 0; d < aiCount && availDomains.length > 0; d++) {
       const dk = availDomains.shift();
       aiDomains.push({key:dk, name:domainNames[dk], icon:domainIcons[dk]});
     }
     html += `<div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.25);padding:14px 16px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:40px;height:40px;border-radius:50%;background:var(--panel);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🤖</div>
         <div style="flex:1;">
           <div style="display:flex;align-items:center;gap:8px;">
@@ -3887,20 +3920,45 @@ function openRoster() {
           </div>
           <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:3px;">${aiCount} domain${aiCount>1?'s':''} controlled</div>
         </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        ${aiDomains.map(d => `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid rgba(139,92,246,.12);">
-          <span style="font-size:14px;">${d.icon}</span>
-          <span style="font-family:var(--fd);font-size:12px;font-weight:600;color:var(--text-dim);">${d.name}</span>
-        </div>`).join('')}
+        <div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);">✓ SUBMITTED</div>
       </div>
     </div>`;
+  }
+
+  // Update subtitle with turn status summary
+  const waiting = total - submitted;
+  if (subtitle) {
+    subtitle.innerHTML = humanCount + ' PLAYERS' + (aiCount > 0 ? ' · ' + aiCount + ' AI' : '') +
+      ' · TURN ' + turnNumber +
+      (waiting > 0
+        ? ' · <span style="color:var(--amber);">WAITING ON ' + waiting + '</span>'
+        : ' · <span style="color:var(--green);">ALL SUBMITTED</span>');
   }
 
   list.innerHTML = html;
 }
 
 function buildRosterCard(p) {
+  // Player who left — show AI takeover state
+  if (p.leftGame) {
+    return `<div style="background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.2);padding:14px 16px;margin-bottom:10px;opacity:.7;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--panel);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🤖</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text-muted);text-decoration:line-through;">${p.name}</div>
+            <span style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--purple);padding:2px 6px;border:1px solid rgba(139,92,246,.3);background:var(--purple-glow);">AI TAKEOVER</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px;">
+            ${p.domains.map(d => '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;">' + d.icon + '</span><span style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;">' + d.name + '</span></div>').join('')}
+          </div>
+          <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:6px;">Left on Turn ${p.leftTurn || turnNumber} · AI controlling as ${aiMode ? (aiMode.charAt(0).toUpperCase() + aiMode.slice(1)) : 'Neutral (default)'}</div>
+        </div>
+        <div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);">✓ SUBMITTED</div>
+      </div>
+    </div>`;
+  }
+
   const borderCol = p.isYou ? p.color : 'var(--border)';
   const bgCol = p.isYou ? 'rgba(245,158,11,.04)' : 'var(--panel)';
 
@@ -3927,6 +3985,20 @@ function buildRosterCard(p) {
       </div>`;
   }
 
+  // Leave game button — only on your card
+  let leaveHtml = '';
+  if (p.isYou) {
+    leaveHtml = `
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);text-align:center;">
+        <button onclick="confirmLeaveGame()" style="background:none;border:none;font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--text-muted);cursor:pointer;padding:6px 12px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'">LEAVE GAME</button>
+      </div>`;
+  }
+
+  // Turn status indicator
+  const turnStatusHtml = p.turnDone
+    ? '<div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);">✓ SUBMITTED</div>'
+    : '<div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--amber);animation:flk 1.5s infinite alternate;">⏳ DECIDING</div>';
+
   const badges = [];
   if (p.isYou) badges.push('<span style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--amber);padding:2px 6px;border:1px solid var(--amber-dim);background:var(--amber-glow);">YOU</span>');
   if (p.isHost) badges.push('<span style="font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--green);padding:2px 6px;border:1px solid rgba(16,185,129,.3);background:var(--green-glow);">HOST</span>');
@@ -3946,14 +4018,36 @@ function buildRosterCard(p) {
           </div>`).join('')}
         </div>
       </div>
+      ${turnStatusHtml}
     </div>
     ${statsHtml}
+    ${leaveHtml}
   </div>`;
 }
 
 function closeRoster() {
   const overlay = document.getElementById('roster-overlay');
   if (overlay) overlay.style.display = 'none';
+}
+
+function confirmLeaveGame() {
+  const confirm = document.getElementById('leave-confirm-overlay');
+  if (confirm) confirm.style.display = 'flex';
+  const modeEl = document.getElementById('leave-ai-mode');
+  if (modeEl) modeEl.textContent = aiMode ? (aiMode.charAt(0).toUpperCase() + aiMode.slice(1)) : 'Neutral';
+}
+
+function dismissLeaveConfirm() {
+  const confirm = document.getElementById('leave-confirm-overlay');
+  if (confirm) confirm.style.display = 'none';
+}
+
+function executeLeaveGame() {
+  const confirm = document.getElementById('leave-confirm-overlay');
+  if (confirm) confirm.style.display = 'none';
+  closeRoster();
+  showToast('You left the game. AI has taken over your domain.');
+  setTimeout(() => nav('ss'), 1500);
 }
 
 // ── SPLASH ANIMATIONS ────────────────────────────────────────────────
