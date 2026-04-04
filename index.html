@@ -4480,6 +4480,7 @@ function startHeartbeat() {
     const current = hcvEl ? parseInt(hcvEl.textContent) : lastHcVal;
     lastHcVal = current;
     playHeartbeat(current);
+    triggerVisualBeat(current); // sync visual to audio
     const interval = getHeartbeatInterval(current);
     heartbeatInterval = setTimeout(beat, interval);
   }
@@ -4503,7 +4504,7 @@ function toggleSound() {
   }
   if (soundEnabled) {
     startHeartbeat();
-    showToast('Heartbeat sound on — uses Web Audio API');
+    showToast('Heartbeat sound on \u2014 uses Web Audio API');
   } else {
     stopHeartbeat();
     showToast('Heartbeat sound off');
@@ -4514,60 +4515,68 @@ function toggleSound() {
 function updateHeartbeatSpeed(newHcVal) {
   if (!soundEnabled) return;
   lastHcVal = newHcVal;
-  // Interval will auto-adjust on next beat since beat() reads live hc-value
 }
 
-// ── VISUAL HEARTBEAT ────────────────────────────────────────────────
+// ── UNIFIED VISUAL HEARTBEAT ────────────────────────────────────────
 let visualPulseRunning = false;
 let miniEkgX = 0;
 let miniEkgPoints = [];
+let ekgSpikeNow = false;
+
+// Shared visual pulse — called by audio beat (when sound on) or visual beat (when sound off)
+function triggerVisualBeat(hcVal) {
+  const interval = getHeartbeatInterval(hcVal);
+  const bpm = Math.round(60000 / interval);
+  const col = hcVal >= 70 ? 'var(--green)' : hcVal >= 50 ? 'var(--amber)' : hcVal >= 30 ? 'var(--amber)' : 'var(--red)';
+
+  // BPM label
+  const bpmLabel = document.getElementById('hc-bpm-label');
+  if (bpmLabel) { bpmLabel.textContent = bpm + ' BPM'; bpmLabel.style.color = col; }
+
+  // Orb pulse — LUB
+  const orb = document.getElementById('hcorb');
+  if (orb) {
+    const intensity = hcVal >= 70 ? .7 : hcVal >= 50 ? .8 : hcVal >= 30 ? .9 : 1;
+    const spread = hcVal >= 70 ? 48 : hcVal >= 50 ? 56 : hcVal >= 30 ? 64 : 72;
+    orb.style.boxShadow = '0 0 32px rgba(245,158,11,' + intensity + '), 0 0 ' + spread + 'px rgba(245,158,11,' + (intensity * .5) + ')';
+    orb.style.transform = 'scale(1.08)';
+    setTimeout(() => { if (orb) { orb.style.transform = 'scale(1.03)'; } }, 160);
+    setTimeout(() => { if (orb) { orb.style.boxShadow = '0 0 20px rgba(245,158,11,.4), 0 0 40px rgba(245,158,11,.15)'; orb.style.transform = 'scale(1)'; } }, 320);
+  }
+
+  // Dot pulse — LUB then DUB
+  const dot1 = document.getElementById('hc-pulse-dot');
+  const dot2 = document.getElementById('hc-pulse-dot2');
+  if (dot1) { dot1.style.opacity = '1'; dot1.style.transform = 'scale(1.6)'; dot1.style.background = col;
+    setTimeout(() => { if(dot1){dot1.style.opacity = '.4'; dot1.style.transform = 'scale(1)';} }, 250); }
+  if (dot2) { setTimeout(() => { if(dot2){dot2.style.opacity = '.9'; dot2.style.transform = 'scale(1.4)'; dot2.style.background = col;}
+    setTimeout(() => { if(dot2){dot2.style.opacity = '.2'; dot2.style.transform = 'scale(1)';} }, 200); }, 160); }
+
+  // Trigger EKG spike
+  ekgSpikeNow = true;
+}
 
 function startVisualHeartbeat() {
   if (visualPulseRunning) return;
   visualPulseRunning = true;
-  let ekgSpikeNow = false;
 
-  // ── BEAT LOOP: fires at exact heartbeat interval (matches sound) ──
-  function beat() {
+  // Visual-only beat loop — runs ONLY when sound is off
+  function visualOnlyBeat() {
     if (!visualPulseRunning) return;
-    const hcvEl = document.getElementById('hc-value');
-    const hcVal = hcvEl ? parseInt(hcvEl.textContent) : 65;
-    const interval = getHeartbeatInterval(hcVal);
-    const bpm = Math.round(60000 / interval);
-    const col = hcVal >= 70 ? 'var(--green)' : hcVal >= 50 ? 'var(--amber)' : hcVal >= 30 ? 'var(--amber)' : 'var(--red)';
-
-    // BPM label
-    const bpmLabel = document.getElementById('hc-bpm-label');
-    if (bpmLabel) { bpmLabel.textContent = bpm + ' BPM'; bpmLabel.style.color = col; }
-
-    // Orb pulse — LUB
-    const orb = document.getElementById('hcorb');
-    if (orb) {
-      const intensity = hcVal >= 70 ? .7 : hcVal >= 50 ? .8 : hcVal >= 30 ? .9 : 1;
-      const spread = hcVal >= 70 ? 48 : hcVal >= 50 ? 56 : hcVal >= 30 ? 64 : 72;
-      orb.style.boxShadow = '0 0 32px rgba(245,158,11,' + intensity + '), 0 0 ' + spread + 'px rgba(245,158,11,' + (intensity * .5) + ')';
-      orb.style.transform = 'scale(1.08)';
-      // DUB — contract
-      setTimeout(() => { if (orb) { orb.style.transform = 'scale(1.03)'; } }, 160);
-      setTimeout(() => { if (orb) { orb.style.boxShadow = '0 0 20px rgba(245,158,11,.4), 0 0 40px rgba(245,158,11,.15)'; orb.style.transform = 'scale(1)'; } }, 320);
+    if (!soundEnabled) {
+      // When sound is off, visual drives itself
+      const hcvEl = document.getElementById('hc-value');
+      const hcVal = hcvEl ? parseInt(hcvEl.textContent) : 65;
+      triggerVisualBeat(hcVal);
+      const interval = getHeartbeatInterval(hcVal);
+      setTimeout(visualOnlyBeat, interval);
+    } else {
+      // When sound is on, audio beat drives visual — just check back later
+      setTimeout(visualOnlyBeat, 500);
     }
-
-    // Dot pulse — LUB then DUB
-    const dot1 = document.getElementById('hc-pulse-dot');
-    const dot2 = document.getElementById('hc-pulse-dot2');
-    if (dot1) { dot1.style.opacity = '1'; dot1.style.transform = 'scale(1.6)'; dot1.style.background = col;
-      setTimeout(() => { if(dot1){dot1.style.opacity = '.4'; dot1.style.transform = 'scale(1)';} }, 250); }
-    if (dot2) { setTimeout(() => { if(dot2){dot2.style.opacity = '.9'; dot2.style.transform = 'scale(1.4)'; dot2.style.background = col;}
-      setTimeout(() => { if(dot2){dot2.style.opacity = '.2'; dot2.style.transform = 'scale(1)';} }, 200); }, 160); }
-
-    // Trigger EKG spike
-    ekgSpikeNow = true;
-
-    // Schedule next beat at the real interval
-    setTimeout(beat, interval);
   }
 
-  // ── EKG TRACE LOOP: draws continuously, spikes on beat ──
+  // EKG trace loop — draws continuously, spikes on beat from either source
   function drawTrace() {
     if (!visualPulseRunning) return;
     const hcvEl = document.getElementById('hc-value');
@@ -4609,7 +4618,7 @@ function startVisualHeartbeat() {
     setTimeout(drawTrace, 50); // smooth 20fps trace
   }
 
-  beat();
+  visualOnlyBeat();
   drawTrace();
 }
 
