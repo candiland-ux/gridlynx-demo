@@ -504,7 +504,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
     <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:rgba(245,158,11,.55);text-transform:uppercase;margin-bottom:8px;">A Game of Power &amp; Crisis</div>
     <div style="font-family:var(--fd);font-size:clamp(56px,16vw,82px);font-weight:700;letter-spacing:6px;color:#e2e8f0;line-height:.9;text-shadow:0 0 40px rgba(245,158,11,.4),0 0 80px rgba(245,158,11,.18);">GRID<span style="color:var(--amber)">LYNX</span></div>
-    <div style="font-family:var(--fb);font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.32);text-transform:uppercase;margin-top:10px;font-weight:200;font-style:italic;">Will the system survive your moves?</div>
+    <div style="font-family:var(--fb);font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:12px;font-weight:300;line-height:1.7;">Manage your domain. Suspect everyone.<br>Survive the city you're all building.</div>
 
     <div style="width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:16px auto;opacity:.4;"></div>
 
@@ -1324,11 +1324,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
           <div style="flex:1;">
             <div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">Government &amp; Coordination</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Shared layer — affects how well all player decisions execute</div>
-            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div style="height:100%;width:72%;background:var(--purple);"></div></div>
-            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>GOVERNANCE EFFECTIVENESS</span><span style="color:var(--purple)">72 — STRAINED</span></div>
+            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div id="gov-bar-fill" style="height:100%;width:72%;background:var(--purple);transition:width .3s;"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>GOVERNANCE EFFECTIVENESS</span><span id="gov-value-label" style="color:var(--purple)">72</span></div>
           </div>
         </div>
-        <div style="font-family:var(--fm);font-size:9px;color:var(--purple);margin-top:10px;letter-spacing:1px;">Active effect: Policy impact at 88% strength · Spillovers +12% · TAP TO VIEW →</div>
+        <div id="gov-effect-line" style="font-family:var(--fm);font-size:9px;color:var(--purple);margin-top:10px;letter-spacing:1px;"></div>
       </div>
       <div style="background:var(--panel);border:1px solid rgba(6,182,212,.3);padding:14px;cursor:pointer;" onclick="nav('str')">
         <div style="display:flex;align-items:center;gap:12px;">
@@ -1336,11 +1336,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
           <div style="flex:1;">
             <div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">Community &amp; Trust</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Shared layer — affects how well city accepts and follows decisions</div>
-            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div style="height:100%;width:64%;background:var(--cyan);"></div></div>
-            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>TRUST &amp; COHESION</span><span style="color:var(--cyan)">64 — TENSE BUT FUNCTIONAL</span></div>
+            <div style="height:3px;background:var(--bg3);margin-top:8px;"><div id="trust-bar-fill" style="height:100%;width:64%;background:var(--cyan);transition:width .3s;"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>TRUST &amp; COHESION</span><span id="trust-value-label" style="color:var(--cyan)">64</span></div>
           </div>
         </div>
-        <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);margin-top:10px;letter-spacing:1px;">Active effect: Volatility at baseline · Compliance mixed · TAP TO VIEW →</div>
+        <div id="trust-effect-line" style="font-family:var(--fm);font-size:9px;color:var(--cyan);margin-top:10px;letter-spacing:1px;"></div>
       </div>
     </div>
   </div>
@@ -1479,16 +1479,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <!-- Dynamic: cascade warnings -->
     <div id="te-cascades"></div>
     <div class="sl">WHAT EACH PLAYER DID</div>
-    <div style="padding:0 20px 20px;">
-      <div class="teci" id="your-domain-row"><div class="teco">⚡</div><div><div class="tecd" style="color:var(--amber)">Energy &amp; Environment — You</div><div class="teca">Emergency Load Balancing committed</div></div><div class="tecd2 pos">+18</div></div>
-      <div class="teci"><div class="teco">🚇</div><div><div class="tecd">Transportation &amp; Access</div><div class="teca">Expand EV Charging Network</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
-      <div class="teci"><div class="teco">🏘</div><div><div class="tecd">Housing &amp; Living</div><div class="teca">Passed — no action taken</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
-      <div class="teci"><div class="teco">🏥</div><div><div class="tecd">Health, Safety &amp; Care</div><div class="teca">Crisis Mental Health Response</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
-      <div class="teci"><div class="teco">📊</div><div><div class="tecd">Economy &amp; Work</div><div class="teca">Gig Economy Protections enacted</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
-      <div class="teci"><div class="teco">⚖️</div><div><div class="tecd">Government &amp; Coordination</div><div class="teca">Airspace Governance Framework started</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
-      <div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim)">
-        <div class="teco">🕵️</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">❓</div>
-      </div>
+    <div style="padding:0 20px 20px;" id="te-player-rows">
+      <div class="teci" id="your-domain-row"><div class="teco">⚡</div><div><div class="tecd" style="color:var(--amber)">Your Domain</div><div class="teca">Awaiting decision</div></div><div class="tecd2" style="color:var(--text-muted)">—</div></div>
     </div>
   </div>
   <div class="ab">
@@ -1507,24 +1499,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
   <div class="scroll">
     <div class="trb">
-      <div class="trg"><div class="trgv">64</div></div>
+      <div class="trg"><div class="trgv" id="trust-value-display">64</div></div>
       <div>
         <div style="font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:2px;">COMMUNITY &amp; TRUST</div>
-        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Fragile Stability</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;">Cohesion holding, but equity tensions mounting. Surveillance raised mistrust.</div>
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);" id="trust-label">Fragile Stability</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;" id="trust-desc">Cohesion holding, but equity tensions mounting.</div>
       </div>
     </div>
     <div class="sl" style="padding-top:0;">TRUST FACTORS</div>
-    <div class="trf"><div class="tft"><div class="tfn">Social Cohesion</div><div class="tfv" style="color:var(--cyan)">71</div></div><div class="tfb"><div class="tff" style="width:71%;background:var(--cyan)"></div></div><div class="tfd">Mutual aid networks active. No major protests this round.</div></div>
-    <div class="trf"><div class="tft"><div class="tfn">Equity &amp; Fairness Perception</div><div class="tfv" style="color:var(--amber)">52</div></div><div class="tfb"><div class="tff" style="width:52%;background:var(--amber)"></div></div><div class="tfd">Zoning decisions perceived as benefiting wealthy districts.</div></div>
-    <div class="trf"><div class="tft"><div class="tfn">Information Integrity</div><div class="tfv" style="color:var(--red)">44</div></div><div class="tfb"><div class="tff" style="width:44%;background:var(--red)"></div></div><div class="tfd">Misinformation spreading about energy failures. Gov comms lagging.</div></div>
-    <div class="trf"><div class="tft"><div class="tfn">Compliance &amp; Rule Legitimacy</div><div class="tfv" style="color:var(--green)">78</div></div><div class="tfb"><div class="tff" style="width:78%;background:var(--green)"></div></div><div class="tfd">Citizens broadly following emergency protocols.</div></div>
-    <div class="spp2">
-      <div style="font-family:var(--fm);font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:8px;">SURVEILLANCE SPILLOVER (Gov → Trust)</div>
-      <div class="spi"><div class="spd">Crime visibility</div><div class="spe pos">↑ +12</div></div>
-      <div class="spi"><div class="spd">Perceived freedom</div><div class="spe neg">↓ −8</div></div>
-      <div class="spi"><div class="spd">Equity concerns</div><div class="spe neg">↓ −11</div></div>
-    </div>
+    <div id="trust-factors-live"></div>
   </div>
 </div>
 
@@ -1744,6 +1727,35 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <button class="btn btn-s" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">↩ MENU</button>
       <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">NEW GAME</button>
     </div>
+  </div>
+</div>
+
+<!-- STRATEGIC CHANNEL OVERLAY -->
+<div id="strategic-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStrategic()">
+  <div style="background:var(--panel2);width:100%;max-width:480px;max-height:85vh;border-top:2px solid var(--amber);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
+    <div style="padding:16px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--amber);">🕵️ Private Channel</div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">OFF-THE-RECORD ACTIONS</div>
+        </div>
+        <button onclick="closeStrategic()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:6px 12px;cursor:pointer;">CLOSE</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;line-height:1.5;">These actions benefit your domain but carry hidden costs to the city. If you act here, all players see "Private Action Detected" on the turn-end screen. They can audit you.</div>
+    </div>
+    <div id="strategic-list" style="flex:1;overflow-y:auto;padding:12px 20px;"></div>
+  </div>
+</div>
+
+<!-- CITY BRIEFING OVERLAY -->
+<div id="briefing-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);align-items:center;justify-content:center;">
+  <div style="max-width:380px;width:90%;text-align:center;padding:28px 24px;">
+    <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:var(--amber);margin-bottom:8px;">CITY BRIEFING</div>
+    <div id="briefing-city" style="font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px;"></div>
+    <div id="briefing-region" style="font-family:var(--fm);font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;"></div>
+    <div id="briefing-conditions" style="text-align:left;margin-bottom:16px;"></div>
+    <div id="briefing-shock-hint" style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:20px;"></div>
+    <button onclick="dismissBriefing()" class="btn btn-p" style="padding:12px 32px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);">BEGIN TURN 1 →</button>
   </div>
 </div>
 
@@ -2015,7 +2027,8 @@ function nav(id){
   if (target) target.classList.add('active');
   window.scrollTo(0,0);
   if(id==='so' && myDomain) renderDomainGrid();
-  if(id==='so') { renderConditionsBar(); refreshAlertPill(); }
+  if(id==='so') { renderConditionsBar(); refreshAlertPill(); renderGovTrust(); }
+  if(id==='str') renderGovTrust();
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
@@ -3015,15 +3028,19 @@ function selectCityRegion(region) {
     const el = document.getElementById('cr-' + r);
     if (el) el.classList.toggle('sel', r === region);
   });
-  // Update city name pool to match region
+  // Suggest a regional name — auto-fill if empty, or replace if current name is from another region's pool
   const cfg = REGIONAL_CONFIG[region];
   if (cfg) {
     const nameInput = document.getElementById('city-name-input');
-    if (nameInput && !nameInput.value.trim()) {
-      const name = cfg.names[Math.floor(Math.random() * cfg.names.length)];
-      nameInput.value = name;
-      cityName = name;
-      updateCityNamePreview();
+    if (nameInput) {
+      const current = nameInput.value.trim();
+      const isFromOtherPool = current && Object.values(REGIONAL_CONFIG).some(r => r !== cfg && r.names.includes(current));
+      if (!current || isFromOtherPool) {
+        const name = cfg.names[Math.floor(Math.random() * cfg.names.length)];
+        nameInput.value = name;
+        cityName = name;
+        updateCityNamePreview();
+      }
     }
   }
 }
@@ -3233,6 +3250,8 @@ function startGame(){
   renderDSB();
   renderConditionsBar();
   startVisualHeartbeat();
+  // Show city briefing before player starts
+  showBriefing();
 }
 
 const domainPublic={
@@ -3759,10 +3778,12 @@ function revealHeartCore() {
     spillEl.innerHTML = '';
   }
 
+  // Render dynamic player action rows
+  renderTurnEndRows();
+
   // Render cascade warnings
   const cascEl = document.getElementById('te-cascades');
   if (cascEl) {
-    // Check which domains are in cascade risk
     const domKeys = ['transport','housing','energy','health','economy','education'];
     const domainIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
     const atRisk = domKeys.filter(k => domains[k].health <= CASCADE_RISK && domains[k].health > CASCADE_ACTIVE);
@@ -4767,6 +4788,193 @@ function openAlerts() {
 function closeAlerts() {
   const overlay = document.getElementById('alerts-overlay');
   if (overlay) overlay.style.display = 'none';
+}
+
+function showBriefing() {
+  const overlay = document.getElementById('briefing-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+
+  const regionCfg = REGIONAL_CONFIG[cityRegion] || REGIONAL_CONFIG.urban;
+  document.getElementById('briefing-city').textContent = cityName || 'The City';
+  document.getElementById('briefing-region').textContent = regionCfg.icon + ' ' + regionCfg.label.toUpperCase() + ' \u00B7 ' + (cityStart || 'strained').toUpperCase() + ' \u00B7 TURN 1 OF 12';
+
+  const condEl = document.getElementById('briefing-conditions');
+  if (condEl) {
+    if (activeConditions.length > 0) {
+      condEl.innerHTML = '<div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;">EXTERNAL PRESSURES FACING THE CITY</div>' +
+        activeConditions.map(c => {
+          const catCol = c.cat === 'ECONOMIC' ? 'var(--amber)' : c.cat === 'GEOPOLITICAL' ? 'var(--red)' : c.cat === 'SOCIAL' ? 'var(--cyan)' : c.cat === 'TECHNOLOGY' ? 'var(--purple)' : c.cat === 'ENVIRONMENTAL' ? 'var(--green)' : 'var(--amber)';
+          return '<div style="background:var(--panel);border:1px solid var(--border);padding:12px;margin-bottom:8px;text-align:left;">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+              '<span style="font-size:18px;">' + c.icon + '</span>' +
+              '<span style="font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);">' + c.name + '</span>' +
+              '<span style="font-family:var(--fm);font-size:7px;color:' + catCol + ';padding:1px 5px;border:1px solid ' + catCol + ';">' + c.cat + '</span>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--text-dim);line-height:1.5;">' + c.desc + '</div>' +
+            '<div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:6px;">Duration: ' + c.turnsLeft + ' turns</div>' +
+          '</div>';
+        }).join('');
+    } else {
+      condEl.innerHTML = '<div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);padding:12px;text-align:left;"><div style="font-size:12px;color:var(--text-dim);">No major external pressures detected. The city\u2019s challenges are internal.</div></div>';
+    }
+  }
+
+  const hintEl = document.getElementById('briefing-shock-hint');
+  if (hintEl) hintEl.textContent = pendingShock ? 'Intelligence suggests an external crisis may strike during this session.' : 'No external crisis warnings at this time.';
+}
+
+function openStrategic() {
+  const overlay = document.getElementById('strategic-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  const list = document.getElementById('strategic-list');
+  if (!list || !curDomain) return;
+
+  const d = domains[curDomain];
+  if (!d || !d.strategic || d.strategic.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);">No private actions available for this domain.</div>';
+    return;
+  }
+
+  list.innerHTML = d.strategic.map((s, i) => {
+    return '<div style="background:var(--panel);border:1px solid rgba(245,158,11,.2);padding:14px;margin-bottom:10px;cursor:pointer;" onclick="selectStrategic(' + i + ')">' +
+      '<div style="font-family:var(--fd);font-size:15px;font-weight:700;color:var(--amber);margin-bottom:4px;">' + s.name + '</div>' +
+      '<div style="font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:8px;">' + s.effect + '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<span style="font-family:var(--fm);font-size:9px;color:var(--green);padding:2px 8px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);">GAIN: ' + s.gain + '</span>' +
+        '<span style="font-family:var(--fm);font-size:9px;color:var(--red);padding:2px 8px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.08);">CITY COST: ' + s.city + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('') +
+  '<div style="text-align:center;padding:10px;font-size:10px;color:var(--text-muted);">Choosing any action triggers "Private Action Detected" on the turn-end screen.</div>';
+}
+
+function selectStrategic(idx) {
+  const d = domains[curDomain];
+  if (!d || !d.strategic || !d.strategic[idx]) return;
+  const s = d.strategic[idx];
+  closeStrategic();
+  // Apply a moderate positive delta to own domain
+  const delta = 10 + Math.floor(Math.random() * 6);
+  d.health = Math.min(100, d.health + delta);
+  updateDomainStatus(curDomain);
+  // Hidden city cost — reduce a random other domain
+  const others = ['transport','housing','energy','health','economy','education'].filter(k => k !== curDomain);
+  const victim = others[Math.floor(Math.random() * others.length)];
+  const cost = 6 + Math.floor(Math.random() * 8);
+  if (domains[victim]) { domains[victim].health = Math.max(0, domains[victim].health - cost); updateDomainStatus(victim); }
+  trust = Math.max(0, trust - 4);
+  // Mark as committed
+  committedDomains.add(curDomain);
+  const yourRow = document.getElementById('your-domain-row');
+  if (yourRow) yourRow.innerHTML = '<div class="teco">' + d.icon + '</div><div><div class="tecd" style="color:var(--amber)">' + d.name + ' — You (PRIVATE)</div><div class="teca">' + s.name + '</div></div><div class="tecd2" style="color:var(--amber);">🕵️</div>';
+  showToast('Private action committed. Other players will see the flag.');
+  renderDomainGrid();
+  renderDSB();
+  setTimeout(() => { renderDomainContext(); updateManageButton(); nav('so'); }, 1200);
+}
+
+function closeStrategic() {
+  const overlay = document.getElementById('strategic-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function dismissBriefing() {
+  const overlay = document.getElementById('briefing-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function renderGovTrust() {
+  // Dashboard gov card
+  const govBar = document.getElementById('gov-bar-fill');
+  const govLabel = document.getElementById('gov-value-label');
+  const govEffect = document.getElementById('gov-effect-line');
+  if (govBar) govBar.style.width = governance + '%';
+  const govStatus = governance >= 75 ? 'EFFECTIVE' : governance >= 55 ? 'MODERATE' : governance >= 35 ? 'STRAINED' : 'FAILING';
+  if (govLabel) govLabel.textContent = governance + ' \u2014 ' + govStatus;
+  if (govEffect) govEffect.textContent = 'Decisions land at ' + governance + '% strength \u00B7 Decaying ' + (-2) + '/turn \u00B7 TAP TO VIEW \u2192';
+
+  // Dashboard trust card
+  const trustBar = document.getElementById('trust-bar-fill');
+  const trustLabel = document.getElementById('trust-value-label');
+  const trustEffect = document.getElementById('trust-effect-line');
+  if (trustBar) trustBar.style.width = trust + '%';
+  const trustStatus = trust >= 70 ? 'STABLE' : trust >= 45 ? 'TENSE' : trust >= 25 ? 'FRACTURED' : 'COLLAPSED';
+  const volLabel = trust < 40 ? 'High volatility (\u00B130%)' : trust < 60 ? 'Moderate volatility (\u00B115%)' : 'Stable \u2014 no volatility';
+  if (trustLabel) trustLabel.textContent = trust + ' \u2014 ' + trustStatus;
+  if (trustEffect) trustEffect.textContent = volLabel + ' \u00B7 TAP TO VIEW \u2192';
+
+  // Trust detail screen
+  const tvd = document.getElementById('trust-value-display');
+  if (tvd) tvd.textContent = trust;
+  const tl = document.getElementById('trust-label');
+  if (tl) tl.textContent = trust >= 70 ? 'Cohesive & Responsive' : trust >= 45 ? 'Fragile Stability' : trust >= 25 ? 'Fracturing' : 'Social Collapse';
+  const td = document.getElementById('trust-desc');
+  if (td) td.textContent = trust >= 70 ? 'Community bonds strong. Decisions accepted. Spillovers predictable.' : trust >= 45 ? 'Cohesion holding but equity tensions mounting. Moderate outcome variance.' : trust >= 25 ? 'Institutions losing legitimacy. Spillover outcomes increasingly unpredictable.' : 'Social fabric torn. Decisions meet resistance. Outcomes volatile.';
+
+  // Trust factors — generated from live game state
+  const tf = document.getElementById('trust-factors-live');
+  if (tf) {
+    const cohesion = Math.min(100, trust + Math.floor(Math.random() * 10) - 3);
+    const equity = Math.min(100, Math.max(0, trust - 12 + Math.floor(Math.random() * 8)));
+    const info = Math.min(100, Math.max(0, trust - 18 + Math.floor(Math.random() * 10)));
+    const comply = Math.min(100, trust + 10 + Math.floor(Math.random() * 6));
+    const col = v => v >= 70 ? 'var(--green)' : v >= 50 ? 'var(--cyan)' : v >= 35 ? 'var(--amber)' : 'var(--red)';
+    const factors = [
+      { name: 'Social Cohesion', val: cohesion, desc: cohesion >= 60 ? 'Community networks active.' : 'Social bonds weakening.' },
+      { name: 'Equity & Fairness', val: equity, desc: equity >= 50 ? 'Resource distribution perceived as adequate.' : 'Growing perception of unfair allocation.' },
+      { name: 'Information Integrity', val: info, desc: info >= 45 ? 'Government communications credible.' : 'Misinformation eroding confidence.' },
+      { name: 'Compliance & Legitimacy', val: comply, desc: comply >= 65 ? 'Citizens following protocols.' : 'Increasing non-compliance with directives.' },
+    ];
+    tf.innerHTML = factors.map(f =>
+      '<div class="trf"><div class="tft"><div class="tfn">' + f.name + '</div><div class="tfv" style="color:' + col(f.val) + '">' + f.val + '</div></div><div class="tfb"><div class="tff" style="width:' + f.val + '%;background:' + col(f.val) + '"></div></div><div class="tfd">' + f.desc + '</div></div>'
+    ).join('');
+  }
+}
+
+function renderTurnEndRows() {
+  const container = document.getElementById('te-player-rows');
+  if (!container) return;
+
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const domIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
+  const domNames = {transport:'Transportation & Access',housing:'Housing & Living',energy:'Energy & Environment',health:'Health, Safety & Care',economy:'Economy & Work',education:'Education & Skills'};
+
+  // Sample decision names per domain for simulated players
+  const sampleActions = {
+    transport:['Expand EV Charging Network','Aerial Corridor Licensing','Transit Frequency Boost','Road Repair Program','Smart Traffic Signals'],
+    housing:['Affordable Housing Fund','Smart Home Energy Nodes','Community Land Trust','Density Adjustment Program','Emergency Shelter Expansion'],
+    energy:['Deploy Second Microgrid','V2G Fleet Integration','Emergency Load Balancing','Carbon Credit Program','Demand Reduction Order'],
+    health:['Expand Telehealth','Crisis Mental Health Response','Emergency Health Mobilization','Mutual Aid Health Network','Workforce Burnout Prevention'],
+    economy:['Workforce Automation Transition','Small Business Fund','Digital Asset Zone','Gig Economy Protections','Supply Chain Resilience'],
+    education:['AI & Digital Literacy Program','Rapid Reskilling Centers','Vocational Track Expansion','City Learning Network','Youth Apprenticeship Pipeline']
+  };
+
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  let html = '';
+
+  // Your domain row(s) — preserved from confirmDecision
+  const existingYourRow = document.getElementById('your-domain-row');
+  if (existingYourRow) html += existingYourRow.outerHTML;
+
+  // Other domains — simulated actions
+  domKeys.forEach(key => {
+    if (myDoms.includes(key)) return; // skip your domains
+    const actions = sampleActions[key] || ['Standard Operations'];
+    const passed = Math.random() < 0.15;
+    const action = passed ? 'Passed \u2014 no action taken' : actions[Math.floor(Math.random() * actions.length)];
+    const delta = passed ? '\u2014' : ('+' + (4 + Math.floor(Math.random() * 14)));
+    const deltaClass = passed ? '' : 'pos';
+    html += '<div class="teci"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd">' + domNames[key] + '</div><div class="teca">' + action + '</div></div><div class="tecd2' + (deltaClass ? ' ' + deltaClass : '') + '" style="color:' + (passed ? 'var(--text-muted)' : 'var(--green)') + ';">' + delta + '</div></div>';
+  });
+
+  // Private action detected — 25% chance each turn
+  if (Math.random() < 0.25) {
+    html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">🕵️</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">❓</div></div>';
+  }
+
+  container.innerHTML = html;
 }
 
 function deliverShock(shock) {
