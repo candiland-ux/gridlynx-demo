@@ -3569,10 +3569,12 @@ function populateCollapseScreen() {
     const domKeys = ['transport','housing','energy','health','economy','education'];
     finalEl.innerHTML = domKeys.map(key => {
       const d = domains[key];
-      const col = d.health >= 55 ? 'var(--amber)' : 'var(--red)';
-      return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,.1);">
-        <span style="font-size:11px;color:var(--text-dim);">${d.icon} ${d.name}</span>
-        <span style="font-family:var(--fm);font-size:10px;color:${col};">${d.health}/100</span>
+      const h = d.health;
+      const col = h <= 0 ? 'var(--red)' : h < 20 ? 'var(--red)' : h < 40 ? 'var(--amber)' : 'var(--amber)';
+      const label = h <= 0 ? 'COLLAPSED' : h + '/100';
+      return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(239,68,68,.1);">
+        <span style="font-size:11px;color:${h <= 0 ? 'var(--red)' : 'var(--text-dim)'};">${d.icon} ${d.name}</span>
+        <span style="font-family:var(--fm);font-size:10px;color:${col};${h <= 0 ? 'letter-spacing:2px;' : ''}">${label}</span>
       </div>`;
     }).join('');
   }
@@ -3687,6 +3689,23 @@ function simulateVictoryOther() {
 
 function simulateCollapse() {
   heartCore = 0;
+  turnNumber = turnNumber > 1 ? turnNumber : 7;
+  cityName = cityName || 'Nova Ridge';
+
+  // Degrade domains to tell a realistic cascade story
+  const collapseHealth = {
+    transport: 18, housing: 12, energy: 0, health: 15, economy: 22, education: 28
+  };
+  const collapseStatus = {
+    transport:'CRITICAL', housing:'CRITICAL', energy:'COLLAPSED', health:'CRITICAL', economy:'CRITICAL', education:'CRITICAL'
+  };
+  Object.keys(collapseHealth).forEach(key => {
+    if (domains[key]) {
+      domains[key].health = collapseHealth[key];
+      domains[key].status = collapseStatus[key];
+    }
+  });
+
   populateCollapseScreen();
   nav('scol');
 }
