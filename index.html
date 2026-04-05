@@ -1750,6 +1750,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
   </div>
 </div>
 
+<!-- SESSION SUMMARY -->
+<div id="s-session-end" class="screen" style="flex-direction:column;background:#050508;">
+  <div class="scroll" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;text-align:center;">
+    <div style="font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--amber);margin-bottom:12px;" id="sess-label">SESSION COMPLETE</div>
+    <div style="font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px;" id="sess-city-name">Nova Ridge</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:30px;" id="sess-subtitle">You stepped away on Turn 4</div>
+
+    <!-- Heart Core final -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <div id="sess-orb" style="width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#fcd34d,#d97706,#92400e);box-shadow:0 0 18px rgba(245,158,11,.6);flex-shrink:0;"></div>
+      <div style="text-align:left;">
+        <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:2px;">HEART CORE AT EXIT</div>
+        <div style="font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);" id="sess-hc">52</div>
+      </div>
+    </div>
+
+    <!-- Your domains -->
+    <div style="width:100%;max-width:340px;margin-bottom:24px;text-align:left;">
+      <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;">YOUR DOMAIN PERFORMANCE</div>
+      <div id="sess-domains"></div>
+    </div>
+
+    <!-- Session stats -->
+    <div style="width:100%;max-width:340px;margin-bottom:24px;display:flex;gap:8px;">
+      <div style="flex:1;background:var(--panel);border:1px solid var(--border);padding:12px;text-align:center;">
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);" id="sess-turns">4</div>
+        <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:4px;">TURNS PLAYED</div>
+      </div>
+      <div style="flex:1;background:var(--panel);border:1px solid var(--border);padding:12px;text-align:center;">
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);" id="sess-decisions">3</div>
+        <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:4px;">DECISIONS MADE</div>
+      </div>
+      <div style="flex:1;background:var(--panel);border:1px solid var(--border);padding:12px;text-align:center;">
+        <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);" id="sess-region">Urban</div>
+        <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:4px;">REGION</div>
+      </div>
+    </div>
+
+    <!-- City state at exit -->
+    <div style="width:100%;max-width:340px;margin-bottom:24px;text-align:left;">
+      <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">CITY STATE AT EXIT</div>
+      <div id="sess-all-domains"></div>
+    </div>
+
+    <!-- Conditions active -->
+    <div style="width:100%;max-width:340px;margin-bottom:30px;text-align:left;" id="sess-conditions-wrap">
+      <div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">ACTIVE CONDITIONS</div>
+      <div id="sess-conditions"></div>
+    </div>
+
+    <button class="btn btn-p" onclick="nav('ss')" style="clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);padding:14px 40px;">NEW GAME</button>
+  </div>
+</div>
+
 <!-- STRATEGIC CHANNEL OVERLAY -->
 <div id="strategic-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStrategic()">
   <div style="background:var(--panel2);width:100%;max-width:480px;max-height:85vh;border-top:2px solid var(--amber);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
@@ -1927,7 +1981,7 @@ const domains={
   transport:{name:'Transportation & Access',icon:'🚇',color:'g',cv:'var(--green)',health:84,status:'STABLE',
     win:'Reach mobility score ≥ 85 while Heart Core holds above 25.',
     desc:'Roads, transit networks, EV infrastructure, aerial corridors, drones, and tele-services that reduce travel demand.',
-    decisions:[{name:'Expand EV Charging Network',effect:'Deploy 200 new EV charging stations across underserved districts. Supports V2G integration with Energy domain.',tags:[{l:'Transport +12',c:'p'},{l:'Energy synergy',c:'i'},{l:'Equity +6',c:'p'}]},{name:'Fast-Track eVTOL Corridors',effect:'Approve aerial mobility licensing for flying taxi routes. Accelerates economy but creates airspace governance friction.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}]},{name:'Drone Delivery Infrastructure',effect:'Build out drone delivery infrastructure to reduce freight congestion on surface roads.',tags:[{l:'Transport +8',c:'p'},{l:'Economy +5',c:'p'},{l:'Airspace rules needed',c:'w'}]},{name:'Maintain Current Systems',effect:'No new investment. System holds at current capacity.',tags:[{l:'Stable',c:'i'},{l:'No cost',c:'p'}]}],
+    decisions:[{name:'Expand EV Charging Network',effect:'Expand EV charging infrastructure in underserved areas. Supports vehicle-to-grid integration with Energy.',tags:[{l:'Transport +12',c:'p'},{l:'Energy synergy',c:'i'},{l:'Equity +6',c:'p'}]},{name:'Fast-Track Flying Taxi Routes',effect:'Approve aerial mobility licensing for new air routes. Accelerates economy but creates governance friction.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}]},{name:'Drone Delivery Infrastructure',effect:'Build out drone delivery infrastructure to reduce freight congestion.',tags:[{l:'Transport +8',c:'p'},{l:'Economy +5',c:'p'},{l:'Airspace rules needed',c:'w'}]},{name:'Maintain Current Systems',effect:'No new investment. System holds at current capacity.',tags:[{l:'Stable',c:'i'},{l:'No cost',c:'p'}]}],
     pass:'Delay transit decisions. Congestion compounds — access inequality increases.',
     strategic:[
       {name:'Sole-Source Contract Award',effect:'Accelerate EV charging buildout by directing contract to a preferred vendor without competitive bidding. Deployment timeline cuts by 40%.',gain:'Transport +10, Timeline −2 turns',city:'City maintenance budget absorbs 6pts of hidden strain'},
@@ -1938,18 +1992,18 @@ const domains={
   housing:{name:'Housing & Living Systems',icon:'🏘',color:'a',cv:'var(--amber)',health:58,status:'PRESSURED',
     win:'Reach housing health ≥ 82 while Heart Core holds above 25.',
     desc:'Residential systems, affordable housing, smart home energy nodes, in-home care, and shelter-in-place survivability.',
-    decisions:[{name:'Density Adjustment Program',effect:'Upzone targeted districts to increase housing capacity. Short-term displacement pressure, long-term supply relief.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}]},{name:'Affordable Housing Investment',effect:'Commit funds to below-market-rate units. Reduces overcrowding and improves equity perception.',tags:[{l:'Housing +9',c:'p'},{l:'Equity +11',c:'p'},{l:'Budget −14',c:'m'}]},{name:'Smart Home Energy Nodes',effect:'Subsidize V2H (vehicle-to-home) installations. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'},{l:'Expensive',c:'w'}]},{name:'Maintain Housing Stock',effect:'Prevent further deterioration. Holds current score.',tags:[{l:'Prevents strain',c:'i'}]}],
+    decisions:[{name:'Density Adjustment Program',effect:'Change building rules in target areas to increase housing capacity. Short-term displacement pressure, long-term supply relief.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}]},{name:'Affordable Housing Investment',effect:'Commit funds to below-market-rate units. Reduces overcrowding and improves equity perception.',tags:[{l:'Housing +9',c:'p'},{l:'Equity +11',c:'p'},{l:'Budget −14',c:'m'}]},{name:'Smart Home Energy Nodes',effect:'Subsidize vehicle-to-home installations. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'},{l:'Expensive',c:'w'}]},{name:'Maintain Housing Stock',effect:'Prevent further deterioration. Holds current score.',tags:[{l:'Prevents strain',c:'i'}]}],
     pass:'Avoid housing decisions. Overcrowding increases — survivability in next crisis drops.',
     strategic:[
       {name:'Zoning Variance — Fast Track',effect:'Approve a high-density development project outside normal public review. Units come online two turns early.',gain:'Housing +14, Developer influence +10',city:'Community consultation skipped — Trust −8 if surfaced; displaced residents increase healthcare load'},
       {name:'Building Code Flexibility',effect:'Waive select fire and air quality standards for one development to accelerate permitting. Looks like deregulation, not a shortcut.',gain:'Housing +9, Budget savings +8',city:'Shelter-in-place survivability rating drops — surfaces as Health domain vulnerability in crisis events'},
       {name:'Inspection Deferral',effect:'Defer mandatory inspections on three buildings until next quarter. Frees up staffing capacity to accelerate other projects.',gain:'+8 influence tokens, Unblocks 2 stalled permits',city:'Hidden structural risk accumulates — 20% chance of triggering crisis event next turn'}
     ],
-    sp:[{d:'Health, Safety & Care',e:'Overcrowded households increase disease spread risk',dir:'neg'},{d:'Energy & Environment',e:'V2H capacity reduces grid pressure when deployed',dir:'pos'}]},
+    sp:[{d:'Health, Safety & Care',e:'Overcrowded households increase disease spread risk',dir:'neg'},{d:'Energy & Environment',e:'Home battery systems reduce grid pressure when deployed',dir:'pos'}]},
   energy:{name:'Energy & Environment',icon:'⚡',color:'r',cv:'var(--red)',health:41,status:'STRAINED',
     win:'Stabilize the grid at ≥ 80 health while Heart Core holds above 25.',
     desc:'Power grid, renewables, V2G systems, microgrids, water treatment, stormwater, and climate resilience programs.',
-    decisions:[{name:'Emergency Load Balancing',effect:'Stabilize the eastern microgrid through emergency load redistribution. Prevents cascade this turn — buys two rounds.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget −10',c:'m'}]},{name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar + battery storage in three priority districts. Long-term resilience investment.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}]},{name:'Temporary Power Purchase',effect:'Buy power from regional grid to cover shortfall. Fast, expensive, prevents immediate crisis.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget −18',c:'m'}]},{name:'Maintain Grid Integrity Only',effect:'Minimal intervention — patch known failure points without structural improvement.',tags:[{l:'Energy +4',c:'p'},{l:'Cascade risk remains',c:'m'}]}],
+    decisions:[{name:'Emergency Load Balancing',effect:'Emergency redistribution across the grid to prevent cascade. Buys time but doesn’t fix the underlying weakness.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget −10',c:'m'}]},{name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar and battery storage in priority areas. Long-term resilience investment.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}]},{name:'Temporary Power Purchase',effect:'Buy power from regional grid to cover shortfall. Fast, expensive, prevents immediate crisis.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget −18',c:'m'}]},{name:'Maintain Grid Integrity Only',effect:'Minimal intervention — patch known failure points without structural improvement.',tags:[{l:'Energy +4',c:'p'},{l:'Cascade risk remains',c:'m'}]}],
     pass:'Delay energy decisions. System volatility increases — cascade failure likely next turn.',
     strategic:[
       {name:'Environmental Monitoring Pause',effect:'Temporarily suspend automated air and water quality reporting to free up grid capacity for priority load. Presented as routine maintenance.',gain:'Energy +12, Grid headroom recovered',city:'Environmental backlash risk if surfaced — Community Trust −10; Health domain loses early warning data'},
@@ -1960,7 +2014,7 @@ const domains={
   health:{name:'Health, Safety & Care',icon:'🏥',color:'g',cv:'var(--green)',health:79,status:'STABLE',
     win:'Sustain health score ≥ 82 while Heart Core holds above 25.',
     desc:'Hospitals, emergency services, fire, police, public health, mental health, remote care, and caregiver workforce.',
-    decisions:[{name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person hospital load. Shifts care from institutions to homes.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}]},{name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to high-stress districts following energy brownouts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}]},{name:'Maintain Emergency Readiness',effect:'Maintain current staffing and equipment. System holds.',tags:[{l:'Stable',c:'i'}]}],
+    decisions:[{name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person facility load. Shifts care closer to where people live.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}]},{name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to areas experiencing the most pressure.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}]},{name:'Maintain Emergency Readiness',effect:'Maintain current staffing and equipment. System holds.',tags:[{l:'Stable',c:'i'}]}],
     pass:'Delay care decisions. Burnout accelerates — response time degrades next crisis.',
     strategic:[
       {name:'Triage Prioritization Adjustment',effect:'Quietly reprioritize emergency response protocols to favor districts with higher property values. Response times improve in your metrics while coverage gaps widen elsewhere.',gain:'Health score +10, Response metric improves',city:'Care access inequality increases — equity factor in Trust drops 8pts if surfaced'},
@@ -2204,9 +2258,6 @@ function beginNextTurn(){
   }
 
   nav('so');
-  // Heartbeat starts muted — user activates with sound toggle
-  soundEnabled = false;
-  stopHeartbeat();
 }
 function nav(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -2557,6 +2608,18 @@ function getConditionDeltaMod(domainKey) {
   return mod; // can be negative (penalty) or positive (bonus)
 }
 
+// Get specific condition details affecting a domain
+function getConditionDetails(domainKey) {
+  const modKey = domainKey + 'DeltaMod';
+  const affecting = [];
+  activeConditions.forEach(c => {
+    if (c.effects[modKey]) {
+      affecting.push({ name: c.name, icon: c.icon, mod: c.effects[modKey], turnsLeft: c.turnsLeft });
+    }
+  });
+  return affecting;
+}
+
 function tickConditions() {
   activeConditions.forEach(c => c.turnsLeft--);
   const expiring = activeConditions.filter(c => c.turnsLeft <= 0);
@@ -2598,7 +2661,7 @@ const EVENT_POOL = {
     { title:'Small Business Tax Credit', domain:'economy', desc:'New state tax credit for small businesses hiring locally. Application window open.', trigger:'always', impacts:[{l:'Economy +10',c:'pos'},{l:'Trust +4',c:'pos'}], act:'PROMOTE', def:'IGNORE', actMsg:'Outreach campaign launched \u2014 200 businesses applied', defMsg:'Credit goes underutilized' },
   ],
   opportunity: [
-    { title:'eVTOL Corridor License', domain:'transport', desc:'Aerial mobility company seeking airspace corridors.', trigger:'transport>60', impacts:[{l:'Transport +14',c:'pos'},{l:'Economy +10',c:'pos'},{l:'Gov friction \u22127',c:'neg'}], act:'APPROVE', def:'DECLINE', actMsg:'Airspace corridors licensed', defMsg:'License declined' },
+    { title:'Flying Taxi Corridor License', domain:'transport', desc:'Flying taxi company seeking air corridors.', trigger:'transport>60', impacts:[{l:'Transport +14',c:'pos'},{l:'Economy +10',c:'pos'},{l:'Gov friction \u22127',c:'neg'}], act:'APPROVE', def:'DECLINE', actMsg:'Airspace corridors licensed', defMsg:'License declined' },
     { title:'Innovation District Proposal', domain:'economy', desc:'Tech consortium establishing an innovation district.', trigger:'economy>60', impacts:[{l:'Economy +12',c:'pos'},{l:'Education +8',c:'pos'},{l:'Housing pressure',c:'neg'}], act:'APPROVE ZONE', def:'TABLE', actMsg:'Innovation district approved', defMsg:'Proposal tabled' },
     { title:'Community Solar Initiative', domain:'energy', desc:'Neighborhood groups deploying community solar.', trigger:'trust>50', impacts:[{l:'Energy +10',c:'pos'},{l:'Trust +8',c:'pos'},{l:'Housing +4',c:'pos'}], act:'FUND IT', def:'DEFER', actMsg:'Community solar funded', defMsg:'Initiative deferred' },
     { title:'Sister City Partnership', domain:'city', desc:'International city proposes knowledge exchange.', trigger:'always', impacts:[{l:'Education +8',c:'pos'},{l:'Gov +6',c:'pos'}], act:'ACCEPT', def:'DECLINE', actMsg:'Partnership established', defMsg:'Partnership declined' },
@@ -3618,28 +3681,28 @@ function renderDomainGrid(){
 const tieredDecisions={
   energy:{
     thriving:[
-      {name:'Export Grid Surplus',effect:'Sell excess renewable capacity to neighboring districts. Generates revenue and builds regional influence.',tags:[{l:'Economy +10',c:'p'},{l:'+8 influence tokens',c:'p'},{l:'Goodwill earned',c:'i'}],delta:0},
-      {name:'Mentor Housing Domain',effect:'Share microgrid blueprints with Housing to accelerate their V2H deployment. Costs you a turn but raises the Heart Core.',tags:[{l:'Housing +12',c:'p'},{l:'Trust +8',c:'p'},{l:'Cross-domain bond',c:'i'}],delta:0},
-      {name:'Expand Monitoring Network',effect:'Deploy advanced environmental sensors city-wide. Strengthens early warning for other domains.',tags:[{l:'City resilience +15',c:'p'},{l:'All domains: better intel',c:'i'}],delta:0}
+      {name:'Export Grid Surplus',effect:'Sell excess renewable capacity to neighboring districts.',tags:[{l:'Economy +10',c:'p'},{l:'+8 influence tokens',c:'p'},{l:'Goodwill earned',c:'i'}],delta:0,details:'Your grid is producing more than the city consumes. Selling that excess generates revenue and builds goodwill with regional partners — useful if you ever need emergency imports. The downside: you’re exporting resilience. If a shock hits your grid, you may wish you’d kept that surplus as a buffer instead of selling it off.'},
+      {name:'Mentor Housing Domain',effect:'Share microgrid blueprints with Housing to accelerate vehicle-to-home power systems.',tags:[{l:'Housing +12',c:'p'},{l:'Trust +8',c:'p'},{l:'Cross-domain bond',c:'i'}],delta:0,details:'Housing is trying to deploy vehicle-to-home power systems but lacks the technical knowledge. Sharing your expertise costs you nothing technically but uses your turn — no energy improvement this round. In return, Housing gets a significant boost and the public sees cross-department cooperation, raising trust. If Housing is struggling, this could prevent their problems from dragging you down through spillover.'},
+      {name:'Expand Monitoring Network',effect:'Deploy advanced environmental sensors city-wide.',tags:[{l:'City resilience +15',c:'p'},{l:'All domains: better intel',c:'i'}],delta:0,details:'Environmental sensors across all districts give every domain early warning of developing problems — air quality shifts, water pressure drops, power demand spikes. No direct energy benefit, but the city becomes more resilient to shocks. The question is whether you can afford to spend a turn on shared infrastructure when your own domain might need attention.'}
     ],
     stable:[
-      {name:'Deploy Second Microgrid Ring',effect:'Extend distributed solar-battery coverage to outer districts. Long-term resilience investment.',tags:[{l:'Energy +8',c:'p'},{l:'Resilience +12',c:'p'},{l:'2-turn payoff',c:'w'}],delta:8},
-      {name:'V2G Fleet Integration',effect:'Connect EV fleets to the grid as distributed storage. Reduces peak load pressure.',tags:[{l:'Energy +6',c:'p'},{l:'Transport synergy',c:'i'},{l:'Economy +4',c:'p'}],delta:6},
-      {name:'Carbon Credit Program',effect:'Issue verified carbon credits from your renewable output. Boosts influence and city reputation.',tags:[{l:'+12 influence tokens',c:'p'},{l:'Trust +6',c:'p'}],delta:4}
+      {name:'Deploy Second Microgrid Ring',effect:'Extend distributed solar-battery coverage to outer districts.',tags:[{l:'Energy +8',c:'p'},{l:'Resilience +12',c:'p'},{l:'2-turn payoff',c:'w'}],delta:8,details:'Extending distributed power coverage to areas currently dependent on the central grid. Immediate impact is modest because construction takes time, but once operational, covered areas sustain power independently during outages. If a shock knocks out the central grid, covered areas stay lit while uncovered areas go dark. The question is whether you have time to wait for the payoff.'},
+      {name:'vehicle-to-grid fleet Integration',effect:'Connect EV fleets to the grid as distributed storage.',tags:[{l:'Energy +6',c:'p'},{l:'Transport synergy',c:'i'},{l:'Economy +4',c:'p'}],delta:6,details:'The city’s electric vehicles sit idle most of the day with charged batteries. Connecting them to the grid turns parked vehicles into distributed storage. Lower immediate impact than building new infrastructure, but uses assets that already exist. Creates a dependency on Transport — if fleet vehicles are reassigned, you lose that stored capacity. Also generates revenue for fleet owners, giving Economy a small boost.'},
+      {name:'Environmental Credit Program',effect:'Issue verified environmental credits from renewable output.',tags:[{l:'+12 influence tokens',c:'p'},{l:'Trust +6',c:'p'}],delta:4,details:'Your renewable output qualifies for environmental credits that generate influence tokens and build public trust. Minimal direct grid improvement — this is a political play more than an engineering one. Useful if you need influence for an upcoming audit or if trust is trending down. Doesn’t address infrastructure weakness.'}
     ],
     moderate:[
-      {name:'Emergency Load Balancing',effect:'Stabilize the eastern microgrid through emergency load redistribution. Prevents cascade this turn.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget −10',c:'m'}],delta:18},
-      {name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar + battery storage in three priority districts.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}],delta:14},
-      {name:'Temporary Power Purchase',effect:'Buy power from regional grid to cover shortfall. Fast, expensive, prevents immediate crisis.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget −18',c:'m'}],delta:10}
+      {name:'Emergency Load Balancing',effect:'Redistribute load across the grid to prevent cascade this turn.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'},{l:'Budget \u221210',c:'m'}],delta:18,details:'Substations are overloaded. Without intervention, they trip offline and cascade failures spread to connected domains — Health loses backup power, Transport signals go dark, Economy’s digital systems trigger shutdowns. Rerouting power from lower-priority areas prevents this. High immediate impact, but it’s a band-aid. The underlying weakness remains. Budget cost means fewer resources for other domains.'},
+      {name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar and battery storage in priority areas.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}],delta:14,details:'Priority areas get their own solar and battery storage, capable of operating independently from the main grid. Moderate immediate impact because installation takes time, but once live, these areas are shock-proof — they sustain power even if the central grid fails. Infrastructure that compounds over time. The risk: if the city collapses before construction finishes, the investment is wasted.'},
+      {name:'Temporary Power Purchase',effect:'Buy power from the regional grid to cover shortfall.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'},{l:'Budget \u221218',c:'m'}],delta:10,details:'The city doesn’t generate enough power right now. Purchasing electricity from neighboring utilities at emergency rates keeps the lights on immediately but creates external dependency. The budget hit is the heaviest of any option, which means other domains feel the squeeze. If you need another emergency purchase later, the city may not be able to afford it. Short-term survival at long-term cost.'}
     ],
     strained:[
-      {name:'Crisis Stabilization Protocol',effect:'Emergency intervention — lock down grid volatility before it cascades. All expansion paused.',tags:[{l:'Energy +22',c:'p'},{l:'Cascade stopped',c:'p'},{l:'Expansion frozen 1 turn',c:'m'}],delta:22},
-      {name:'Demand Reduction Order',effect:'Mandate reduced consumption in non-essential sectors. Painful but fast.',tags:[{l:'Energy +16',c:'p'},{l:'Economy −8',c:'m'},{l:'Trust −5',c:'m'}],delta:16},
-      {name:'Emergency Generator Deployment',effect:'Bring temporary diesel generators online. Buys two turns but increases emissions.',tags:[{l:'Energy +12',c:'p'},{l:'Emissions spike',c:'m'},{l:'2 turns only',c:'w'}],delta:12}
+      {name:'Crisis Stabilization Protocol',effect:'Lock down grid volatility before it cascades. All expansion paused.',tags:[{l:'Energy +22',c:'p'},{l:'Cascade stopped',c:'p'},{l:'Expansion frozen 1 turn',c:'m'}],delta:22,details:'Everything stops. All resources focus exclusively on stabilizing the grid — no new projects, no expansions, no support for other domains. Maximum stabilization but your domain is completely locked next turn. If a shock hits or conditions change while you’re frozen, you cannot respond. Other players may exploit your downtime. The cascade protection is real though: without this, connected domains start draining.'},
+      {name:'Demand Reduction Order',effect:'Mandate reduced consumption across non-essential uses.',tags:[{l:'Energy +16',c:'p'},{l:'Economy \u22128',c:'m'},{l:'Trust \u22125',c:'m'}],delta:16,details:'The city orders businesses and residents to cut power usage — reduced commercial hours, dimmed lighting, climate control restrictions. Effective at reducing grid strain, but businesses lose revenue and residents resent the restrictions. Economy takes a direct hit. Trust drops because people feel punished for an infrastructure failure they didn’t cause. If trust is already low, this could push spillovers into volatile territory.'},
+      {name:'Emergency Generator Deployment',effect:'Bring temporary diesel generators online for critical facilities.',tags:[{l:'Energy +12',c:'p'},{l:'Emissions spike',c:'m'},{l:'2 turns only',c:'w'}],delta:12,details:'Temporary diesel generators deployed to critical facilities. Keeps essential systems running but doesn’t fix the grid itself. The generators are only sustainable for a couple of turns before fuel costs become unsustainable. Emissions spike draws negative attention. This buys time — use it to set up a permanent fix. If you’re still relying on generators in a few turns, you’re in the same crisis with fewer options.'}
     ],
     critical:[
-      {name:'Full Grid Lockdown',effect:'Emergency total-grid stabilization. Everything else stops. This is the only move.',tags:[{l:'Energy +28',c:'p'},{l:'Cascade prevented',c:'p'},{l:'All other actions suspended',c:'m'}],delta:28},
-      {name:'Call Federal Emergency',effect:'Request federal grid assistance. Guaranteed help but loses 2 turns of autonomy.',tags:[{l:'Energy +20',c:'p'},{l:'Federal oversight begins',c:'m'}],delta:20}
+      {name:'Full Grid Lockdown',effect:'Emergency total-grid stabilization. Everything else stops.',tags:[{l:'Energy +28',c:'p'},{l:'Cascade prevented',c:'p'},{l:'All other actions suspended',c:'m'}],delta:28,details:'Every city resource redirects to grid stabilization. Maximum possible recovery, but no other domain can take action — Housing, Transport, Health, all frozen. If another domain is also in crisis, they’re on their own. The city is betting everything on energy recovery. If it works, you’re out of critical. If a shock hits during lockdown, there’s no backup plan.'},
+      {name:'Call Federal Emergency',effect:'Request federal grid assistance. Guaranteed help, loses autonomy.',tags:[{l:'Energy +20',c:'p'},{l:'Federal oversight begins',c:'m'}],delta:20,details:'Federal emergency declaration brings outside resources — crews, equipment, temporary infrastructure. Guaranteed to stabilize the grid, but the city loses decision-making autonomy. Federal oversight means governance recovers more slowly and future decisions may be restricted. The public sees outside intervention, which signals crisis — trust impact depends on whether people feel rescued or failed by their own city.'}
     ]
   },
   housing:{
@@ -3650,27 +3713,27 @@ const tieredDecisions={
     ],
     stable:[
       {name:'Affordable Housing Investment',effect:'Commit funds to below-market-rate units. Reduces overcrowding and improves equity.',tags:[{l:'Housing +9',c:'p'},{l:'Equity +11',c:'p'},{l:'Budget −14',c:'m'}],delta:9},
-      {name:'Smart Home Energy Nodes',effect:'Subsidize V2H installations. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'}],delta:6},
+      {name:'Smart Home Energy Nodes',effect:'Subsidize vehicle-to-home power systems. Creates distributed energy resilience.',tags:[{l:'Housing +6',c:'p'},{l:'Energy resilience +8',c:'p'}],delta:6},
       {name:'Community Land Trust',effect:'Transfer select parcels to community land trust governance. Long-term affordability lock-in.',tags:[{l:'Housing +7',c:'p'},{l:'Trust +10',c:'p'},{l:'Displacement risk −',c:'i'}],delta:7}
     ],
     moderate:[
-      {name:'Density Adjustment Program',effect:'Upzone targeted districts to increase housing capacity.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}],delta:12},
-      {name:'Emergency Shelter Activation',effect:'Open overflow shelter capacity in community buildings.',tags:[{l:'Housing +10',c:'p'},{l:'Overcrowding −',c:'i'},{l:'Budget −8',c:'m'}],delta:10},
-      {name:'Rapid Modular Construction',effect:'Deploy pre-approved modular units on city-owned land.',tags:[{l:'Housing +8',c:'p'},{l:'Fast deployment',c:'i'}],delta:8}
+      {name:'Density Adjustment Program',effect:'Change building rules in target areas to increase housing capacity.',tags:[{l:'Housing +12',c:'p'},{l:'Displacement risk',c:'m'},{l:'Trust −6',c:'m'}],delta:12,details:'Changing building rules in target areas to allow more housing — taller buildings, apartments above shops. Increases housing supply over time but current residents face displacement pressure as property values shift and landlords redevelop. Construction disrupts daily life. The new units don’t exist yet — this is a supply pipeline, not immediate relief. If displacement triggers protest events before supply arrives, trust damage could outweigh the housing gains.'},
+      {name:'Emergency Shelter Activation',effect:'Open overflow shelter capacity in community buildings.',tags:[{l:'Housing +10',c:'p'},{l:'Overcrowding −',c:'i'},{l:'Budget −8',c:'m'}],delta:10,details:'Community buildings converted to overflow shelters. Immediate capacity for residents at risk of homelessness. No construction required — uses existing infrastructure. But these buildings serve other purposes: youth programs, senior services, community meetings. Those shut down while shelters are active. This is a stopgap that works for a couple of turns before volunteer fatigue sets in.'},
+      {name:'Rapid Prefab Housing',effect:'Deploy pre-approved prefab housing units on city-owned land.',tags:[{l:'Housing +8',c:'p'},{l:'Fast deployment',c:'i'}],delta:8,details:'Pre-approved prefab housing units deployed on city-owned land. Ready for occupancy within weeks instead of months. No zoning battles because it’s city land. Lower impact than changing building rules but faster and no displacement risk. The units are basic — functional but not permanent. Residents may view them as a sign the city is failing rather than responding.'}
     ],
     strained:[
-      {name:'Crisis Housing Intervention',effect:'Emergency acquisition and conversion of vacant commercial buildings.',tags:[{l:'Housing +20',c:'p'},{l:'Displacement stopped',c:'p'},{l:'Budget −20',c:'m'}],delta:20},
-      {name:'Shelter-in-Place Directive',effect:'Mandate residents stay in current housing — prevents further displacement.',tags:[{l:'Housing +14',c:'p'},{l:'Freedom perception −8',c:'m'}],delta:14},
-      {name:'Federal Housing Request',effect:'Apply for emergency federal housing funds. Two-turn delay before benefit lands.',tags:[{l:'Housing +16 (Turn+2)',c:'p'},{l:'Influence −10',c:'m'}],delta:8}
+      {name:'Crisis Housing Intervention',effect:'Emergency acquisition and conversion of vacant commercial buildings.',tags:[{l:'Housing +20',c:'p'},{l:'Displacement stopped',c:'p'},{l:'Budget −20',c:'m'}],delta:20,details:'The city exercises emergency authority to acquire and convert vacant commercial buildings into housing. Maximum housing impact but the heaviest budget cost of any option. Legal challenges from property owners are likely. Conversions take time to make habitable. Stops the displacement cascade but the financial burden limits every other domain’s options.'},
+      {name:'Shelter-in-Place Directive',effect:'Mandate residents stay in current housing — prevents further displacement.',tags:[{l:'Housing +14',c:'p'},{l:'Freedom perception −8',c:'m'}],delta:14,details:'Legal order prevents evictions and restricts residential moves during the crisis. Stops displacement immediately — no one loses their home this turn. But landlords face defaults, small property owners go under, and the perception of government overreach drives trust down. Some residents feel protected; others feel trapped. No budget cost but significant trust and governance impact.'},
+      {name:'Federal Housing Request',effect:'Apply for emergency federal housing funds. Two-turn delay before benefit lands.',tags:[{l:'Housing +16 (Turn+2)',c:'p'},{l:'Influence −10',c:'m'}],delta:8,details:'Application for federal emergency housing assistance. Resources are substantial but take time to arrive. In the meantime, housing conditions don’t improve. If the city collapses before funds land, the application is moot. Costs influence to navigate bureaucracy. The eventual payoff is significant but you’re betting the city survives long enough.'}
     ],
     critical:[
-      {name:'Mass Emergency Housing',effect:'Commandeer vacant properties for emergency use. Extreme measure — stops collapse.',tags:[{l:'Housing +26',c:'p'},{l:'Collapse prevented',c:'p'},{l:'Legal exposure',c:'m'}],delta:26},
-      {name:'Evacuation Assistance Program',effect:'Help residents relocate to less impacted districts. Reduces pressure but reduces population.',tags:[{l:'Housing +18',c:'p'},{l:'Population −',c:'m'}],delta:18}
+      {name:'Mass Emergency Housing',effect:'Commandeer vacant properties for emergency use. Extreme measure — stops collapse.',tags:[{l:'Housing +26',c:'p'},{l:'Collapse prevented',c:'p'},{l:'Legal exposure',c:'m'}],delta:26,details:'Emergency seizure of vacant properties under crisis authority. Every empty building becomes potential shelter. Maximum capacity, maximum legal exposure. Property owners will push back. But if Housing hits zero, the city collapses — legal battles are a future problem. This is the last resort before total failure.'},
+      {name:'Evacuation Assistance Program',effect:'Help residents relocate to less impacted districts. Reduces pressure but reduces population.',tags:[{l:'Housing +18',c:'p'},{l:'Population −',c:'m'}],delta:18,details:'Help residents relocate to less impacted areas. Reduces pressure on overwhelmed housing systems but shrinks the population base. Fewer residents means lower tax revenue and a signal to businesses that the city is failing. Effective at preventing collapse but the city you save may be smaller than the one you started with.'}
     ]
   },
   transport:{
     thriving:[
-      {name:'Open Aerial Corridor to Neighbors',effect:'License your eVTOL corridors to adjacent cities. Revenue and regional prestige.',tags:[{l:'Economy +12',c:'p'},{l:'+10 influence tokens',c:'p'},{l:'Regional trust',c:'i'}],delta:0},
+      {name:'Open Aerial Corridor to Neighbors',effect:'License your flying taxi routes to adjacent cities. Revenue and regional prestige.',tags:[{l:'Economy +12',c:'p'},{l:'+10 influence tokens',c:'p'},{l:'Regional trust',c:'i'}],delta:0},
       {name:'Export Transit Model',effect:'Share your EV and transit infrastructure blueprints city-wide. Helps lagging domains.',tags:[{l:'City resilience +10',c:'p'},{l:'Trust +8',c:'p'}],delta:0},
       {name:'Autonomous Fleet Expansion',effect:'Scale autonomous vehicle fleet city-wide. Maximizes mobility score.',tags:[{l:'Transport +6',c:'p'},{l:'Economy +10',c:'p'},{l:'Jobs displaced',c:'m'}],delta:6}
     ],
@@ -3680,14 +3743,14 @@ const tieredDecisions={
       {name:'Transit Frequency Boost',effect:'Double service frequency on high-demand corridors.',tags:[{l:'Transport +10',c:'p'},{l:'Trust +5',c:'p'},{l:'Budget −12',c:'m'}],delta:10}
     ],
     moderate:[
-      {name:'Fast-Track eVTOL Corridors',effect:'Approve aerial mobility licensing for flying taxi routes.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}],delta:14},
-      {name:'Bus Rapid Transit Expansion',effect:'Extend BRT network to underserved outer districts.',tags:[{l:'Transport +11',c:'p'},{l:'Equity +8',c:'p'},{l:'Budget −10',c:'m'}],delta:11},
-      {name:'Congestion Pricing',effect:'Implement dynamic congestion pricing on core corridors.',tags:[{l:'Transport +9',c:'p'},{l:'Revenue +12',c:'p'},{l:'Trust −5',c:'m'}],delta:9}
+      {name:'Fast-Track Flying Taxi Routes',effect:'Approve aerial mobility licensing for flying taxi routes.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +10',c:'p'},{l:'Gov friction',c:'m'}],delta:14,details:'Flying taxi service brings transport capacity that bypasses all ground congestion. Economy gets a boost from the investment. But air traffic rules doesn’t exist yet — the city is writing rules in real time. Safety protocols are unresolved. If an incident occurs, governance takes the hit. High upside if nothing goes wrong; significant political risk if it does.'},
+      {name:'Bus Rapid Transit Expansion',effect:'Extend express bus network to underserved outer districts.',tags:[{l:'Transport +11',c:'p'},{l:'Equity +8',c:'p'},{l:'Budget −10',c:'m'}],delta:11,details:'Dedicated bus lanes with signal priority extending to underserved areas. Residents with long commutes gain faster access to jobs, healthcare, and schools. Immediate equity improvement. Budget cost for construction and vehicles. Some drivers lose a lane, which generates pushback. The infrastructure is permanent and compounds over time.'},
+      {name:'Congestion Pricing',effect:'Implement dynamic congestion pricing on core corridors.',tags:[{l:'Transport +9',c:'p'},{l:'Revenue +12',c:'p'},{l:'Trust −5',c:'m'}],delta:9,details:'Dynamic tolls during peak hours. Immediately reduces congestion and generates revenue for other transit improvements. But commuters who can’t afford the tolls or shift schedules bear the heaviest burden. Public perception is strongly negative — trust drops. Revenue takes a turn to materialize while the system is implemented. Effective but politically costly.'}
     ],
     strained:[
-      {name:'Emergency Transit Mobilization',effect:'Deploy all reserve fleet capacity to high-demand corridors immediately.',tags:[{l:'Transport +18',c:'p'},{l:'Access restored',c:'p'},{l:'Budget −15',c:'m'}],delta:18},
-      {name:'Mobility Voucher Program',effect:'Issue transit vouchers to affected residents — stops mobility collapse.',tags:[{l:'Transport +14',c:'p'},{l:'Trust +9',c:'p'},{l:'Budget −18',c:'m'}],delta:14},
-      {name:'Road Access Priority Order',effect:'Mandate freight-free residential access windows during peak hours.',tags:[{l:'Transport +12',c:'p'},{l:'Economy friction',c:'m'}],delta:12}
+      {name:'Emergency Transit Mobilization',effect:'Deploy all reserve fleet capacity to high-demand corridors immediately.',tags:[{l:'Transport +18',c:'p'},{l:'Access restored',c:'p'},{l:'Budget −15',c:'m'}],delta:18,details:'Every reserve vehicle deployed to high-demand corridors. Maximum immediate capacity. Commuters who were stranded can reach jobs and services. But the fleet is at capacity — no reserves for breakdowns or emergencies. Budget hit is heavy from overtime operations. If a shock hits Transport while fully deployed, there’s no backup.'},
+      {name:'Mobility Voucher Program',effect:'Issue transit vouchers to affected residents — stops mobility collapse.',tags:[{l:'Transport +14',c:'p'},{l:'Trust +9',c:'p'},{l:'Budget −18',c:'m'}],delta:14,details:'Transit passes and rideshare credits issued to affected residents. People can move. Trust improves because the city is visibly helping. But this doesn’t fix infrastructure — the underlying problems remain. You’re subsidizing mobility rather than building it. Budget cost is ongoing. Effective stopgap that buys goodwill but not resilience.'},
+      {name:'Road Access Priority Order',effect:'Mandate freight-free residential access windows during peak hours.',tags:[{l:'Transport +12',c:'p'},{l:'Economy friction',c:'m'}],delta:12,details:'Freight banned from residential corridors during peak hours. Commuters and residents get priority. Reduces congestion immediately. But freight has to go somewhere — deliveries shift to off-hours, increasing costs for businesses. Economy feels the friction. No budget cost but the economic drag is real.'}
     ],
     critical:[
       {name:'Transportation Emergency Declaration',effect:'Full system emergency mobilization. Federal transit authority invoked.',tags:[{l:'Transport +25',c:'p'},{l:'Collapse prevented',c:'p'},{l:'Autonomy reduced',c:'m'}],delta:25},
@@ -3701,17 +3764,17 @@ const tieredDecisions={
       {name:'Share Telehealth Infrastructure',effect:'License your telehealth platform to other domains for worker wellness programs.',tags:[{l:'Economy +8',c:'p'},{l:'Education +6',c:'p'},{l:'Cross-domain trust',c:'i'}],delta:0}
     ],
     stable:[
-      {name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person hospital load.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}],delta:10},
+      {name:'Expand Telehealth Infrastructure',effect:'Scale remote care to reduce in-person hospital load.',tags:[{l:'Health +10',c:'p'},{l:'Reduces burnout',c:'p'},{l:'Equity gap risk',c:'w'}],delta:10,details:'Patients with chronic conditions and routine needs shift to virtual visits. Reduces facility load significantly and extends care to homebound residents. Requires reliable internet — areas with poor connectivity are excluded. Reduces staff burnout but creates dependency on digital infrastructure that Energy must sustain. If Energy falters, telehealth goes down with it.'},
       {name:'Mental Health District Program',effect:'Embed mental health workers in schools and workplaces.',tags:[{l:'Health +8',c:'p'},{l:'Trust +7',c:'p'},{l:'Education synergy',c:'i'}],delta:8},
       {name:'Workforce Wellness Investment',effect:'Reduce healthcare worker burnout through scheduling reform.',tags:[{l:'Health +7',c:'p'},{l:'Burnout risk −',c:'p'},{l:'Budget −10',c:'m'}],delta:7}
     ],
     moderate:[
-      {name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to high-stress districts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}],delta:8},
+      {name:'Crisis Mental Health Response',effect:'Deploy mobile mental health units to high-stress districts.',tags:[{l:'Health +8',c:'p'},{l:'Trust +6',c:'p'},{l:'Budget −8',c:'m'}],delta:8,details:'Mobile mental health units deployed to areas experiencing the most pressure from infrastructure failures. Visible community presence builds trust. Addresses the secondary crisis that follows every infrastructure failure: anxiety, substance use, domestic violence spikes. Budget cost for staffing. You choose which areas get coverage and which don’t — that choice has equity implications.'},
       {name:'Hospital Capacity Expansion',effect:'Activate surge capacity in partner facilities.',tags:[{l:'Health +12',c:'p'},{l:'Response time improved',c:'p'},{l:'Budget −16',c:'m'}],delta:12},
       {name:'Community Health Worker Surge',effect:'Deploy neighborhood health workers to highest-need districts.',tags:[{l:'Health +10',c:'p'},{l:'Equity +8',c:'p'}],delta:10}
     ],
     strained:[
-      {name:'Emergency Health Mobilization',effect:'Activate full emergency health infrastructure — field hospitals, reserve staff.',tags:[{l:'Health +20',c:'p'},{l:'Response restored',c:'p'},{l:'Budget −22',c:'m'}],delta:20},
+      {name:'Emergency Health Mobilization',effect:'Activate full emergency health infrastructure — field hospitals, reserve staff.',tags:[{l:'Health +20',c:'p'},{l:'Response restored',c:'p'},{l:'Budget −22',c:'m'}],delta:20,details:'All reserve healthcare capacity activated — retired staff recalled, students deployed to clinics, hours extended. Maximum coverage expansion in the shortest time. Staff burnout is guaranteed — you’re running the system at redline. If Health stays in crisis for another couple of turns, the workforce starts breaking down. This buys short-term stability at the cost of long-term capacity.'},
       {name:'Mutual Aid Health Network',effect:'Coordinate with community organizations to extend care reach.',tags:[{l:'Health +15',c:'p'},{l:'Trust +10',c:'p'}],delta:15},
       {name:'Triage Reallocation',effect:'Redirect resources to highest-severity cases only — stabilizes the system.',tags:[{l:'Health +12',c:'p'},{l:'Access inequality risk',c:'m'}],delta:12}
     ],
@@ -3727,12 +3790,12 @@ const tieredDecisions={
       {name:'Universal Basic Income Pilot',effect:'Fund a UBI pilot in one district. Bold. Trust gains are significant if it works.',tags:[{l:'Trust +18',c:'p'},{l:'Economy +4',c:'p'},{l:'Budget −20',c:'m'}],delta:4}
     ],
     stable:[
-      {name:'Workforce Automation Transition',effect:'Support businesses automating mid-skill roles with parallel reskilling.',tags:[{l:'Economy +14',c:'p'},{l:'Jobs displaced',c:'m'},{l:'Education dependency',c:'w'}],delta:14},
-      {name:'Gig Economy Protections',effect:'Establish minimum protections for platform workers.',tags:[{l:'Economy +6',c:'p'},{l:'Trust +9',c:'p'},{l:'Business friction',c:'w'}],delta:6},
+      {name:'Workforce Automation Transition',effect:'Support businesses automating mid-skill roles with parallel reskilling.',tags:[{l:'Economy +14',c:'p'},{l:'Jobs displaced',c:'m'},{l:'Education dependency',c:'w'}],delta:14,details:'Funding businesses to automate mid-skill roles. Productivity jumps as repetitive work is handled by machines. But workers in manufacturing, logistics, and data entry are displaced. Some retrain through Education; others don’t. Education absorbs the retraining demand. Net economic gain is real but displaced workers consume social services during the transition period.'},
+      {name:'Gig Economy Protections',effect:'Establish minimum protections for platform workers.',tags:[{l:'Economy +6',c:'p'},{l:'Trust +9',c:'p'},{l:'Business friction',c:'w'}],delta:6,details:'Wage floors, benefit requirements, and scheduling protections for platform workers. Rideshare, delivery, and freelance workers gain stability. Trust improves as working people feel protected. But platform companies may reduce operations or raise prices. Businesses relying on flexible labor face higher costs. Popular policy but the economic adjustment takes time.'},
       {name:'Small Business Resilience Fund',effect:'Capitalize a fund supporting small businesses through disruption.',tags:[{l:'Economy +10',c:'p'},{l:'Trust +7',c:'p'},{l:'Budget −12',c:'m'}],delta:10}
     ],
     moderate:[
-      {name:'Digital Asset Economy Zone',effect:'Establish a licensed digital asset and AI business zone.',tags:[{l:'Economy +16',c:'p'},{l:'Energy strain +8',c:'m'},{l:'Tax revenue +',c:'p'}],delta:16},
+      {name:'Digital Asset Economy Zone',effect:'Establish a licensed digital asset and AI business zone.',tags:[{l:'Economy +16',c:'p'},{l:'Energy strain +8',c:'m'},{l:'Tax revenue +',c:'p'}],delta:16,details:'Licensed zone for cryptocurrency and AI businesses. Attracts high-value companies and tax revenue. But the computing infrastructure consumes enormous power — Energy absorbs the load. If Energy is already under pressure, the added demand could trigger cascade. High reward if you can sustain the energy cost; dangerous if you can’t.'},
       {name:'Supply Chain Resilience Program',effect:'Invest in local supply chain redundancy to reduce external shocks.',tags:[{l:'Economy +12',c:'p'},{l:'Resilience +8',c:'i'}],delta:12},
       {name:'Foreign Investment Attraction',effect:'Launch an investment attraction campaign targeting sustainable industry.',tags:[{l:'Economy +10',c:'p'},{l:'+8 influence tokens',c:'p'}],delta:10}
     ],
@@ -3753,8 +3816,8 @@ const tieredDecisions={
       {name:'AI Literacy Citywide Mandate',effect:'Mandatory AI literacy for all city employees. Future-proofs governance.',tags:[{l:'Gov effectiveness +12',c:'p'},{l:'Economy +8',c:'p'}],delta:0}
     ],
     stable:[
-      {name:'AI & Digital Literacy Program',effect:'City-wide initiative to build AI literacy across all age groups.',tags:[{l:'Education +12',c:'p'},{l:'Economy prep',c:'i'},{l:'3-turn payoff',c:'w'}],delta:12},
-      {name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling programs for automation-displaced workers.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'},{l:'Budget −12',c:'m'}],delta:10},
+      {name:'AI & Digital Literacy Program',effect:'City-wide initiative to build AI literacy across all age groups.',tags:[{l:'Education +12',c:'p'},{l:'Economy prep',c:'i'},{l:'3-turn payoff',c:'w'}],delta:12,details:'City-wide curriculum overhaul adding AI literacy and data skills. Students gain future-ready skills aligned with the emerging economy. Teachers need retraining before full deployment. Schools in lower-resource areas may lack hardware. Long-term economic benefit is substantial but the education system absorbs significant disruption during transition. Takes time to produce graduates who enter the workforce.'},
+      {name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling programs for automation-displaced workers.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'},{l:'Budget −12',c:'m'}],delta:10,details:'Dedicated reskilling facilities for displaced workers. Intensive programs in healthcare, clean energy, and IT. Workers displaced by automation or closures have a pathway back. Budget cost for facilities and instructors. Centers need transit access — if Transport is under pressure, attendance drops. Effectiveness depends on whether there are jobs waiting on the other end.'},
       {name:'University Partnership Program',effect:'Partner with local universities on applied research for city challenges.',tags:[{l:'Education +8',c:'p'},{l:'Economy +6',c:'p'},{l:'2-turn payoff',c:'w'}],delta:8}
     ],
     moderate:[
@@ -3808,12 +3871,12 @@ const extraDecisions = {
   },
   housing: {
     thriving:[{name:'Net-Zero Housing Standard',effect:'Mandate all new construction meets net-zero energy standards. National model.',tags:[{l:'Energy +8',c:'p'},{l:'Trust +6',c:'p'},{l:'City prestige',c:'i'}],delta:0}],
-    stable:[{name:'Accessory Dwelling Unit Program',effect:'Fast-track ADU permits to increase housing supply within existing neighborhoods.',tags:[{l:'Housing +8',c:'p'},{l:'Economy +4',c:'p'}],delta:8},
+    stable:[{name:'Accessory Dwelling Unit Program',effect:'Fast-track backyard housing unit permits to increase housing supply within existing neighborhoods.',tags:[{l:'Housing +8',c:'p'},{l:'Economy +4',c:'p'}],delta:8},
       {name:'Tenant Protection Initiative',effect:'Strengthen renter protections against displacement. Builds trust, slows development pace.',tags:[{l:'Housing +6',c:'p'},{l:'Trust +10',c:'p'},{l:'Economy −4',c:'m'}],delta:6}],
     moderate:[{name:'Modular Housing Factory',effect:'Establish a prefab housing factory. Reduces construction costs 30% and accelerates delivery.',tags:[{l:'Housing +14',c:'p'},{l:'Economy +6',c:'p'},{l:'Budget −12',c:'m'}],delta:14},
       {name:'Housing-Transit Integration',effect:'Co-locate new housing with transit hubs. Reduces car dependency and commute burden.',tags:[{l:'Housing +10',c:'p'},{l:'Transport +6',c:'p'}],delta:10}],
     strained:[{name:'Emergency Rent Freeze',effect:'Freeze rents city-wide for 2 turns. Prevents displacement cascade but chills investment.',tags:[{l:'Housing +16',c:'p'},{l:'Trust +8',c:'p'},{l:'Economy −10',c:'m'}],delta:16},
-      {name:'Vacant Property Seizure',effect:'Invoke eminent domain on abandoned properties for emergency conversion. Legal risk.',tags:[{l:'Housing +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Trust −4',c:'m'}],delta:18}],
+      {name:'Vacant Property Seizure',effect:'Invoke emergency property seizure on abandoned properties for emergency conversion. Legal risk.',tags:[{l:'Housing +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Trust −4',c:'m'}],delta:18}],
     critical:[{name:'Federal Housing Emergency',effect:'Declare federal housing emergency. FEMA-style temporary shelters. Dignity low but lives saved.',tags:[{l:'Housing +22',c:'p'},{l:'Trust −6',c:'m'},{l:'Federal oversight',c:'m'}],delta:22}]
   },
   transport: {
@@ -3832,8 +3895,8 @@ const extraDecisions = {
       {name:'Digital Health Records',effect:'Unified city-wide health records system. Better coordination, privacy concerns.',tags:[{l:'Health +6',c:'p'},{l:'Gov +4',c:'p'},{l:'Privacy risk',c:'w'}],delta:6}],
     moderate:[{name:'Mobile Clinic Fleet',effect:'Deploy mobile health clinics to areas without fixed facilities. Extends reach.',tags:[{l:'Health +12',c:'p'},{l:'Transport dependency',c:'w'}],delta:12},
       {name:'Nurse Practitioner Fast-Track',effect:'Accelerate NP certification pipeline to address provider shortage.',tags:[{l:'Health +10',c:'p'},{l:'Education +4',c:'p'},{l:'2-turn payoff',c:'w'}],delta:10}],
-    strained:[{name:'Hospital Surge Protocol',effect:'Activate surge capacity — cancel elective procedures, convert spaces, extend shifts.',tags:[{l:'Health +18',c:'p'},{l:'Burnout risk +',c:'m'}],delta:18},
-      {name:'Regional Mutual Aid',effect:'Activate mutual aid agreements with neighboring health systems.',tags:[{l:'Health +14',c:'p'},{l:'Transport +4',c:'p'}],delta:14}],
+    strained:[{name:'Hospital Surge Protocol',effect:'Activate surge capacity — cancel non-emergency surgeries, convert spaces, extend shifts.',tags:[{l:'Health +18',c:'p'},{l:'Burnout risk +',c:'m'}],delta:18,details:'Non-emergency surgeries canceled. Overflow areas converted to patient space. All shifts extended. Maximum capacity immediately but staff fatigue compounds rapidly. Patients with non-urgent conditions are turned away — some will worsen. The medical workforce will tolerate this for one crisis, not two consecutive ones.'},
+      {name:'Regional Mutual Aid',effect:'Activate emergency cooperation agreements with neighboring health systems.',tags:[{l:'Health +14',c:'p'},{l:'Transport +4',c:'p'}],delta:14,details:'Emergency cooperation agreements with neighboring health systems activated. Their resources respond to your calls. Immediate capacity boost without straining your own workforce. But neighbors have their own problems — if their systems are also under pressure, aid may be limited. Creates dependency on external goodwill.'}],
     critical:[{name:'Field Hospital Deployment',effect:'Erect temporary field hospitals in parking structures. Last-resort capacity.',tags:[{l:'Health +24',c:'p'},{l:'Trust −4',c:'m'},{l:'Signals crisis',c:'m'}],delta:24}]
   },
   economy: {
@@ -3842,8 +3905,8 @@ const extraDecisions = {
       {name:'Tech Startup Incubator',effect:'Fund a startup accelerator focused on civic tech. Creates jobs and innovation pipeline.',tags:[{l:'Economy +6',c:'p'},{l:'Education +6',c:'p'}],delta:6}],
     moderate:[{name:'Commercial Rent Stabilization',effect:'Cap commercial rent increases to prevent small business displacement.',tags:[{l:'Economy +12',c:'p'},{l:'Trust +6',c:'p'},{l:'Investment friction',c:'w'}],delta:12},
       {name:'Green Jobs Program',effect:'Training and placement program for renewable energy and retrofit jobs.',tags:[{l:'Economy +10',c:'p'},{l:'Energy +4',c:'p'},{l:'Education +4',c:'p'}],delta:10}],
-    strained:[{name:'Emergency Business Grants',effect:'Direct grants to businesses at risk of closure. Stops the bleeding but drains reserves.',tags:[{l:'Economy +16',c:'p'},{l:'Budget −18',c:'m'}],delta:16},
-      {name:'Tax Holiday Declaration',effect:'Suspend business taxes for 2 turns. Keeps employers but starves city services.',tags:[{l:'Economy +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Services cut',c:'m'}],delta:18}],
+    strained:[{name:'Emergency Business Grants',effect:'Direct grants to businesses at risk of closure. Stops the bleeding but drains reserves.',tags:[{l:'Economy +16',c:'p'},{l:'Budget −18',c:'m'}],delta:16,details:'Direct cash grants to businesses at risk of closure. Prevents the cascade of closures where each shuttered business affects suppliers, employees, and neighbors. Heavy budget cost. The grants keep doors open this turn but don’t address underlying conditions. If pressure continues, you’ll need another round of funding.'},
+      {name:'Tax Holiday Declaration',effect:'Suspend business taxes for 2 turns. Keeps employers but starves city services.',tags:[{l:'Economy +18',c:'p'},{l:'Gov −6',c:'m'},{l:'Services cut',c:'m'}],delta:18,details:'Business taxes suspended for the next couple of turns. Every business keeps more revenue. Prevents closures and may attract investment. But the city loses its primary revenue stream. Services that depend on tax funding face cuts. Governance weakens because the bureaucracy can’t function without resources. Popular with businesses, dangerous for city operations.'}],
     critical:[{name:'Federal Economic Disaster Zone',effect:'Apply for federal disaster designation. Maximum aid, maximum stigma.',tags:[{l:'Economy +24',c:'p'},{l:'Trust −8',c:'m'},{l:'Federal control',c:'m'}],delta:24}]
   },
   education: {
@@ -3852,8 +3915,8 @@ const extraDecisions = {
       {name:'Industry Apprenticeship Pipeline',effect:'Partner with major employers for paid apprenticeship programs.',tags:[{l:'Education +6',c:'p'},{l:'Economy +8',c:'p'}],delta:6}],
     moderate:[{name:'School Infrastructure Bond',effect:'Issue bonds for facility repairs and technology upgrades across all schools.',tags:[{l:'Education +14',c:'p'},{l:'Budget −12',c:'m'},{l:'2-turn payoff',c:'w'}],delta:14},
       {name:'After-School STEM Program',effect:'City-funded after-school programs in underserved neighborhoods. Equity focus.',tags:[{l:'Education +10',c:'p'},{l:'Trust +6',c:'p'}],delta:10}],
-    strained:[{name:'Emergency Teacher Recruitment',effect:'Signing bonuses and fast-track certification to fill critical vacancies.',tags:[{l:'Education +16',c:'p'},{l:'Budget −14',c:'m'}],delta:16},
-      {name:'Virtual School Pivot',effect:'Shift struggling schools to hybrid/virtual model. Maintains access, reduces facility pressure.',tags:[{l:'Education +12',c:'p'},{l:'Trust −4',c:'m'},{l:'Equity concerns',c:'w'}],delta:12}],
+    strained:[{name:'Emergency Teacher Recruitment',effect:'Signing bonuses and fast-track certification to fill critical vacancies.',tags:[{l:'Education +16',c:'p'},{l:'Budget −14',c:'m'}],delta:16,details:'Signing bonuses and fast-track certification to fill critical vacancies. Schools that can’t open without staff get staffed quickly. But fast-tracked teacher quality is uncertain. Budget cost for bonuses. Experienced teachers may resent the compensation disparity. If you’re still short-staffed in a few turns, the pipeline isn’t working and the budget is spent.'},
+      {name:'Virtual School Pivot',effect:'Shift struggling schools to hybrid/virtual model. Maintains access, reduces facility pressure.',tags:[{l:'Education +12',c:'p'},{l:'Trust −4',c:'m'},{l:'Equity concerns',c:'w'}],delta:12,details:'Struggling schools shift to hybrid or virtual delivery. Maintains educational access when physical schools can’t operate. Reduces facility pressure and staffing requirements. But students without reliable internet or quiet study space fall behind. Parents who relied on schools for childcare are pulled from the workforce, impacting Economy. Works as emergency measure but creates inequality if sustained.'}],
     critical:[{name:'State Takeover Prevention',effect:'Emergency measures to avoid state intervention in school system. All resources redirected.',tags:[{l:'Education +22',c:'p'},{l:'Economy −6',c:'m'},{l:'Gov −4',c:'m'}],delta:22}]
   }
 };
@@ -3880,6 +3943,62 @@ function getContextualDecisions(domainKey) {
   return ctx;
 }
 
+// ── REGIONAL DECISIONS ──────────────────────────────────────────────
+const regionalDecisions = {
+  urban: {
+    energy: {
+      moderate:[{name:'Subway Power Recovery',effect:'Reroute excess subway regenerative braking energy back into the grid. Urban-only infrastructure.',tags:[{l:'Energy +12',c:'p'},{l:'Transport synergy',c:'i'}],delta:12}],
+      strained:[{name:'Skyscraper Load Shedding',effect:'Mandate reduced power in commercial high-rises during peak hours. Thousands of office workers affected.',tags:[{l:'Energy +16',c:'p'},{l:'Economy \u22126',c:'m'},{l:'Trust \u22124',c:'m'}],delta:16}],
+      critical:[{name:'Blackout Zone Triage',effect:'Sacrifice power to low-priority blocks to keep hospitals and transit running.',tags:[{l:'Energy +22',c:'p'},{l:'Trust \u221210',c:'m'}],delta:22}]
+    },
+    transport: {
+      moderate:[{name:'Congestion Pricing Zone',effect:'Dynamic tolling in the downtown core. Reduces gridlock, generates revenue, angers commuters.',tags:[{l:'Transport +14',c:'p'},{l:'Economy +6',c:'p'},{l:'Trust \u22126',c:'m'}],delta:14}],
+      strained:[{name:'Emergency Subway Extension',effect:'Open unfinished subway tunnels for limited service. Safety risk but immediate capacity.',tags:[{l:'Transport +18',c:'p'},{l:'Health \u22124',c:'m'},{l:'Budget \u221214',c:'m'}],delta:18}]
+    },
+    housing: {
+      moderate:[{name:'Vacant Office Conversion',effect:'Fast-track converting empty commercial towers to residential. Post-pandemic surplus meets housing crisis.',tags:[{l:'Housing +14',c:'p'},{l:'Economy +4',c:'p'},{l:'2-turn build',c:'w'}],delta:14}],
+      strained:[{name:'Emergency High-Rise Shelters',effect:'Open floors in city-owned buildings as temporary shelters. Immediate capacity, not sustainable.',tags:[{l:'Housing +16',c:'p'},{l:'Gov \u22124',c:'m'}],delta:16}]
+    }
+  },
+  suburban: {
+    energy: {
+      moderate:[{name:'HOA Solar Mandate',effect:'Require solar panels on all new subdivision construction. Developers push back but grid diversifies.',tags:[{l:'Energy +12',c:'p'},{l:'Housing +4',c:'p'},{l:'Trust \u22124',c:'m'}],delta:12}],
+      strained:[{name:'School Roof Solar Emergency',effect:'Deploy emergency solar arrays on every school roof. Fast distributed generation.',tags:[{l:'Energy +14',c:'p'},{l:'Education +4',c:'p'}],delta:14}]
+    },
+    transport: {
+      moderate:[{name:'Park-and-Ride Network',effect:'Build park-and-ride lots at subdivision entrances with shuttle service to transit hubs.',tags:[{l:'Transport +12',c:'p'},{l:'Energy +4',c:'p'},{l:'Budget \u221210',c:'m'}],delta:12}],
+      strained:[{name:'Emergency School Bus Rerouting',effect:'Repurpose school bus fleet for general transit during crisis.',tags:[{l:'Transport +14',c:'p'},{l:'Education \u22124',c:'m'}],delta:14}]
+    },
+    housing: {
+      moderate:[{name:'backyard housing unit Fast-Track Program',effect:'Eliminate permitting barriers for backyard apartments and in-law suites. Granny flats everywhere.',tags:[{l:'Housing +12',c:'p'},{l:'Trust +4',c:'p'}],delta:12}],
+      strained:[{name:'Trailer Park Emergency Expansion',effect:'Authorize temporary mobile home parks on vacant lots. Immediate capacity, neighborhood resistance.',tags:[{l:'Housing +16',c:'p'},{l:'Trust \u22128',c:'m'}],delta:16}]
+    }
+  },
+  rural: {
+    energy: {
+      moderate:[{name:'County Generator Sharing',effect:'Organize a generator-sharing cooperative among farms and towns. Peer-to-peer resilience.',tags:[{l:'Energy +10',c:'p'},{l:'Trust +6',c:'p'}],delta:10}],
+      strained:[{name:'Emergency Generator Convoy',effect:'Request state emergency management to truck in portable generators. Lifeline for isolated areas.',tags:[{l:'Energy +16',c:'p'},{l:'Gov dependency',c:'w'}],delta:16}],
+      critical:[{name:'Dam Emergency Release',effect:'Open the county dam for emergency hydroelectric generation. Environmental cost, immediate power.',tags:[{l:'Energy +20',c:'p'},{l:'Health \u22126',c:'m'},{l:'Trust \u22124',c:'m'}],delta:20}]
+    },
+    transport: {
+      moderate:[{name:'Volunteer Driver Network',effect:'Organize community volunteer transportation for elderly and isolated residents.',tags:[{l:'Transport +10',c:'p'},{l:'Trust +8',c:'p'},{l:'Health +4',c:'p'}],delta:10}],
+      strained:[{name:'Emergency Bridge Repair',effect:'The one bridge connecting the south side is failing. Emergency repair before it closes entirely.',tags:[{l:'Transport +18',c:'p'},{l:'Budget \u221216',c:'m'}],delta:18}]
+    },
+    housing: {
+      moderate:[{name:'Church & Community Shelter Network',effect:'Partner with churches and community centers for temporary housing. Trust-driven, no construction needed.',tags:[{l:'Housing +10',c:'p'},{l:'Trust +10',c:'p'}],delta:10}],
+      strained:[{name:'Abandoned Farm Conversion',effect:'Convert foreclosed agricultural properties into emergency housing. Legal complexities but immediate space.',tags:[{l:'Housing +14',c:'p'},{l:'Economy +4',c:'p'},{l:'Gov \u22124',c:'m'}],delta:14}]
+    },
+    health: {
+      moderate:[{name:'Traveling Nurse Practitioner',effect:'Fund a roaming NP clinic visiting remote areas weekly. Fills the gap left by closed rural hospitals.',tags:[{l:'Health +12',c:'p'},{l:'Transport dependency',c:'w'}],delta:12}],
+      strained:[{name:'Telemedicine Emergency Rollout',effect:'Distribute tablets and satellite hotspots for remote medical consultations.',tags:[{l:'Health +14',c:'p'},{l:'Education +4',c:'p'}],delta:14}]
+    },
+    economy: {
+      moderate:[{name:'Agritourism Initiative',effect:'Market local farms for tourism revenue. Seasonal but brings outside money into the county.',tags:[{l:'Economy +10',c:'p'},{l:'Trust +4',c:'p'},{l:'Transport +4',c:'p'}],delta:10}],
+      strained:[{name:'Emergency Crop Subsidy',effect:'Direct emergency agricultural subsidies to prevent farm closures. Keeps the economic base alive.',tags:[{l:'Economy +16',c:'p'},{l:'Budget \u221214',c:'m'}],delta:16}]
+    }
+  }
+};
+
 function openDomain(key){
   curDomain=key;selDec=null;
   const d=domains[key];
@@ -3890,7 +4009,9 @@ function openDomain(key){
   const extras = (extraDecisions[key] && extraDecisions[key][tier]) || [];
   // Add contextual decisions based on game state
   const contextual = getContextualDecisions(key);
-  const tierDecs = [...baseDecs, ...extras, ...contextual];
+  // Add region-specific decisions
+  const regionPool = (regionalDecisions[cityRegion] && regionalDecisions[cityRegion][key] && regionalDecisions[cityRegion][key][tier]) || [];
+  const tierDecs = [...baseDecs, ...extras, ...contextual, ...regionPool];
   document.getElementById('dmt').textContent=d.name.toUpperCase();
 
   // Filter out decisions on cooldown
@@ -3933,15 +4054,191 @@ function openDomain(key){
   // Store available decisions globally so confirmDecision can access them
   window._availDecs = availDecs;
 
+  // Generate contextual detail for each decision
+  function decDetail(dec) {
+    let lines = [];
+    const condMod = getConditionDeltaMod(key);
+    const rawDelta = dec.delta || 0;
+    const effective = rawDelta > 0 ? Math.round(rawDelta * (governance/100) * (1 + condMod)) : 0;
+    const healthAfter = Math.min(100, d.health + effective);
+    const winThresholds = { transport: 85, housing: 82, energy: 80, health: 82, economy: 80, education: 80 };
+    const threshold = winThresholds[key] || 80;
+    const dks = ['transport','housing','energy','health','economy','education'];
+
+    // ── Analyze ALL available options to position this one ──
+    const allEffective = availDecs.map(ad => {
+      const rd = ad.delta || 0;
+      return { name: ad.name, eff: rd > 0 ? Math.round(rd * (governance/100) * (1 + condMod)) : 0, tags: ad.tags, raw: rd };
+    });
+    const maxEff = Math.max(...allEffective.map(a => a.eff));
+    const minEff = Math.min(...allEffective.filter(a => a.eff > 0).map(a => a.eff));
+    const hasCosts = dec.tags.filter(t => t.c === 'm').length;
+    const othersCosts = allEffective.filter(a => a.name !== dec.name).map(a => a.tags.filter(t => t.c === 'm').length);
+    const leastCostly = hasCosts <= Math.min(...othersCosts);
+    const mostCostly = hasCosts >= Math.max(...othersCosts);
+
+    // Spillover help to struggling domains
+    const rules = spilloverRules[key] || [];
+    let helpScore = 0;
+    rules.forEach(r => {
+      if (domains[r.target] && domains[r.target].health < 50) {
+        helpScore += Math.round(rawDelta * r.weight);
+      }
+    });
+    const allHelpScores = availDecs.map(ad => {
+      let hs = 0;
+      rules.forEach(r => { if (domains[r.target] && domains[r.target].health < 50) hs += Math.round((ad.delta||0) * r.weight); });
+      return hs;
+    });
+    const bestHelper = helpScore >= Math.max(...allHelpScores) && helpScore > 0;
+
+    // ── DESCRIPTION — always show, use details if available, else effect text ──
+    const descText = dec.details || dec.effect;
+    lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--text-muted);margin-bottom:4px;">DESCRIPTION</div><div style="color:var(--text-dim);line-height:1.8;font-size:11px;">' + descText + '</div></div>');
+
+    // ── WHAT CHANGES ──
+    if (rawDelta > 0) {
+      let context = 'Moves your domain from <strong>' + d.health + '</strong> to <strong>' + healthAfter + '</strong>.';
+      const condDetails = getConditionDetails(key);
+      if (condDetails.length > 0) {
+        condDetails.forEach(c => {
+          const pts = Math.abs(Math.round(rawDelta * (governance/100) * c.mod));
+          if (pts > 0) context += ' ' + c.icon + ' ' + c.name + ' is ' + (c.mod < 0 ? 'costing' : 'adding') + ' ' + pts + ' point' + (pts !== 1 ? 's' : '') + ' (' + c.turnsLeft + ' turn' + (c.turnsLeft !== 1 ? 's' : '') + ' left).';
+        });
+      }
+      if (healthAfter >= threshold) context += ' This crosses your win threshold \u2014 but other players\u2019 decisions and spillovers land before the check runs.';
+      else if (threshold - healthAfter <= 10) context += ' You\u2019d be ' + (threshold - healthAfter) + ' points from your win condition \u2014 other players\u2019 actions can shift your domain before your next turn.';
+      if (d.health < 15 && healthAfter >= 15) context += ' Prevents your domain from triggering city collapse.';
+      lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">' + context + '</div></div>');
+    } else {
+      lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">No direct improvement to your domain this turn. This action supports the city or builds influence for future turns.</div></div>');
+    }
+
+    // ── WHAT IT COSTS ──
+    const costLines = [];
+    dec.tags.forEach(t => {
+      if (t.c !== 'm' && t.c !== 'w') return;
+      const label = t.l;
+      // Helper to describe a domain's current pressure
+      function domPressure(dk) {
+        const dom = domains[dk];
+        if (!dom) return '';
+        const s = dom.health < 25 ? 'CRITICAL' : dom.health < 50 ? 'STRAINED' : dom.health < 75 ? 'PRESSURED' : 'STABLE';
+        if (s === 'CRITICAL') return ' ' + dom.name.split(' ')[0] + ' is currently CRITICAL \u2014 any additional strain is dangerous.';
+        if (s === 'STRAINED') return ' ' + dom.name.split(' ')[0] + ' is currently STRAINED \u2014 this added pressure makes recovery harder.';
+        if (s === 'PRESSURED') return ' ' + dom.name.split(' ')[0] + ' is currently PRESSURED \u2014 absorbs the impact but moves closer to strain.';
+        return '';
+      }
+
+      if (label.match(/Budget/i)) costLines.push('Drains city budget. Fewer resources available for other domains if a shock or crisis hits before reserves recover.');
+      else if (label.match(/Trust/i)) costLines.push('Public trust takes a hit. Lower trust makes all spillover effects less predictable \u2014 a positive investment in one domain could randomly hurt another.' + (trust < 50 ? ' Trust is already under pressure.' : ''));
+      else if (label.match(/Gov.*friction|Gov.*strain|Gov/i)) costLines.push('Weakens governance. Every decision across every domain delivers less until governance recovers.' + (governance < 50 ? ' Governance is already weak \u2014 further decline means decisions barely register.' : ''));
+      else if (label.match(/Energy.*strain|Energy/i)) costLines.push('Increases power demand on the grid.' + domPressure('energy'));
+      else if (label.match(/Economy.*friction|Economy/i)) costLines.push('Puts pressure on businesses and employment.' + domPressure('economy'));
+      else if (label.match(/Health/i)) costLines.push('Adds strain to the health system \u2014 staff capacity and patient outcomes affected.' + domPressure('health'));
+      else if (label.match(/Education/i)) costLines.push('Disrupts education systems \u2014 workforce pipeline and student outcomes affected.' + domPressure('education'));
+      else if (label.match(/Transport/i)) costLines.push('Disrupts mobility \u2014 commuters and freight movement affected.' + domPressure('transport'));
+      else if (label.match(/Housing/i)) costLines.push('Adds pressure to the housing system \u2014 overcrowding or displacement may increase.' + domPressure('housing'));
+      else if (label.match(/Expansion frozen|frozen|locked|suspended/i)) costLines.push('Your domain is locked next turn. No growth, no new decisions. If conditions worsen or a shock hits, you can\u2019t respond.');
+      else if (label.match(/Reserve|depleted/i)) costLines.push('Emergency reserves spent. This option won\u2019t be available again soon \u2014 if a similar crisis hits, you\u2019ll need a different approach.');
+      else if (label.match(/Federal/i)) costLines.push('Federal involvement means external oversight. Governance recovers more slowly and some future decisions may be restricted.');
+      else if (label.match(/turn.*payoff|delayed|2-turn|3-turn/i)) costLines.push('Benefit is delayed over multiple turns. If the city collapses before the investment matures, the resources are lost.');
+      else if (label.match(/Displacement|Equity/i)) costLines.push('Creates displacement pressure on residents. Can erode trust and trigger protest events that further destabilize the city.');
+      else if (label.match(/Emissions|Environmental/i)) costLines.push('Environmental cost \u2014 emissions spike or resource depletion. May trigger negative events or condition modifiers in future turns.');
+      else if (label.match(/Burnout/i)) costLines.push('Burns out your workforce. Staff fatigue compounds \u2014 future decisions in this domain deliver less if burnout isn\u2019t addressed.');
+      else if (label.match(/Jobs displaced/i)) costLines.push('Workers lose their positions. Education absorbs retraining demand.' + domPressure('education') + ' Displaced workers strain social services during the transition.');
+      else if (label.match(/Population/i)) costLines.push('Population shrinks. Fewer residents means lower tax revenue, reduced demand for services, and a signal that the city is failing.');
+      else if (label.match(/Legal/i)) costLines.push('Creates legal exposure. Affected parties may challenge this action, consuming governance resources and public attention.');
+      else if (label.match(/Freedom|perception/i)) costLines.push('Restricts personal freedom. Public may view this as government overreach, driving trust down and potentially triggering protest events.');
+      else if (label.match(/Business friction/i)) costLines.push('Creates friction with the business community.' + domPressure('economy') + ' Companies may reduce operations or consider relocation.');
+      else if (label.match(/Cascade.*risk|risk.*remains/i)) costLines.push('The underlying vulnerability remains. Connected domains are still exposed to cascade \u2014 this is a temporary fix, not a structural one.');
+      else if (label.match(/Safety|Privacy/i)) costLines.push('Raises safety or privacy concerns. Public backlash may erode trust and generate negative events.');
+      else if (label.match(/Signals crisis|crisis signal/i)) costLines.push('Visible signal that the city is in crisis. May accelerate business departures, population loss, or public panic.');
+      else if (label.match(/Airspace|airspace/i)) costLines.push('Requires new air traffic rules that don\u2019t exist yet. Regulatory gaps create risk \u2014 if incidents occur, governance takes the hit.');
+      else if (label.match(/Expensive|costly/i)) costLines.push('High cost. Budget pressure ripples across all other domains, limiting their options.');
+      else {
+        // Generate from tag content
+        const cleaned = label.replace(/[+\-]\d+/g, '').trim();
+        costLines.push(cleaned + ' \u2014 affects the city\u2019s overall stability.');
+      }
+    });
+    if (costLines.length > 0) {
+      lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--amber);margin-bottom:4px;">WHAT IT COSTS</div><div style="color:var(--text-dim);line-height:1.7;">' + costLines.join('<br>') + '</div></div>');
+    } else {
+      lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--amber);margin-bottom:4px;">WHAT IT COSTS</div><div style="color:var(--text-dim);line-height:1.7;">No direct tradeoffs. The cost is the turn itself \u2014 you\u2019re choosing this instead of something else.</div></div>');
+    }
+
+    // ── WHERE IT RIPPLES ──
+    if (rules.length > 0) {
+      const rippleLines = [];
+      rules.forEach(r => {
+        const tgt = domains[r.target];
+        if (!tgt) return;
+        const tgtName = tgt.name.split(' ')[0];
+        const tgtStatus = tgt.health < 25 ? 'CRITICAL' : tgt.health < 50 ? 'STRAINED' : tgt.health < 75 ? 'PRESSURED' : 'STABLE';
+        rippleLines.push(tgtName + ' (' + tgtStatus + '): ' + (r.reason || ''));
+      });
+      if (rippleLines.length > 0) {
+        lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--cyan);margin-bottom:4px;">WHERE IT RIPPLES</div><div style="color:var(--text-dim);line-height:1.7;">' + rippleLines.join('<br>') + '</div></div>');
+      }
+    } else {
+      lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--cyan);margin-bottom:4px;">WHERE IT RIPPLES</div><div style="color:var(--text-dim);line-height:1.7;">No direct spillover to other domains from this action.</div></div>');
+    }
+
+    return lines.join('');
+  }
+
+  function r_reason(rule) {
+    if (rule && rule.reason) return rule.reason + '.';
+    return '';
+  }
+  const govMult = governance / 100;
+  const cMod = getConditionDeltaMod(key);
+  const effMult = govMult * (1 + cMod);
+
   const decs=availDecs.map((dec,i)=>{
-    const tags=dec.tags.map(t=>`<span class="dt dt-${t.c}">${t.l}</span>`).join('');
-    return `<div class="dcard" id="dec${i}" onclick="selDec2(${i})"><div class="drad"></div><div class="dinf"><div class="dname">${dec.name}</div><div class="deff">${dec.effect}</div><div class="dtags">${tags}</div></div></div>`;
+    // Adjust positive domain tags to show effective values
+    const tags=dec.tags.map(t=>{
+      if (t.c === 'p') {
+        const m = t.l.match(/^(.+?)\s*\+(\d+)$/);
+        if (m) {
+          const raw = parseInt(m[2]);
+          const eff = Math.round(raw * effMult);
+          return `<span class="dt dt-p">${m[1]} +${eff}</span>`;
+        }
+      }
+      return `<span class="dt dt-${t.c}">${t.l}</span>`;
+    }).join('');
+    const detail = decDetail(dec);
+    return `<div class="dcard" id="dec${i}" onclick="selDec2(${i})">
+      <div class="drad"></div>
+      <div class="dinf">
+        <div class="dname">${dec.name}</div>
+        <div class="deff">${dec.effect}</div>
+        <div class="dtags">${tags}</div>
+        <div onclick="event.stopPropagation();toggleDecDetail(${i})" style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--cyan);cursor:pointer;margin-top:6px;padding:4px 0;">▶ BRIEFING</div>
+        <div id="dec-detail-${i}" style="display:none;margin-top:8px;padding:10px;background:rgba(6,182,212,.04);border:1px solid rgba(6,182,212,.15);font-size:10px;color:var(--text-dim);line-height:1.8;">
+          ${detail}
+        </div>
+      </div>
+    </div>`;
   }).join('');
 
   // Show message if all decisions in this tier have been used
   const exhaustedMsg = availDecs.length === 0 ? '<div style="padding:16px;text-align:center;color:var(--amber);font-size:12px;line-height:1.6;">All available decisions are on cooldown. Pass this turn \u2014 options return next turn.</div>' : '';
 
-  const sps=d.sp.map(s=>`<div class="spi"><div class="spd">${s.d}</div><div class="spe ${s.dir}">${s.dir==='neg'?'↓ Negative pressure':'↑ Positive synergy'}</div></div>`).join('');
+  // Build spillover section from the same spilloverRules the engine uses
+  const domIcons = {transport:'\uD83D\uDE87',housing:'\uD83C\uDFD8',energy:'\u26A1',health:'\uD83C\uDFE5',economy:'\uD83D\uDCCA',education:'\uD83C\uDF93'};
+  const spRules = spilloverRules[key] || [];
+  const sps = spRules.map(r => {
+    const tgt = domains[r.target];
+    const tgtName = tgt ? tgt.name : r.target;
+    const tgtIcon = domIcons[r.target] || '';
+    const tgtHealth = tgt ? tgt.health : 50;
+    const tgtStatus = tgtHealth < 25 ? 'CRITICAL' : tgtHealth < 50 ? 'STRAINED' : tgtHealth < 75 ? 'PRESSURED' : 'STABLE';
+    const statusCol = tgtHealth < 25 ? 'var(--red)' : tgtHealth < 50 ? 'var(--amber)' : 'var(--text-muted)';
+    return '<div class="spi"><div class="spd">' + tgtIcon + ' ' + tgtName + ' <span style="font-family:var(--fm);font-size:8px;color:' + statusCol + '">' + tgtHealth + '/100 ' + tgtStatus + '</span></div><div style="font-size:10px;color:var(--text-dim);line-height:1.5;margin-top:2px;">' + (r.reason || '') + '</div></div>';
+  }).join('');
 
   document.getElementById('dcontent').innerHTML=`
     ${thrivingBanner}
@@ -3958,12 +4255,24 @@ function openDomain(key){
       ${exhaustedMsg}
       ${decs}
       ${tier!=='thriving'?`<div class="pcard" id="decpass" onclick="selDec2('pass')"><div class="drad"></div><div><div class="plbl">Pass — Take no action</div><div class="pcon">${d.pass}</div></div></div>`:''}
-      <div class="spp"><div class="spt">CROSS-DOMAIN SPILLOVER EFFECTS</div>${sps}</div>
+      <div class="spp"><div class="spt">CONNECTED DOMAINS — YOUR DECISIONS AFFECT THESE</div>${sps}</div>
     </div>`;
   nav('sd');
 }
 
 function selDec2(i){selDec=i;document.querySelectorAll('.dcard,.pcard').forEach(c=>c.classList.remove('sel'));const el=i==='pass'?document.getElementById('decpass'):document.getElementById('dec'+i);if(el)el.classList.add('sel');}
+
+function toggleDecDetail(i) {
+  const el = document.getElementById('dec-detail-' + i);
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  // Close all others
+  document.querySelectorAll('[id^="dec-detail-"]').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('.dec-toggle-btn').forEach(b => b.textContent = '\u25B6 BRIEFING');
+  if (!isOpen) {
+    el.style.display = 'block';
+  }
+}
 // ── SPILLOVER ENGINE ─────────────────────────────────────────────────
 let governance = 72; // 0-100 — how effectively decisions execute
 let trust = 64;      // 0-100 — how well city accepts decisions, affects volatility
@@ -3983,7 +4292,7 @@ const spilloverRules = {
   ],
   housing: [
     {target:'health',   weight:0.20, reason:'Overcrowding affects disease risk'},
-    {target:'energy',   weight:0.15, reason:'V2H capacity supports grid resilience'},
+    {target:'energy',   weight:0.15, reason:'Home battery systems support grid resilience'},
     {target:'education',weight:0.10, reason:'Stable housing supports student outcomes'}
   ],
   health: [
@@ -5630,30 +5939,87 @@ function executeLeaveGame() {
   playerLeftGame = true;
   playerLeftTurn = turnNumber;
 
-  // Show takeover notification
-  showToast('AI has taken control of your domain. You are now spectating.');
+  populateSessionSummary('left');
+  nav('s-session-end');
+}
 
-  // Disable the manage button and mark domains as AI-controlled
-  const manageBtn = document.getElementById('manage-btn');
-  if (manageBtn) {
-    manageBtn.textContent = '🤖 AI CONTROLLING';
-    manageBtn.style.opacity = '0.5';
-    manageBtn.style.pointerEvents = 'none';
+function populateSessionSummary(reason) {
+  // reason: 'left', 'stalemate', 'collapse', 'victory'
+  const label = document.getElementById('sess-label');
+  const cityEl = document.getElementById('sess-city-name');
+  const subtitle = document.getElementById('sess-subtitle');
+  const hcEl = document.getElementById('sess-hc');
+  const turnsEl = document.getElementById('sess-turns');
+  const decisionsEl = document.getElementById('sess-decisions');
+  const regionEl = document.getElementById('sess-region');
+
+  if (label) {
+    if (reason === 'left') label.textContent = 'SESSION ENDED';
+    else if (reason === 'stalemate') label.textContent = 'TURN LIMIT REACHED';
+    else if (reason === 'collapse') label.textContent = 'CITY COLLAPSED';
+    else label.textContent = 'SESSION COMPLETE';
+  }
+  if (cityEl) cityEl.textContent = cityName || 'The City';
+  if (subtitle) {
+    if (reason === 'left') subtitle.textContent = 'You stepped away on Turn ' + turnNumber + '. AI took control of your domain.';
+    else if (reason === 'stalemate') subtitle.textContent = 'No player reached their win condition in ' + turnNumber + ' turns.';
+    else if (reason === 'collapse') subtitle.textContent = 'The city\u2019s systems failed on Turn ' + turnNumber + '.';
+    else subtitle.textContent = turnNumber + ' turns played.';
+  }
+  if (hcEl) hcEl.textContent = heartCore;
+  if (turnsEl) turnsEl.textContent = turnNumber;
+  if (regionEl) regionEl.textContent = (REGIONAL_CONFIG[cityRegion] || {label:'Urban'}).label;
+
+  // Count decisions made (estimate from cooldowns)
+  let decCount = 0;
+  Object.values(usedDecisions).forEach(d => { decCount += Object.keys(d).length; });
+  if (decisionsEl) decisionsEl.textContent = decCount || turnNumber;
+
+  // Orb color
+  const orbEl = document.getElementById('sess-orb');
+  if (orbEl) {
+    const oc = orbColors(heartCore);
+    orbEl.style.background = oc.grad;
+    orbEl.style.boxShadow = '0 0 18px ' + oc.glow + '.6)';
   }
 
-  // Add spectating banner to dashboard
-  const hcPanel = document.querySelector('.hcw');
-  if (hcPanel && !document.getElementById('spectate-banner')) {
-    const banner = document.createElement('div');
-    banner.id = 'spectate-banner';
-    banner.style.cssText = 'background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);padding:10px 14px;margin:10px 0 0;display:flex;align-items:center;gap:10px;';
-    banner.innerHTML = '<span style="font-size:20px;">🤖</span><div><div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--purple);">AI Takeover Active</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px;">You left on Turn ' + turnNumber + '. AI is managing your domain in ' + (aiMode ? aiMode.charAt(0).toUpperCase() + aiMode.slice(1) : 'Neutral') + ' mode.</div></div>';
-    hcPanel.appendChild(banner);
+  // Your domains
+  const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
+  const domEl = document.getElementById('sess-domains');
+  if (domEl) {
+    domEl.innerHTML = myDoms.map(k => {
+      const dd = domains[k];
+      if (!dd) return '';
+      const col = dd.health >= 75 ? 'var(--green)' : dd.health >= 50 ? 'var(--amber)' : 'var(--red)';
+      const status = dd.health >= 90 ? 'THRIVING' : dd.health >= 75 ? 'STABLE' : dd.health >= 50 ? 'PRESSURED' : dd.health >= 25 ? 'STRAINED' : 'CRITICAL';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">' + dd.icon + '</span><div><div style="font-size:12px;color:var(--text);">' + dd.name + '</div><div style="font-family:var(--fm);font-size:8px;color:' + col + ';letter-spacing:1px;margin-top:2px;">' + status + '</div></div></div><div style="font-family:var(--fd);font-size:20px;font-weight:700;color:' + col + ';">' + dd.health + '</div></div>';
+    }).join('');
   }
 
-  // Stay on dashboard
-  nav('so');
-  refreshAlertPill();
+  // All domains
+  const allEl = document.getElementById('sess-all-domains');
+  if (allEl) {
+    const dks = ['transport','housing','energy','health','economy','education'];
+    allEl.innerHTML = dks.map(k => {
+      const dd = domains[k];
+      if (!dd) return '';
+      const isYours = myDoms.includes(k);
+      const col = dd.health >= 75 ? 'var(--green)' : dd.health >= 50 ? 'var(--amber)' : dd.health <= 0 ? 'var(--red)' : 'var(--red)';
+      const status = dd.health <= 0 ? 'COLLAPSED' : dd.health >= 90 ? 'THRIVING' : dd.health >= 75 ? 'STABLE' : dd.health >= 50 ? 'PRESSURED' : dd.health >= 25 ? 'STRAINED' : 'CRITICAL';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:11px;color:' + (isYours ? 'var(--amber)' : 'var(--text-dim)') + ';">' + dd.icon + ' ' + dd.name.split(' ')[0] + (isYours ? ' \u25C6' : '') + '</span><span style="font-family:var(--fm);font-size:9px;color:' + col + ';">' + status + '</span></div>';
+    }).join('');
+  }
+
+  // Active conditions
+  const condWrap = document.getElementById('sess-conditions-wrap');
+  const condEl = document.getElementById('sess-conditions');
+  if (condEl) {
+    if (activeConditions.length > 0) {
+      condEl.innerHTML = activeConditions.map(c => '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:14px;">' + c.icon + '</span><span style="font-size:11px;color:var(--text-dim);">' + c.name + '</span></div>').join('');
+    } else {
+      if (condWrap) condWrap.style.display = 'none';
+    }
+  }
 }
 
 // ── SPLASH ANIMATIONS ────────────────────────────────────────────────
