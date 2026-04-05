@@ -521,6 +521,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       </button>
     </div>
 
+    <!-- Quick Demo — skips setup -->
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);">
+      <button onclick="quickDemo()" style="width:100%;padding:14px 20px;background:none;border:1px solid rgba(139,92,246,.4);color:var(--purple);font-family:var(--fm);font-size:12px;letter-spacing:3px;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(139,92,246,.08)';this.style.borderColor='var(--purple)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(139,92,246,.4)'">
+        ⚡ QUICK DEMO
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(139,92,246,.6);margin-top:4px;font-weight:400;">Skip setup — jump straight into gameplay</div>
+      </button>
+    </div>
+
     <!-- Endgame simulations — demo access -->
     <div style="margin-top:24px;opacity:.5;transition:opacity .3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">
       <div style="font-family:var(--fm);font-size:8px;letter-spacing:3px;color:var(--text-muted);margin-bottom:8px;">SIMULATE ENDGAME</div>
@@ -2290,6 +2298,46 @@ const playerConfigs = {
   5: { human:5, ai:1, each:1, desc:'Each player controls 1 domain. AI controls 1.' },
   6: { human:6, ai:0, each:1, desc:'Each player controls 1 domain. No AI.' }
 };
+
+function quickDemo() {
+  // Preset everything — skip all setup screens
+  selectedMode = 'app';
+  playerCount = 4;
+  playerProfile.name = 'Demo Player';
+  playerProfile.emoji = '\u26A1';
+  playerProfile.color = '#f59e0b';
+  playerProfile.colorVar = '#f59e0b';
+  playerProfile.saved = true;
+  myDomain = 'energy';
+  window.myDomains = ['energy'];
+  cityRegion = 'urban';
+  cityStart = 'volatile';
+  cityStartMode = 'host';
+  cityName = 'Nova Ridge';
+  aiMode = 'reactive';
+
+  // Force a shock on turn 2 for dramatic demo moment
+  const shockKeys = Object.keys(SHOCK_EVENTS);
+  const shockKey = shockKeys[Math.floor(Math.random() * shockKeys.length)];
+  pendingShock = { ...SHOCK_EVENTS[shockKey], deliverTurn: 2 };
+  shockDelivered = false;
+
+  // Start the game
+  startGame();
+
+  // Turn sound on after a short delay (needs user gesture context)
+  setTimeout(() => {
+    initAudio();
+    soundEnabled = true;
+    const btn = document.getElementById('sound-toggle');
+    if (btn) {
+      btn.innerHTML = '<span style="font-size:14px;">&#128266;</span> HEARTBEAT ON';
+      btn.style.borderColor = 'var(--amber)';
+      btn.style.color = 'var(--amber)';
+    }
+    startHeartbeat();
+  }, 500);
+}
 
 function chooseMode(m){
   selectedMode = m;
@@ -4851,6 +4899,102 @@ function playBeat(time, duration, gain) {
   osc.stop(time + duration + 0.05);
 }
 
+function playVictorySound() {
+  initAudio();
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  // Ascending major chord — C E G C (triumphant)
+  const notes = [261.6, 329.6, 392.0, 523.3];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now + i * 0.15);
+    gain.gain.setValueAtTime(0, now + i * 0.15);
+    gain.gain.linearRampToValueAtTime(0.25, now + i * 0.15 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 1.2);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now + i * 0.15);
+    osc.stop(now + i * 0.15 + 1.5);
+  });
+  // Final sustained chord
+  setTimeout(() => {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    [523.3, 659.3, 784.0].forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 2.0);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 2.5);
+    });
+  }, 700);
+}
+
+function playCollapseSound() {
+  initAudio();
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  // Descending dissonant tone — dread
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  const gain2 = audioCtx.createGain();
+
+  // Low descending rumble
+  osc1.type = 'sawtooth';
+  osc1.frequency.setValueAtTime(120, now);
+  osc1.frequency.exponentialRampToValueAtTime(30, now + 3.0);
+  gain1.gain.setValueAtTime(0.3, now);
+  gain1.gain.linearRampToValueAtTime(0.4, now + 0.5);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 3.5);
+
+  // Dissonant high tone
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(440, now);
+  osc2.frequency.exponentialRampToValueAtTime(220, now + 2.0);
+  gain2.gain.setValueAtTime(0.1, now);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(300, now);
+  filter.frequency.linearRampToValueAtTime(80, now + 3.0);
+
+  osc1.connect(filter);
+  filter.connect(gain1);
+  gain1.connect(audioCtx.destination);
+  osc2.connect(gain2);
+  gain2.connect(audioCtx.destination);
+
+  osc1.start(now);
+  osc1.stop(now + 4);
+  osc2.start(now);
+  osc2.stop(now + 3);
+
+  // Final flatline beep
+  setTimeout(() => {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, t);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 3.0);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 3.5);
+  }, 2500);
+}
+
 function getHeartbeatInterval(hcVal) {
   // Map Heart Core 0-100 to interval 400ms-2000ms
   // Low health = fast pulse, high health = slow pulse
@@ -5148,6 +5292,7 @@ function populateCollapseScreen() {
   const corr = document.getElementById('col-corruption');
   if (corr) corr.style.display = 'block';
   startEkgFlatline();
+  playCollapseSound();
 }
 
 function startEkgFlatline() {
@@ -5236,6 +5381,7 @@ function simulateVictoryWinner() {
   if (sub) sub.textContent = cityName + ' endures — because of you.';
 
   nav('s-victory-winner');
+  playVictorySound();
 }
 
 function simulateVictoryOther() {
@@ -5301,6 +5447,7 @@ function simulateVictoryOther() {
   if (turnsNeeded) turnsNeeded.textContent = 'EST. ' + turnsLeft + ' MORE TURN' + (turnsLeft > 1 ? 'S' : '') + ' NEEDED AT YOUR PACE';
 
   nav('s-victory-other');
+  playVictorySound();
 }
 
 function simulateCollapse() {
