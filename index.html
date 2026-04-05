@@ -1997,6 +1997,23 @@ let heartCore=65,turnNumber=1;
 let pendingHCChanges = []; // queue HC changes during decision phase, apply at turn-end
 let hcRevealed = false; // HC display stays frozen until turn-end reveal
 
+// Apply HC floor — not used for collapse anymore, just prevents HC display from hitting 0 prematurely
+function applyHCFloor() {
+  // HC still decays but collapse is now driven by domain health, not HC reaching 0
+}
+
+// Check if city should collapse — clear, player-understandable conditions
+function checkCollapse() {
+  const dks = ['transport','housing','energy','health','economy','education'];
+  // Condition 1: Any domain at 0 = catastrophic single-point failure
+  const zeroCount = dks.filter(k => domains[k] && domains[k].health <= 0).length;
+  if (zeroCount > 0) return true;
+  // Condition 2: Two or more domains below 15 = systemic failure
+  const nearDeadCount = dks.filter(k => domains[k] && domains[k].health < 15).length;
+  if (nearDeadCount >= 2) return true;
+  return false;
+}
+
 // Get the display value for HC — frozen during decisions, live after reveal
 function displayHC() {
   return hcRevealed ? heartCore : hcBeforeTurn;
@@ -2161,7 +2178,7 @@ function beginNextTurn(){
   if (roundPill) roundPill.textContent = 'TURN ' + turnNumber;
   const cityHeader = document.getElementById('city-name-header');
   if (cityHeader && cityName) cityHeader.textContent = cityName;
-  if(heartCore<=0){populateCollapseScreen();nav('scol');return;}
+  if(checkCollapse()){populateCollapseScreen();nav('scol');return;}
   renderDomainGrid();
   renderDSB();
   renderDomainContext();
@@ -4107,7 +4124,7 @@ function confirmDecision(){
     showToast(effectiveDelta>0?`"${dec.name}" committed — Health +${effectiveDelta}${spillovers.length?' + '+spillovers.length+' spillovers':''}`:`"${dec.name}" committed`);
   }
 
-  if(heartCore<=0){renderDomainGrid();renderDSB();populateCollapseScreen();setTimeout(()=>nav('scol'),1400);return;}
+  if(checkCollapse()){renderDomainGrid();renderDSB();populateCollapseScreen();setTimeout(()=>nav('scol'),1400);return;}
   renderDomainGrid();
   renderDSB();
 
@@ -4145,20 +4162,16 @@ function revealHeartCore() {
   const strainCount = dks.filter(k => domains[k] && domains[k].health >= 25 && domains[k].health < 50).length;
   const healthyCount = dks.filter(k => domains[k] && domains[k].health >= 75).length;
 
-  // Base: -1 (institutional entropy). Extra: -1 per strained, -2 per critical.
+  // Base: -1 (institutional entropy). Strained: -1 per 2 strained. Critical: -2 each.
   // Recovery: +1 if no domain below 50; +2 if all above 75
   let hcChange = -1;
   hcChange -= critCount * 2;
-  hcChange -= strainCount;
+  hcChange -= Math.ceil(strainCount / 2); // softer: 2 strained = -1, not -1 each
   if (critCount === 0 && strainCount === 0) hcChange += 1;
   if (healthyCount === 6) hcChange += 2;
   heartCore = Math.max(0, Math.min(100, heartCore + hcChange));
 
-  // Domain at 0 = catastrophic failure — massive HC hit
-  const zeroCount = dks.filter(k => domains[k] && domains[k].health <= 0).length;
-  if (zeroCount > 0) heartCore = Math.max(0, heartCore - (zeroCount * 15));
-
-  // Cascade drain
+  // Cascade drain on HC
   if (turnCascades.length > 0) {
     heartCore = Math.max(0, heartCore - turnCascades.length * 2);
   }
@@ -4792,20 +4805,32 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 function populateCollapseScreen() {
   const turnLine = document.getElementById('col-turn-line');
-  if (turnLine) turnLine.textContent = 'Heart Core reached 0 — Turn ' + turnNumber;
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const zeroDomains = domKeys.filter(k => domains[k] && domains[k].health <= 0);
+  const nearDeadDomains = domKeys.filter(k => domains[k] && domains[k].health < 15 && domains[k].health > 0);
+
+  // Show collapse reason
+  if (turnLine) {
+    if (zeroDomains.length > 0) {
+      turnLine.textContent = domains[zeroDomains[0]].name.split(' ')[0] + ' collapsed \u2014 Turn ' + turnNumber;
+    } else if (nearDeadDomains.length >= 2) {
+      turnLine.textContent = 'Multiple systems failed \u2014 Turn ' + turnNumber;
+    } else {
+      turnLine.textContent = 'City failed \u2014 Turn ' + turnNumber;
+    }
+  }
   const cityEl = document.getElementById('col-city-name');
   if (cityEl) cityEl.textContent = cityName || 'The city';
 
   const finalEl = document.getElementById('col-domain-final');
   if (finalEl) {
-    const domKeys = ['transport','housing','energy','health','economy','education'];
     finalEl.innerHTML = domKeys.map(key => {
       const d = domains[key];
       const h = d.health;
-      const col = h <= 0 ? 'var(--red)' : h < 20 ? 'var(--red)' : h < 40 ? 'var(--amber)' : 'var(--amber)';
-      const label = h <= 0 ? 'COLLAPSED' : h + '/100';
+      const col = h <= 0 ? 'var(--red)' : h < 15 ? 'var(--red)' : h < 40 ? 'var(--amber)' : 'var(--amber)';
+      const label = h <= 0 ? 'COLLAPSED' : h < 15 ? h + '/100 \u2014 FAILING' : h + '/100';
       return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(239,68,68,.1);">
-        <span style="font-size:11px;color:${h <= 0 ? 'var(--red)' : 'var(--text-dim)'};">${d.icon} ${d.name}</span>
+        <span style="font-size:11px;color:${h <= 0 ? 'var(--red)' : h < 15 ? 'var(--red)' : 'var(--text-dim)'};">${d.icon} ${d.name}</span>
         <span style="font-family:var(--fm);font-size:10px;color:${col};${h <= 0 ? 'letter-spacing:2px;' : ''}">${label}</span>
       </div>`;
     }).join('');
@@ -5538,30 +5563,37 @@ function deliverShock(shock) {
   const domainIcons = {transport:'🚇',housing:'🏘',energy:'⚡',health:'🏥',economy:'📊',education:'🎓'};
   const domainShort = {transport:'Transport',housing:'Housing',energy:'Energy',health:'Health',economy:'Economy',education:'Education'};
 
-  // Apply impacts
+  // Apply impacts — show before → after for each
   const impactLines = [];
   Object.keys(shock.impacts).forEach(key => {
     const delta = shock.impacts[key];
     if (delta !== 0 && domains[key]) {
+      const before = domains[key].health;
       domains[key].health = Math.max(0, domains[key].health + delta);
       updateDomainStatus(key);
-      impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(239,68,68,.12);"><span style="font-size:11px;color:var(--text-dim);">' + domainIcons[key] + ' ' + domainShort[key] + '</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + delta + '</span></div>');
+      const after = domains[key].health;
+      impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,.12);"><span style="font-size:11px;color:var(--text-dim);">' + domainIcons[key] + ' ' + domainShort[key] + '</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + before + '</span> <span style="color:var(--text-dim);">\u2192</span> <span style="color:var(--red);">' + after + '</span> <span style="color:var(--red);">(' + delta + ')</span></span></div>');
     }
   });
 
-  // Apply HC, trust, governance hits
+  // Apply HC, trust, governance hits — show before → after
+  const hcBefore = heartCore;
   heartCore = Math.max(0, heartCore + shock.hcHit);
+  const trustBefore = trust;
   trust = Math.max(0, trust + shock.trustHit);
+  const govBefore = governance;
   governance = Math.max(0, governance + shock.govHit);
 
-  impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;margin-top:6px;border-top:1px solid rgba(239,68,68,.2);"><span style="font-size:11px;color:var(--red);">Heart Core</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.hcHit + '</span></div>');
-  if (shock.trustHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:11px;color:var(--cyan);">Trust</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.trustHit + '</span></div>');
-  if (shock.govHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="font-size:11px;color:var(--purple);">Governance</span><span style="font-family:var(--fm);font-size:10px;color:var(--red);">' + shock.govHit + '</span></div>');
+  impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;margin-top:6px;border-top:1px solid rgba(239,68,68,.2);"><span style="font-size:11px;color:var(--red);">\u2764 Heart Core</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + hcBefore + '</span> \u2192 <span style="color:var(--red)">' + heartCore + '</span></span></div>');
+  if (shock.trustHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="font-size:11px;color:var(--cyan);">Trust</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + trustBefore + '</span> \u2192 <span style="color:var(--red)">' + trust + '</span></span></div>');
+  if (shock.govHit) impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="font-size:11px;color:var(--purple);">Governance</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + govBefore + '</span> \u2192 <span style="color:var(--red)">' + governance + '</span></span></div>');
 
   document.getElementById('shock-impacts').innerHTML = '<div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:2px;margin-bottom:8px;">IMMEDIATE IMPACT</div>' + impactLines.join('');
   document.getElementById('shock-meta').textContent = 'Turn ' + turnNumber + ' \u00B7 ' + (cityName || 'The City') + ' \u00B7 ' + (REGIONAL_CONFIG[cityRegion] || {label:'Urban'}).label;
 
-  // Update displays
+  // Sync all displays with new values
+  hcRevealed = true;
+  syncHC();
   renderDomainGrid();
   renderDSB();
 }
@@ -5569,7 +5601,7 @@ function deliverShock(shock) {
 function dismissShock() {
   const overlay = document.getElementById('shock-overlay');
   if (overlay) overlay.style.display = 'none';
-  if (heartCore <= 0) { populateCollapseScreen(); nav('scol'); return; }
+  if (checkCollapse()) { populateCollapseScreen(); nav('scol'); return; }
   renderDomainContext();
   updateManageButton();
   nav('so');
