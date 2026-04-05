@@ -4139,8 +4139,26 @@ function revealHeartCore() {
   });
   pendingHCChanges = [];
 
-  // Apply per-turn HC decay and cascade drain — visible on turn-end screen
-  heartCore = Math.max(0, heartCore - 3);
+  // Apply HC change based on actual domain health — city decays when domains struggle
+  const dks = ['transport','housing','energy','health','economy','education'];
+  const critCount = dks.filter(k => domains[k] && domains[k].health < 25).length;
+  const strainCount = dks.filter(k => domains[k] && domains[k].health >= 25 && domains[k].health < 50).length;
+  const healthyCount = dks.filter(k => domains[k] && domains[k].health >= 75).length;
+
+  // Base: -1 (institutional entropy). Extra: -1 per strained, -2 per critical.
+  // Recovery: +1 if no domain below 50; +2 if all above 75
+  let hcChange = -1;
+  hcChange -= critCount * 2;
+  hcChange -= strainCount;
+  if (critCount === 0 && strainCount === 0) hcChange += 1;
+  if (healthyCount === 6) hcChange += 2;
+  heartCore = Math.max(0, Math.min(100, heartCore + hcChange));
+
+  // Domain at 0 = catastrophic failure — massive HC hit
+  const zeroCount = dks.filter(k => domains[k] && domains[k].health <= 0).length;
+  if (zeroCount > 0) heartCore = Math.max(0, heartCore - (zeroCount * 15));
+
+  // Cascade drain
   if (turnCascades.length > 0) {
     heartCore = Math.max(0, heartCore - turnCascades.length * 2);
   }
