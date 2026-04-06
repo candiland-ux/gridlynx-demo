@@ -9,7 +9,18 @@
 :root{--bg:#0a0a0f;--bg2:#0f0f18;--bg3:#141422;--panel:#12121e;--panel2:#1a1a2e;--border:#2a2a45;--border-bright:#3d3d6b;--amber:#f59e0b;--amber-dim:#92600a;--amber-glow:rgba(245,158,11,0.15);--cyan:#06b6d4;--cyan-dim:#0e5f6e;--cyan-glow:rgba(6,182,212,0.12);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--red:#ef4444;--red-glow:rgba(239,68,68,0.12);--purple:#8b5cf6;--purple-glow:rgba(139,92,246,0.12);--text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#475569;--fd:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--fb:'Exo 2',sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;}
-.screen{display:none;min-height:100vh;animation:fi .3s ease;}
+body::before{content:'';position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(ellipse 120% 50% at 50% 65%, rgba(245,158,11,.06) 0%, transparent 70%),
+  radial-gradient(ellipse 80% 30% at 30% 70%, rgba(6,182,212,.04) 0%, transparent 60%),
+  radial-gradient(ellipse 60% 25% at 70% 72%, rgba(139,92,246,.03) 0%, transparent 50%),
+  linear-gradient(180deg, #06060c 0%, #0a0a14 30%, #12101c 55%, #0d0b14 75%, #08080f 100%);pointer-events:none;}
+body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-index:-1;background:
+  linear-gradient(0deg, transparent 0%,transparent 2%,rgba(245,158,11,.012) 2%,transparent 2.5%,transparent 5%,rgba(245,158,11,.01) 5%,transparent 5.3%,transparent 8%,rgba(245,158,11,.015) 8%,transparent 8.4%,transparent 12%,rgba(6,182,212,.008) 12%,transparent 12.3%,transparent 15%,rgba(245,158,11,.01) 15%,transparent 15.5%,transparent 20%,rgba(139,92,246,.006) 20%,transparent 20.2%,transparent 25%,rgba(245,158,11,.008) 25%,transparent 25.4%,transparent 32%,rgba(6,182,212,.006) 32%,transparent 32.3%,transparent 100%);
+  mask-image:linear-gradient(to top, rgba(0,0,0,.6) 0%, rgba(0,0,0,.3) 40%, transparent 100%);-webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.6) 0%, rgba(0,0,0,.3) 40%, transparent 100%);pointer-events:none;}
+.screen{display:none;min-height:100vh;animation:fi .3s ease;position:relative;}
+.screen::before{content:'';position:fixed;inset:0;z-index:0;opacity:.025;pointer-events:none;background-image:
+  repeating-linear-gradient(90deg,rgba(245,158,11,.4) 0px,transparent 1px,transparent 80px),
+  repeating-linear-gradient(0deg,rgba(6,182,212,.3) 0px,transparent 1px,transparent 80px);}
 .screen.active{display:flex;flex-direction:column;}
 @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .scroll{overflow-y:auto;flex:1;}
@@ -25,7 +36,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
 
 /* BUTTONS */
-.btn{flex:1;padding:12px;font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.btn{flex:1;padding:13px;font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);text-shadow:0 1px 2px rgba(0,0,0,.3);}
 .btn-p{background:var(--amber-glow);color:var(--amber);border-color:var(--amber);}
 .btn-p:hover{background:rgba(245,158,11,.22);}
 .btn-s{background:transparent;color:var(--text-dim);border-color:var(--border);}
@@ -34,7 +45,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .btn-c:hover{background:rgba(6,182,212,.22);}
 .btn-pu{background:var(--purple-glow);color:var(--purple);border-color:var(--purple);}
 .btn-r{background:var(--red-glow);color:var(--red);border-color:var(--red);}
-.ab{padding:14px 20px;border-top:1px solid var(--border);background:var(--panel);display:flex;gap:10px;flex-shrink:0;}
+.ab{padding:16px 20px;border-top:1px solid var(--border);background:linear-gradient(to top,var(--panel) 0%,var(--panel2) 100%);display:flex;gap:10px;flex-shrink:0;box-shadow:0 -4px 16px rgba(0,0,0,.3);}
 
 /* PILLS */
 .pill{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:3px 10px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
@@ -117,9 +128,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .ovc{font-family:var(--fd);font-size:28px;font-weight:700;color:var(--text);margin-top:2px;}
 .sps{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .hcp{margin:16px 20px;padding:18px;background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden;}
+.hcp::before{content:'';position:absolute;top:50%;left:30px;width:140px;height:140px;transform:translate(-20%,-50%);background:radial-gradient(circle,rgba(245,158,11,.12) 0%,rgba(245,158,11,.04) 40%,transparent 70%);pointer-events:none;}
 .hcp::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(245,158,11,.06),transparent 70%);pointer-events:none;}
 .hcr{display:flex;align-items:center;gap:18px;}
-.hcorb{width:60px;height:60px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3);cursor:pointer;transition:box-shadow .15s,transform .12s;}
+.hcorb{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#fcd34d,#d97706,#92400e);box-shadow:0 0 30px rgba(245,158,11,.7),0 0 60px rgba(245,158,11,.3),inset 0 0 15px rgba(252,211,77,.4);cursor:pointer;transition:box-shadow .15s,transform .12s;}
 @keyframes hpa{0%,100%{box-shadow:0 0 24px rgba(245,158,11,.7),0 0 48px rgba(245,158,11,.3)}50%{box-shadow:0 0 32px rgba(245,158,11,.9),0 0 64px rgba(245,158,11,.4)}}
 .hci{flex:1;}
 .hcl{font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;}
@@ -132,7 +144,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .hcb{height:6px;background:var(--bg3);}
 .hcbf{height:100%;width:73%;background:linear-gradient(90deg,var(--red),var(--amber) 50%,var(--green));}
 .dg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 20px;}
-.dc{background:var(--panel);border:1px solid var(--border);padding:13px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.dc{background:linear-gradient(135deg,var(--panel) 0%,var(--bg3) 100%);border:1px solid var(--border);padding:16px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;border-radius:2px;}
 .dc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
 .dc.g::after{background:var(--green);}
 .dc.a::after{background:var(--amber);}
@@ -143,16 +155,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .dc.a:hover{background:rgba(245,158,11,.04);}
 .dc.r:hover{background:rgba(239,68,68,.04);}
 .dc.c:hover{background:rgba(6,182,212,.04);}
-.dci{font-size:19px;margin-bottom:7px;}
+.dci{font-size:28px;margin-bottom:8px;filter:drop-shadow(0 0 6px rgba(255,255,255,.15));}
 .dcn{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);}
 .dcs{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.3;}
 .dcm{margin-top:9px;}
 .dcml{display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);}
-.dcmb{height:3px;background:var(--bg3);margin-top:3px;}
-.dcmf{height:100%;}
-.dc.g .dcmf{background:var(--green);}
-.dc.a .dcmf{background:var(--amber);}
-.dc.r .dcmf{background:var(--red);}
+.dcmb{height:5px;background:var(--bg3);margin-top:4px;border-radius:3px;overflow:hidden;}
+.dcmf{height:100%;border-radius:3px;transition:width .6s ease;}
+.dc.g .dcmf{background:var(--green);}.dc.g{border-color:rgba(16,185,129,.25);box-shadow:0 0 12px rgba(16,185,129,.08);}
+.dc.a .dcmf{background:var(--amber);}.dc.a{border-color:rgba(245,158,11,.25);box-shadow:0 0 12px rgba(245,158,11,.08);}
+.dc.r .dcmf{background:var(--red);}.dc.r{border-color:rgba(239,68,68,.25);box-shadow:0 0 12px rgba(239,68,68,.1);}
 .dc.c .dcmf{background:var(--cyan);}
 .dcw{font-family:var(--fm);font-size:8px;color:var(--red);margin-top:5px;}
 
@@ -191,6 +203,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .pcard.sel{border-color:var(--red);background:var(--red-glow);}
 .pcard.sel .drad{border-color:var(--red);background:var(--red);}
 .pcard.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+#decloan.sel{border-color:var(--purple) !important;background:rgba(139,92,246,.12) !important;}
+#decloan.sel .drad{border-color:var(--purple);background:var(--purple);}
+#decloan.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
 .plbl{font-family:var(--fd);font-size:13px;color:var(--text-muted);}
 .pcon{font-size:11px;color:var(--red);margin-top:2px;}
 .spp{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin-bottom:14px;}
@@ -1387,6 +1402,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
             <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>EVENTS &amp; POLICIES</span><span id="budget-value-label" style="color:var(--amber)">$80M</span></div>
           </div>
         </div>
+        <div id="loan-status-dash" style="display:none;margin-top:8px;padding:8px 10px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);">
+          <div style="font-family:var(--fm);font-size:8px;color:var(--purple);letter-spacing:1px;">🏦 ACTIVE LOAN</div>
+          <div style="font-size:10px;color:var(--text);margin-top:3px;" id="loan-status-text"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1525,6 +1544,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <!-- Dynamic: cascade warnings -->
     <div id="te-cascades"></div>
     <!-- Dynamic: budget changes -->
+    <div id="te-event-results"></div>
     <div id="te-budgets"></div>
     <div class="sl" id="te-players-label">DOMAIN OUTCOMES THIS TURN</div>
     <div style="padding:0 20px 20px;" id="te-player-rows">
@@ -1848,6 +1868,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 </div>
 
 <!-- STRATEGIC CHANNEL OVERLAY -->
+
+<!-- COUNCIL VOTE OVERLAY -->
+<div id="council-vote-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;">
+  <div style="max-width:380px;width:90%;padding:24px;background:var(--panel2);border:2px solid var(--red);">
+    <div style="font-family:var(--fm);font-size:10px;color:var(--red);letter-spacing:3px;margin-bottom:6px;">⚠ EMERGENCY COUNCIL VOTE</div>
+    <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:12px;">Heart Core Critical</div>
+    <div id="council-vote-list"></div>
+  </div>
+</div>
+
+<!-- CRISIS INSURANCE OVERLAY -->
+<div id="insurance-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;flex-direction:column;" onclick="if(event.target===this)declineInsurance()">
+  <div style="max-width:340px;width:90%;padding:24px;background:var(--panel2);border:1px solid rgba(6,182,212,.3);">
+    <div style="font-family:var(--fm);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:6px;">🛡 CRISIS INSURANCE</div>
+    <div style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;">Protect Your Domain?</div>
+    <div style="font-size:11px;color:var(--text);line-height:1.6;margin-bottom:16px;">Pay <strong style="color:var(--cyan);">$5M</strong> from your domain budget now. If a shock hits this turn, your domain takes 40% less damage. If no shock hits, the money is gone.</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="buyInsurance()" style="flex:1;padding:12px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.3);color:var(--cyan);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">🛡 BUY $5M</button>
+      <button onclick="declineInsurance()" style="flex:1;padding:12px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">DECLINE</button>
+    </div>
+  </div>
+</div>
+
+<!-- STRATEGIC CHANNEL OVERLAY -->
 <div id="strategic-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStrategic()">
   <div style="background:var(--panel2);width:100%;max-width:480px;max-height:85vh;border-top:2px solid var(--amber);animation:sheetUp .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;">
     <div style="padding:16px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;">
@@ -2098,6 +2142,12 @@ function fmtB(n){ return '$' + n + 'M'; }
 let pendingHCChanges = []; // queue HC changes during decision phase, apply at turn-end
 let hcRevealed = false; // HC display stays frozen until turn-end reveal
 let govBeforeTurn = 72, trustBeforeTurn = 64; // snapshot at turn start for turn-end delta
+let hasShockInsurance = false; // crisis insurance active this turn
+let insurancePurchased = false; // once bought, never offered again
+let insuranceOfferCount = 0; // max 2 offers per game
+let activeLoan = null; // {amount, repayTurn, originalAmount} — null if no loan
+let lastBribeDecision = null; // tracks what the bribe funded for audit reversal
+let turnEventResults = []; // tracks event vote outcomes for turn-end display
 window.isPRO = false; // Toggle PRO features — false = base (first intel insight + blur), true = full intel
 
 // Apply HC floor — not used for collapse anymore, just prevents HC display from hitting 0 prematurely
@@ -2280,12 +2330,24 @@ function beginNextTurn(){
   myDoms.forEach(function(dk) {
     const dh = domains[dk] ? domains[dk].health : 50;
     let domRev = 0;
-    if (dh >= 90) domRev = 10 + Math.floor(Math.random() * 4);
-    else if (dh >= 75) domRev = 7 + Math.floor(Math.random() * 4);
-    else if (dh >= 50) domRev = 4 + Math.floor(Math.random() * 4);
-    else if (dh >= 25) domRev = 1 + Math.floor(Math.random() * 3);
-    else domRev = Math.floor(Math.random() * 2);
+    if (dh >= 90) domRev = 12 + Math.floor(Math.random() * 4);
+    else if (dh >= 75) domRev = 9 + Math.floor(Math.random() * 4);
+    else if (dh >= 50) domRev = 6 + Math.floor(Math.random() * 5);
+    else if (dh >= 25) domRev = 3 + Math.floor(Math.random() * 4);
+    else domRev = 1 + Math.floor(Math.random() * 2);
     domainBudgets[dk] = Math.min(100, (domainBudgets[dk] || 0) + domRev);
+  });
+
+  // Simulate AI domain budgets — revenue and spending so status labels shift each turn
+  const allDomKeys = ['transport','housing','energy','health','economy','education'];
+  allDomKeys.forEach(function(dk) {
+    if (myDoms.includes(dk)) return; // skip player domains
+    const dh = domains[dk] ? domains[dk].health : 50;
+    // Revenue based on health
+    let aiRev = dh >= 75 ? 6 + Math.floor(Math.random() * 5) : dh >= 50 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 3);
+    // Spending — AI makes decisions too
+    let aiSpend = 6 + Math.floor(Math.random() * 7);
+    domainBudgets[dk] = Math.max(0, Math.min(100, (domainBudgets[dk] || 0) + aiRev - aiSpend));
   });
 
   // Apply pending spillover budget changes — reveal net impact privately
@@ -2311,9 +2373,14 @@ function beginNextTurn(){
   const budgetEl = document.getElementById('budget-display');
   if (budgetEl) budgetEl.textContent = fmtB(domainBudgets[myDomain||'energy']||0);
 
+  // Check loan repayment
+  checkLoanRepayment();
+
+
   selDec=null;
   committedDomains = new Set();
   turnSpillovers = [];  // reset for new turn
+  turnEventResults = []; // reset event vote tracking
 
   // HC is already decayed from revealHeartCore — just snapshot for next turn
   hcBeforeTurn = heartCore;
@@ -2353,6 +2420,20 @@ function beginNextTurn(){
   // Show final turn warning
   if (turnNumber >= maxTurns - 1) {
     showToast(turnNumber >= maxTurns ? '⏱ FINAL TURN — last chance to hit your objective' : '⏱ Approaching final turn');
+  }
+
+  // Emergency council vote if HC critically low
+  if (heartCore < 30 && heartCore > 0 && turnNumber > 2) {
+    setTimeout(function(){ triggerCouncilVote(); }, 1500);
+  }
+
+  // Offer crisis insurance: first time on turn 3, second time after turn 5 if declined. Never if already purchased.
+  const shouldOfferInsurance = !insurancePurchased && (domainBudgets[myDomain||'energy']||0) >= 5 && (
+    (insuranceOfferCount === 0 && turnNumber >= 3) ||
+    (insuranceOfferCount === 1 && turnNumber >= 5)
+  );
+  if (shouldOfferInsurance) {
+    setTimeout(function(){ offerShockInsurance(); }, heartCore < 30 ? 4000 : 500);
   }
 
   nav('so');
@@ -4522,7 +4603,18 @@ function openDomain(key){
       ${exhaustedMsg}
       ${brokeMsg}
       ${decs}
-      ${tier!=='thriving'?`<div class="pcard" id="decpass" onclick="selDec2('pass')"><div class="drad"></div><div><div class="plbl">Pass — Take no action</div><div class="pcon">${d.pass}</div><div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:4px;">No budget cost, but domain health declines</div></div></div>`:''}
+      ${!activeLoan && cityBudget >= 10 ? `<div class="pcard" id="decloan" onclick="selDec2('loan')" style="border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.04);">
+        <div class="drad"></div>
+        <div>
+          <div class="plbl" style="color:var(--purple);">🏦 City Treasury Loan</div>
+          <div style="font-size:10px;color:var(--text);line-height:1.5;margin-top:3px;">Borrow $10\u201320M from the city treasury. Public record \u2014 all players will see. Repayment due in 3 turns at 40% interest. Default penalties: governance drops, budget garnished.</div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:4px;">No domain budget cost \u2014 money comes from city treasury</div>
+        </div>
+      </div>` : ''}${activeLoan ? `<div style="margin:10px 0;padding:10px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.2);">
+        <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:1px;">🏦 ACTIVE LOAN</div>
+        <div style="font-size:10px;color:var(--text);margin-top:4px;">Owe ${fmtB(activeLoan.repay)} \u2014 due turn ${activeLoan.repayTurn}</div>
+      </div>` : ''}
+      ${tier!=='thriving'?`<div class="pcard" id="decpass" onclick="selDec2('pass')"><div class="drad"></div><div><div class="plbl">Pass \u2014 Take no action</div><div class="pcon">${d.pass}</div><div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);margin-top:4px;">No budget cost, but domain health declines</div></div></div>`:''}
       <div class="spp"><div class="spt">CONNECTED DOMAINS — YOUR DECISIONS AFFECT THESE</div>${sps}</div>
     </div>`;
   nav('sd');
@@ -4700,6 +4792,19 @@ function confirmDecision(){
     turnSpillovers.push(...spillovers);
 
     showToast('Pass recorded — consequences revealed at turn end');
+  } else if(selDec==='loan'){
+    // Loan selected — process inline
+    if (activeLoan) { showToast('You already have an outstanding loan.'); return; }
+    if (cityBudget < 10) { showToast('City treasury too low for a loan.'); return; }
+    const loanAmount = 10 + Math.floor(Math.random() * 11);
+    const repayAmount = loanAmount + Math.floor(loanAmount * 0.4);
+    activeLoan = { amount: loanAmount, repay: repayAmount, repayTurn: turnNumber + 3 };
+    const budgetBefore = domainBudgets[curDomain] || 0;
+    domainBudgets[curDomain] = Math.min(100, budgetBefore + loanAmount);
+    cityBudget = Math.max(0, cityBudget - loanAmount);
+    window._loanTakenThisTurn = { domain: curDomain, amount: loanAmount };
+    renderGovTrust();
+    showToast('\uD83C\uDFE6 Loan: +' + fmtB(loanAmount) + '. Budget: ' + fmtB(budgetBefore) + ' \u2192 ' + fmtB(domainBudgets[curDomain]) + '. Owe ' + fmtB(repayAmount) + ' in 3 turns.');
   } else {
     const dec=tierDecs[selDec];
     if (!dec) { showToast('Decision not found — try again'); return; }
@@ -4743,6 +4848,12 @@ function confirmDecision(){
     const govNote = govMod < 0.9 ? ' (gov: ' + Math.round(govMod*100) + '%)' : '';
     const costNote = decCost > 0 ? ' | Budget: ' + fmtB(budgetBefore) + ' → ' + fmtB(domainBudgets[curDomain]) : '';
     showToast(effectiveDelta>0?`"${dec.name}" committed — Health +${effectiveDelta}${costNote}${spillovers.length?' + '+spillovers.length+' spillovers':''}`:`"${dec.name}" committed${costNote}`);
+
+    // Track if this decision was funded by a bribe
+    if (window._bribeFundedDomain === curDomain) {
+      lastBribeDecision = { domain: curDomain, delta: effectiveDelta, spillovers: spillovers.slice() };
+      window._bribeFundedDomain = null;
+    }
   }
 
   if(checkCollapse()){renderDomainGrid();renderDSB();populateCollapseScreen();setTimeout(()=>nav('scol'),1400);return;}
@@ -4924,6 +5035,31 @@ function revealHeartCore() {
     cascEl.innerHTML = cascHtml;
   }
 
+  // Event vote results on turn-end
+  const eventResultsEl = document.getElementById('te-event-results');
+  if (eventResultsEl && turnEventResults.length > 0) {
+    let evHtml = '<div style="margin:0 20px 10px;padding:14px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);">';
+    evHtml += '<div style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:8px;">\uD83D\uDCCB CITY EVENT DECISIONS</div>';
+    let totalSpent = 0;
+    turnEventResults.forEach(function(ev) {
+      const typeIcon = ev.type === 'crisis' ? '\uD83D\uDEA8' : ev.type === 'policy' ? '\uD83D\uDCDC' : '\u2B50';
+      const resultCol = ev.result === 'APPROVED' ? 'var(--green)' : ev.result === 'REJECTED' ? 'var(--red)' : 'var(--text-muted)';
+      const resultIcon = ev.result === 'APPROVED' ? '\u2713' : ev.result === 'REJECTED' ? '\u274C' : '\u23ED';
+      if (ev.spent) totalSpent += ev.cost;
+      evHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);">';
+      evHtml += '<div style="flex:1;"><span style="font-size:12px;">' + typeIcon + '</span> <span style="font-size:11px;color:var(--text);">' + ev.title + '</span></div>';
+      evHtml += '<div style="text-align:right;"><span style="font-family:var(--fm);font-size:10px;color:' + resultCol + ';font-weight:700;">' + resultIcon + ' ' + ev.result + '</span>';
+      evHtml += '<div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);">Vote: ' + ev.votes + (ev.spent ? ' | Cost: ' + fmtB(ev.cost) : '') + '</div></div></div>';
+    });
+    if (totalSpent > 0) {
+      evHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:4px;border-top:1px solid rgba(245,158,11,.2);"><span style="font-size:11px;color:var(--amber);">Total spent on events</span><span style="font-family:var(--fd);font-size:13px;font-weight:700;color:var(--amber);">' + fmtB(totalSpent) + '</span></div>';
+    }
+    evHtml += '</div>';
+    eventResultsEl.innerHTML = evHtml;
+  } else if (eventResultsEl) {
+    eventResultsEl.innerHTML = '';
+  }
+
   // Budget summary on turn-end
   const budgetEl = document.getElementById('te-budgets');
   if (budgetEl) {
@@ -4960,49 +5096,102 @@ function revealHeartCore() {
 function spendInf(cost,msg){if(infBal<cost){showToast('Insufficient influence tokens');return;}infBal-=cost;document.getElementById('infval').textContent=infBal;showToast(msg);}
 
 function runAudit(){
-  const exposed=Math.random()<0.35;
-  const ra=document.getElementById('auditresult');
-  const ab=document.getElementById('auditbar');
-  ra.innerHTML=exposed
-    ?`<div class="aurz exp" style="margin:16px 20px 0"><div class="aurzt">⚠ EXPOSED</div><div class="aurzd">Corruption confirmed in Housing &amp; Living. Player 3 loses domain control for 2 turns. Trust index −15. You gain 20 influence tokens.</div></div>`
-    :`<div class="aurz clean" style="margin:16px 20px 0"><div class="aurzt">✓ CLEAN</div><div class="aurzd">No corruption found. Player 3 retains domain control. You lose 8 credibility points and 15 influence tokens.</div></div>`;
-  ab.innerHTML=`<button class="btn btn-p" style="width:100%;" onclick="nav('ste')">CONTINUE → END OF TURN</button>`;
+  if (infBal < 15) { showToast('Need 15 influence tokens to audit'); return; }
+  infBal -= 15;
+  const exposed = Math.random() < 0.35;
+  const ra = document.getElementById('auditresult');
+  const ab = document.getElementById('auditbar');
+
+  if (exposed) {
+    let reverseMsg = '';
+    if (lastBribeDecision) {
+      const dk = lastBribeDecision.domain;
+      const delta = lastBribeDecision.delta;
+      if (domains[dk]) {
+        domains[dk].health = Math.max(0, domains[dk].health - delta);
+        updateDomainStatus(dk);
+      }
+      if (lastBribeDecision.spillovers) {
+        lastBribeDecision.spillovers.forEach(function(s){
+          if (domains[s.target]) {
+            domains[s.target].health = Math.max(0, domains[s.target].health - s.delta);
+            updateDomainStatus(s.target);
+          }
+        });
+      }
+      const dName = domains[dk] ? domains[dk].name.split(' ')[0] : dk;
+      reverseMsg = ' The bribe-funded decision has been reversed \u2014 ' + dName + ' lost ' + delta + ' health and all spillovers undone.';
+      lastBribeDecision = null;
+    }
+    trust = Math.max(0, trust - 12);
+    governance = Math.max(0, governance - 5);
+    ra.innerHTML = '<div class="aurz exp" style="margin:16px 20px 0"><div class="aurzt">\u26A0 EXPOSED</div><div class="aurzd">Corruption confirmed. Trust \u221212, Governance \u22125.' + reverseMsg + '</div></div>';
+    renderDomainGrid(); renderDSB(); renderGovTrust();
+  } else {
+    ra.innerHTML = '<div class="aurz clean" style="margin:16px 20px 0"><div class="aurzt">\u2713 CLEAN</div><div class="aurzd">No corruption found. 15 influence tokens spent. Trust unaffected.</div></div>';
+  }
+  ab.innerHTML = '<button class="btn btn-p" style="width:100%;" onclick="nav(\'ste\')">CONTINUE \u2192 END OF TURN</button>';
   window.scrollTo(0,9999);
 }
 
 function resolveEv(id,msg,type){
   const card=document.getElementById(id);
+  const evTitle = card.querySelector('.evti') ? card.querySelector('.evti').textContent : msg;
+  const evType = card.classList.contains('cr') ? 'crisis' : card.classList.contains('po') ? 'policy' : 'opportunity';
   if (type !== 'd') {
-    // ACT — deduct city budget
     const cost = parseInt(card.getAttribute('data-cost') || '0');
     if (cost > cityBudget) {
       showToast('City treasury cannot afford this (' + fmtB(cost) + ' needed, ' + fmtB(cityBudget) + ' available)');
       return;
     }
+    // Vote required — you vote yes, simulate 3 AI players
+    const isCrisis = evType === 'crisis';
+    const isPolicy = evType === 'policy';
+    const approvalChance = isCrisis ? 0.75 : isPolicy ? 0.55 : 0.6;
+    let yesVotes = 1;
+    for (let v = 0; v < 3; v++) { if (Math.random() < approvalChance) yesVotes++; }
+    const approved = yesVotes >= 3;
+
+    if (!approved) {
+      turnEventResults.push({ title: evTitle, type: evType, result: 'REJECTED', votes: yesVotes + '/4', cost: cost, spent: false });
+      card.classList.add('resolved');
+      const vb = document.createElement('div');
+      vb.className = 'evrb';
+      vb.style.color = 'var(--red)';
+      vb.textContent = '\u274C VOTE FAILED (' + yesVotes + '/4) \u2014 ' + fmtB(cost) + ' not spent. Consequences carry forward.';
+      card.appendChild(vb);
+      if (isCrisis) { trust = Math.max(0, trust - 4); }
+      governance = Math.max(0, governance - 1);
+      renderGovTrust();
+      showToast('Council rejected (' + yesVotes + '/4). Event deferred.');
+      return;
+    }
+    const treasuryBefore = cityBudget;
     cityBudget = Math.max(0, cityBudget - cost);
-
-    // Acting on events builds trust and governance
-    // Find event type from card class
-    const isCrisis = card.classList.contains('cr');
-    const isPolicy = card.classList.contains('po');
-    if (isCrisis) { trust = Math.min(100, trust + 3); } // city responded — trust rises
-    if (isPolicy) { governance = Math.min(100, governance + 2); } // new systems adopted
-    trust = Math.min(100, trust + 1); // any action shows leadership
-
+    turnEventResults.push({ title: evTitle, type: evType, result: 'APPROVED', votes: yesVotes + '/4', cost: cost, spent: true, treasuryBefore: treasuryBefore, treasuryAfter: cityBudget });
+    if (isCrisis) { trust = Math.min(100, trust + 3); }
+    if (isPolicy) { governance = Math.min(100, governance + 2); }
+    trust = Math.min(100, trust + 1);
     renderGovTrust();
+    card.classList.add('resolved');
+    const rb = document.createElement('div');
+    rb.className = 'evrb';
+    rb.textContent = '\u2713 APPROVED (' + yesVotes + '/4) \u2014 ' + fmtB(cost) + ' from treasury. ' + msg;
+    card.appendChild(rb);
+    showToast(msg + ' | Vote: ' + yesVotes + '/4 | Treasury: ' + fmtB(cityBudget));
   } else {
-    // DEFER — consequences to trust and governance
-    const isCrisis = card.classList.contains('cr');
-    if (isCrisis) { trust = Math.max(0, trust - 4); } // city ignored a crisis — trust drops
-    governance = Math.max(0, governance - 1); // inaction weakens institutions
+    turnEventResults.push({ title: evTitle, type: evType, result: 'DEFERRED', votes: '0/4', cost: 0, spent: false });
+    const isCrisis = evType === 'crisis';
+    if (isCrisis) { trust = Math.max(0, trust - 4); }
+    governance = Math.max(0, governance - 1);
     renderGovTrust();
+    card.classList.add('resolved');
+    const db = document.createElement('div');
+    db.className = 'evrb';
+    db.textContent = '\u23ED DEFERRED \u2014 consequences carry forward';
+    card.appendChild(db);
+    showToast(msg + ' | Trust affected');
   }
-  card.classList.add('resolved');
-  const b=document.createElement('div');
-  b.className='evrb';
-  b.textContent=type==='d'?'⏭ DEFERRED — consequences carry forward':'✓ RESOLVED — '+msg;
-  card.appendChild(b);
-  showToast(type==='d' ? msg + ' | Trust affected' : msg + ' | Treasury: ' + fmtB(cityBudget));
 }
 
 let pt;
@@ -6214,6 +6403,7 @@ function selectStrategic(idx) {
   committedDomains.add(curDomain);
   if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
   usedDecisions[curDomain][s.name] = 3; // corruption has longer cooldown
+  window._privateActionThisTurn = true;
   showToast('Private action committed. Other players will see the flag.');
   renderDomainGrid();
   renderDSB();
@@ -6227,13 +6417,17 @@ function closeStrategic() {
 
 function acceptBribe() {
   const amount = 15 + Math.floor(Math.random() * 11); // 15-25
-  domainBudgets[curDomain] = Math.min(100, (domainBudgets[curDomain] || 0) + amount);
+  const budgetBefore = domainBudgets[curDomain] || 0;
+  domainBudgets[curDomain] = Math.min(100, budgetBefore + amount);
   trust = Math.max(0, trust - 3); // small hidden trust cost
   closeStrategic();
-  showToast('\uD83D\uDCB0 +$' + amount + 'M accepted. Private Action flagged.');
+  showToast('\uD83D\uDCB0 +' + fmtB(amount) + '. Budget: ' + fmtB(budgetBefore) + ' \u2192 ' + fmtB(domainBudgets[curDomain]));
   // Mark as private action for turn-end visibility
   if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
   usedDecisions[curDomain]['__bribe__'] = 3;
+  // Flag that next decision on this domain is bribe-funded
+  window._bribeFundedDomain = curDomain;
+  window._privateActionThisTurn = true;
   // Re-render domain screen with updated budget so cards unlock
   setTimeout(function(){ openDomain(curDomain); }, 800);
 }
@@ -6241,6 +6435,144 @@ function acceptBribe() {
 function dismissBriefing() {
   const overlay = document.getElementById('briefing-overlay');
   if (overlay) overlay.style.display = 'none';
+}
+
+// ── FEATURE 1: EMERGENCY CITY COUNCIL VOTE ──────────────────────────
+function triggerCouncilVote() {
+  const overlay = document.getElementById('council-vote-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const domIcons = {transport:'\uD83D\uDE87',housing:'\uD83C\uDFD8',energy:'\u26A1',health:'\uD83C\uDFE5',economy:'\uD83D\uDCCA',education:'\uD83C\uDF93'};
+  const myDk = myDomain || 'energy';
+  const votable = domKeys.filter(function(k){ return k !== myDk; });
+  document.getElementById('council-vote-list').innerHTML = '<div style="font-size:11px;color:var(--text);line-height:1.6;margin-bottom:12px;">Heart Core is critically low. The city council must divert $10M from one domain\u2019s budget to fund emergency stabilization. Vote for the domain that loses funding. You cannot vote for yourself.</div>' +
+    votable.map(function(k){
+      const d = domains[k];
+      const budStatus = (domainBudgets[k]||0) >= 30 ? 'STABLE' : (domainBudgets[k]||0) >= 15 ? 'PRESSURED' : 'STRAINED';
+      return '<div onclick="castCouncilVote(\'' + k + '\')" style="padding:12px;margin-bottom:8px;background:var(--panel);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">' + domIcons[k] + '</span><span style="font-size:12px;color:var(--text);">' + d.name.split(' ')[0] + '</span></div><span style="font-family:var(--fm);font-size:8px;color:var(--text-muted);">Budget: ' + budStatus + '</span></div>';
+    }).join('');
+}
+
+function castCouncilVote(targetDomain) {
+  // Simulate other players voting randomly
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  const myDk = myDomain || 'energy';
+  const votes = {};
+  domKeys.forEach(function(k){ votes[k] = 0; });
+  votes[targetDomain] = 1; // your vote
+  // AI players vote (biased toward domains with more budget)
+  for (let i = 0; i < 3; i++) {
+    const votable = domKeys.filter(function(k){ return k !== myDk; });
+    const pick = votable[Math.floor(Math.random() * votable.length)];
+    votes[pick] = (votes[pick] || 0) + 1;
+  }
+  // Find domain with most votes
+  let maxVotes = 0, loser = '';
+  domKeys.forEach(function(k){
+    if (votes[k] > maxVotes) { maxVotes = votes[k]; loser = k; }
+  });
+  // Deduct from loser
+  domainBudgets[loser] = Math.max(0, (domainBudgets[loser]||0) - 10);
+  heartCore = Math.min(100, heartCore + 8); // HC stabilized
+  syncHC();
+  const overlay = document.getElementById('council-vote-overlay');
+  if (overlay) overlay.style.display = 'none';
+  const loserName = domains[loser] ? domains[loser].name.split(' ')[0] : loser;
+  showToast('\uD83C\uDFDB Council voted: ' + loserName + ' loses $10M. Heart Core stabilized.');
+  renderGovTrust();
+  renderDSB();
+}
+
+// ── FEATURE 2: AUDIT WITH REAL CONSEQUENCES ─────────────────────────
+// (wired into existing runAudit — see modification below)
+
+// ── FEATURE 3: BUDGET STATUS VISIBLE TO OTHERS ──────────────────────
+// (wired into renderTurnEndRows — see modification below)
+
+// ── FEATURE 4: CRISIS INSURANCE ──────────────────────────────────────
+function offerShockInsurance() {
+  if (insurancePurchased) return; // already bought this game
+  if (insuranceOfferCount >= 2) return; // max 2 offers
+  const myDk = myDomain || 'energy';
+  const myBud = domainBudgets[myDk] || 0;
+  if (myBud < 5) return; // can't afford
+  const overlay = document.getElementById('insurance-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+}
+
+function buyInsurance() {
+  const myDk = myDomain || 'energy';
+  domainBudgets[myDk] = Math.max(0, (domainBudgets[myDk]||0) - 5);
+  hasShockInsurance = true;
+  insurancePurchased = true;
+  insuranceOfferCount++;
+  const overlay = document.getElementById('insurance-overlay');
+  if (overlay) overlay.style.display = 'none';
+  showToast('\uD83D\uDEE1 Crisis insurance purchased for $5M. 40% damage reduction if a crisis hits.');
+  renderGovTrust();
+}
+
+function declineInsurance() {
+  insuranceOfferCount++;
+  const overlay = document.getElementById('insurance-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ── FEATURE 6: LOAN SYSTEM ──────────────────────────────────────────
+function takeLoan() {
+  if (activeLoan) { showToast('You already have an outstanding loan.'); return; }
+  const loanAmount = 10 + Math.floor(Math.random() * 11); // $10-20M
+  const repayAmount = loanAmount + Math.floor(loanAmount * 0.4); // 40% interest
+  activeLoan = { amount: loanAmount, repay: repayAmount, repayTurn: turnNumber + 3 };
+  const budgetBefore = domainBudgets[curDomain] || 0;
+  domainBudgets[curDomain] = Math.min(100, budgetBefore + loanAmount);
+  cityBudget = Math.max(0, cityBudget - loanAmount); // comes from city treasury
+  window._loanTakenThisTurn = { domain: curDomain, amount: loanAmount };
+  showToast('\uD83C\uDFE6 Loan: +' + fmtB(loanAmount) + '. Budget: ' + fmtB(budgetBefore) + ' \u2192 ' + fmtB(domainBudgets[curDomain]) + '. Owe ' + fmtB(repayAmount) + ' in 3 turns.');
+  renderGovTrust();
+  // Re-render domain screen with updated budget so cards unlock
+  setTimeout(function(){ openDomain(curDomain); }, 800);
+}
+
+function checkLoanRepayment() {
+  if (!activeLoan) return;
+  const turnsLeft = activeLoan.repayTurn - turnNumber;
+  // Warning one turn before
+  if (turnsLeft === 1) {
+    setTimeout(function(){
+      showToast('\u26A0 LOAN DUE NEXT TURN: ' + fmtB(activeLoan.repay) + ' will be deducted from your domain budget.');
+    }, 1200);
+    return;
+  }
+  if (turnNumber >= activeLoan.repayTurn) {
+    const myDk = myDomain || 'energy';
+    const budBefore = domainBudgets[myDk] || 0;
+    const canRepay = budBefore >= activeLoan.repay;
+    if (canRepay) {
+      domainBudgets[myDk] = budBefore - activeLoan.repay;
+      setTimeout(function(){
+        showToast('\uD83C\uDFE6 Loan repaid: ' + fmtB(activeLoan.repay) + ' deducted. Budget: ' + fmtB(budBefore) + ' \u2192 ' + fmtB(domainBudgets[myDk]));
+      }, 1200);
+    } else {
+      // Default — governance penalty and budget garnished
+      const garnish = Math.min(budBefore, activeLoan.repay);
+      domainBudgets[myDk] = Math.max(0, budBefore - garnish);
+      governance = Math.max(0, governance - 5);
+      trust = Math.max(0, trust - 3);
+      const remaining = activeLoan.repay - garnish;
+      setTimeout(function(){
+        showToast('\u26A0 LOAN DEFAULT! Budget garnished ' + fmtB(garnish) + '. Governance -5, Trust -3.' + (remaining > 0 ? ' ' + fmtB(remaining) + ' still owed.' : ''));
+      }, 1200);
+      if (remaining > 0) {
+        activeLoan.repay = remaining;
+        activeLoan.repayTurn = turnNumber + 2;
+        return;
+      }
+    }
+    activeLoan = null;
+  }
 }
 
 function renderGovTrust() {
@@ -6287,6 +6619,21 @@ function renderGovTrust() {
   // Utility bar shows domain budget
   const budgetTopEl = document.getElementById('budget-display');
   if (budgetTopEl) budgetTopEl.textContent = fmtB(myDomBudget);
+
+  // Loan status on dashboard
+  const loanDash = document.getElementById('loan-status-dash');
+  const loanText = document.getElementById('loan-status-text');
+  if (loanDash && loanText) {
+    if (activeLoan) {
+      loanDash.style.display = 'block';
+      const turnsLeft = activeLoan.repayTurn - turnNumber;
+      loanText.textContent = 'Owe ' + fmtB(activeLoan.repay) + ' \u2014 due in ' + turnsLeft + ' turn' + (turnsLeft !== 1 ? 's' : '') + (turnsLeft <= 1 ? ' \u26A0 IMMINENT' : '');
+      if (turnsLeft <= 1) loanText.style.color = 'var(--red)';
+      else loanText.style.color = 'var(--text)';
+    } else {
+      loanDash.style.display = 'none';
+    }
+  }
 
   // Trust detail screen
   const tvd = document.getElementById('trust-value-display');
@@ -6372,22 +6719,37 @@ function renderTurnEndRows() {
     if (!d) return;
 
     if (isYours) {
-      // YOUR domain — show exact health and status
+      // YOUR domain — show exact health and budget
       const statusCol = d.health >= 75 ? 'var(--green)' : d.health >= 50 ? 'var(--amber)' : d.health >= 25 ? 'var(--amber)' : 'var(--red)';
-      html += '<div class="teci" style="background:rgba(245,158,11,.04);border-color:var(--amber-dim);"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd" style="color:var(--amber)">' + domNames[key] + ' <span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--amber);padding:1px 4px;border:1px solid var(--amber-dim);vertical-align:middle;">YOU</span></div><div class="teca">Health: ' + d.health + '/100 \u2014 ' + d.status + '</div></div><div class="tecd2" style="color:' + statusCol + ';">' + d.health + '</div></div>';
+      const myBud = domainBudgets[key] || 0;
+      html += '<div class="teci" style="background:rgba(245,158,11,.04);border-color:var(--amber-dim);"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd" style="color:var(--amber)">' + domNames[key] + ' <span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--amber);padding:1px 4px;border:1px solid var(--amber-dim);vertical-align:middle;">YOU</span></div><div class="teca">Health: ' + d.health + '/100 \u2014 ' + d.status + '</div><div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:2px;">\uD83D\uDCB0 ' + fmtB(myBud) + '</div></div><div class="tecd2" style="color:' + statusCol + ';">' + d.health + '</div></div>';
     } else {
-      // OTHER domains — status label and direction ONLY
+      // OTHER domains — status + direction + budget status (no exact numbers)
       const statusCol = d.health >= 80 ? 'var(--green)' : d.health >= 55 ? 'var(--cyan)' : d.health >= 30 ? 'var(--amber)' : 'var(--red)';
       const simDelta = Math.round((Math.random() * 18) - 6);
       const direction = simDelta > 2 ? '\u2191 Improved' : simDelta < -2 ? '\u2193 Declined' : '\u2194 Holding';
       const dirCol = simDelta > 2 ? 'var(--green)' : simDelta < -2 ? 'var(--red)' : 'var(--text-muted)';
-      html += '<div class="teci"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd">' + domNames[key] + '</div><div class="teca" style="color:' + statusCol + '">' + d.status + '</div></div><div class="tecd2" style="color:' + dirCol + ';font-size:10px;">' + direction + '</div></div>';
+      const otherBud = domainBudgets[key] || 0;
+      const budStatus = otherBud >= 30 ? 'STABLE' : otherBud >= 15 ? 'PRESSURED' : otherBud >= 5 ? 'STRAINED' : 'CRITICAL';
+      const budCol = otherBud >= 30 ? 'var(--text-muted)' : otherBud >= 15 ? 'var(--amber)' : 'var(--red)';
+      html += '<div class="teci"><div class="teco">' + domIcons[key] + '</div><div><div class="tecd">' + domNames[key] + '</div><div class="teca" style="color:' + statusCol + '">' + d.status + '</div><div style="font-family:var(--fm);font-size:8px;color:' + budCol + ';margin-top:2px;">\uD83D\uDCB0 Budget: ' + budStatus + '</div></div><div class="tecd2" style="color:' + dirCol + ';font-size:10px;">' + direction + '</div></div>';
     }
   });
 
-  // Private action detected — 25% chance
-  if (Math.random() < 0.25) {
-    html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">\uD83D\uDD75\uFE0F</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">One player used the private channel. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">\u2753</div></div>';
+  // Loan taken this turn — visible to all
+  if (window._loanTakenThisTurn) {
+    const lt = window._loanTakenThisTurn;
+    const loanDomName = domains[lt.domain] ? domains[lt.domain].name.split(' ')[0] : lt.domain;
+    html += '<div class="teci" style="background:rgba(139,92,246,.05);border-color:rgba(139,92,246,.3);"><div class="teco">\uD83C\uDFE6</div><div><div class="tecd" style="color:var(--purple)">Treasury Loan Issued</div><div class="teca">' + loanDomName + ' borrowed ' + fmtB(lt.amount) + ' from the city treasury. Repayment due in 3 turns.</div></div></div>';
+    window._loanTakenThisTurn = null;
+  }
+
+  // Private action detected — only if actually used, or simulated AI players (15% chance per AI)
+  const humanUsedPrivate = window._privateActionThisTurn || false;
+  const aiUsedPrivate = Math.random() < 0.15; // simulate one AI player occasionally cheating
+  window._privateActionThisTurn = false; // reset for next turn
+  if (humanUsedPrivate || aiUsedPrivate) {
+    html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">\uD83D\uDD75\uFE0F</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">At least one player used the private channel this turn. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">\u2753</div></div>';
   }
 
   container.innerHTML = html;
@@ -6408,14 +6770,22 @@ function deliverShock(shock) {
 
   // Apply impacts — show before → after for each
   const impactLines = [];
+  const insuredDomain = myDomain || 'energy';
   Object.keys(shock.impacts).forEach(key => {
-    const delta = shock.impacts[key];
+    let delta = shock.impacts[key];
     if (delta !== 0 && domains[key]) {
+      // Crisis insurance reduces damage to insured domain by 40%
+      let insuredNote = '';
+      if (hasShockInsurance && key === insuredDomain && delta < 0) {
+        const reduced = Math.round(delta * 0.6);
+        insuredNote = ' \uD83D\uDEE1';
+        delta = reduced;
+      }
       const before = domains[key].health;
       domains[key].health = Math.max(0, domains[key].health + delta);
       updateDomainStatus(key);
       const after = domains[key].health;
-      impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,.12);"><span style="font-size:11px;color:var(--text-dim);">' + domainIcons[key] + ' ' + domainShort[key] + '</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + before + '</span> <span style="color:var(--text-dim);">\u2192</span> <span style="color:var(--red);">' + after + '</span> <span style="color:var(--red);">(' + delta + ')</span></span></div>');
+      impactLines.push('<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,.12);"><span style="font-size:11px;color:var(--text-dim);">' + domainIcons[key] + ' ' + domainShort[key] + insuredNote + '</span><span style="font-family:var(--fm);font-size:10px;"><span style="color:var(--text-muted)">' + before + '</span> <span style="color:var(--text-dim);">\u2192</span> <span style="color:var(--red);">' + after + '</span> <span style="color:var(--red);">(' + delta + ')</span></span></div>');
     }
   });
 
