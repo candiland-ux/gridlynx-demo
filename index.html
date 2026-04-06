@@ -4717,7 +4717,6 @@ function confirmDecision(){
     // Deduct from domain budget
     const budgetBefore = domainBudgets[curDomain] || 0;
     domainBudgets[curDomain] = Math.max(0, budgetBefore - decCost);
-    console.log('BUDGET: ' + fmtB(budgetBefore) + ' → ' + fmtB(domainBudgets[curDomain]) + ' (cost ' + fmtB(decCost) + ')');
 
     let delta=dec.delta!=null?dec.delta:0;
     if(delta===0){
@@ -5590,7 +5589,7 @@ function dismissJoinRequest() {
   if (overlay) overlay.style.display = 'none';
 }
 
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600);}
 
 // ── ENDGAME SIMULATIONS ────────────────────────────────────────────────
 
