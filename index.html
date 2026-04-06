@@ -4527,17 +4527,21 @@ function openDomain(key){
     </div>`;
   nav('sd');
 
-  // Pulse the off-the-record button if player can't afford any decisions
-  const otrBtn = document.getElementById('otr-btn');
-  if (otrBtn) {
-    if (allUnaffordable) {
-      otrBtn.classList.add('otr-urgent');
-      otrBtn.textContent = '\uD83D\uDCB0 OFF-THE-RECORD';
-    } else {
-      otrBtn.classList.remove('otr-urgent');
-      otrBtn.textContent = 'OFF-THE-RECORD';
+  // Pulse the off-the-record button if player's budget is critically low
+  setTimeout(function(){
+    const otrBtn = document.getElementById('otr-btn');
+    if (otrBtn) {
+      if (myBudget < 5 || allUnaffordable) {
+        otrBtn.classList.add('otr-urgent');
+        otrBtn.innerHTML = '\uD83D\uDCB0 OFF-THE-RECORD';
+        otrBtn.style.fontSize = '11px';
+      } else {
+        otrBtn.classList.remove('otr-urgent');
+        otrBtn.textContent = 'OFF-THE-RECORD';
+        otrBtn.style.fontSize = '';
+      }
     }
-  }
+  }, 100);
 }
 
 function selDec2(i){selDec=i;document.querySelectorAll('.dcard,.pcard').forEach(c=>c.classList.remove('sel'));const el=i==='pass'?document.getElementById('decpass'):document.getElementById('dec'+i);if(el)el.classList.add('sel');}
@@ -6224,16 +6228,14 @@ function closeStrategic() {
 function acceptBribe() {
   const amount = 15 + Math.floor(Math.random() * 11); // 15-25
   domainBudgets[curDomain] = Math.min(100, (domainBudgets[curDomain] || 0) + amount);
-  const budgetEl = document.getElementById('budget-display');
-  if (budgetEl) budgetEl.textContent = fmtB(domainBudgets[myDomain||'energy']||0);
   trust = Math.max(0, trust - 3); // small hidden trust cost
   closeStrategic();
-  showToast('\uD83D\uDCB0 +$' + amount + 'M accepted from anonymous source. Private Action flagged.');
+  showToast('\uD83D\uDCB0 +$' + amount + 'M accepted. Private Action flagged.');
   // Mark as private action for turn-end visibility
   if (!usedDecisions[curDomain]) usedDecisions[curDomain] = {};
   usedDecisions[curDomain]['__bribe__'] = 3;
-  renderDSB();
-  renderDomainGrid();
+  // Re-render domain screen with updated budget so cards unlock
+  setTimeout(function(){ openDomain(curDomain); }, 800);
 }
 
 function dismissBriefing() {
