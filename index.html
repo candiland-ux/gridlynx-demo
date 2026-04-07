@@ -524,7 +524,6 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
       <div id="hc-crisis-ring" style="position:absolute;inset:-32px;border-radius:50%;border:1px solid rgba(239,68,68,.3);animation:crisisRing 1.1s ease-in-out infinite;"></div>
     </div>
 
-    <div style="font-family:var(--fm);font-size:9px;letter-spacing:5px;color:rgba(245,158,11,.55);text-transform:uppercase;margin-bottom:8px;">A Game of Power &amp; Crisis</div>
     <div style="font-family:var(--fd);font-size:clamp(56px,16vw,82px);font-weight:700;letter-spacing:6px;color:#e2e8f0;line-height:.9;text-shadow:0 0 40px rgba(245,158,11,.4),0 0 80px rgba(245,158,11,.18);">GRID<span style="color:var(--amber)">LYNX</span></div>
     <div style="font-family:var(--fb);font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:12px;font-weight:300;line-height:1.7;">Power. Pressure. Politics.<br>Win your domain. Trust no one. Keep the city alive.</div>
 
@@ -1859,7 +1858,8 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 <div id="federal-aid-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;">
   <div style="max-width:380px;width:90%;padding:24px;background:var(--panel2);border:2px solid rgba(59,130,246,.4);">
     <div style="font-family:var(--fm);font-size:10px;color:#3b82f6;letter-spacing:3px;margin-bottom:6px;">🇺🇸 FEDERAL DISASTER RELIEF</div>
-    <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;">Aid Available</div>
+    <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;">Council Vote Required</div>
+    <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">YOUR VOTE + 3 OTHER PLAYERS · NEED 3/4</div>
     <div style="font-size:11px;color:var(--text);line-height:1.6;margin-bottom:14px;">The federal government has approved emergency relief for the recent crisis. Accepting aid brings <strong style="color:#3b82f6;"><span id="federal-aid-amount">$30M</span></strong> to the city treasury, but the city loses some autonomy.</div>
     <div style="background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.2);padding:10px;margin-bottom:14px;font-size:10px;color:var(--text-dim);line-height:1.6;">
       <div style="color:#3b82f6;font-family:var(--fm);font-size:8px;letter-spacing:1px;margin-bottom:6px;">ACCEPT</div>
@@ -1873,8 +1873,8 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
       <div style="color:var(--amber);">? Trust shifts (independence vs. stubbornness)</div>
     </div>
     <div style="display:flex;gap:10px;">
-      <button onclick="acceptFederalAid()" style="flex:1;padding:12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#3b82f6;font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">🇺🇸 ACCEPT AID</button>
-      <button onclick="declineFederalAid()" style="flex:1;padding:12px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">DECLINE</button>
+      <button onclick="acceptFederalAid()" style="flex:1;padding:12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#3b82f6;font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">VOTE: ACCEPT</button>
+      <button onclick="declineFederalAid()" style="flex:1;padding:12px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">VOTE: DECLINE</button>
     </div>
   </div>
 </div>
@@ -6898,37 +6898,82 @@ function offerFederalAid() {
 }
 
 function acceptFederalAid() {
+  // City council vote required — accepting federal aid is a city-level decision
+  // Mixed political views: some want cash, some want autonomy
+  let yesVotes = 1; // your vote
+  for (let v = 0; v < 3; v++) {
+    if (Math.random() < 0.6) yesVotes++; // ~60% approval baseline
+  }
+  const approved = yesVotes >= 3;
+
+  const overlay = document.getElementById('federal-aid-overlay');
+  if (overlay) overlay.style.display = 'none';
+
+  if (!approved) {
+    // Vote failed — aid declined regardless of your choice
+    showToast('🏛 Council vote failed (' + yesVotes + '/4). Federal aid rejected. Self-funded recovery proceeds.');
+    setTimeout(function(){ executeDecline(); }, 1500);
+    return;
+  }
+
+  // Vote passed — accept aid
   const amount = window._pendingFederalAid || 25;
   const treasuryBefore = cityBudget;
   cityBudget = Math.min(200, cityBudget + amount);
   governance = Math.max(0, governance - 3); // federal oversight burden
-  // Trust shifts unpredictably — public sees rescue OR failure
-  const trustShift = Math.floor(Math.random() * 11) - 5; // -5 to +5
+  const trustShift = Math.floor(Math.random() * 11) - 5;
   trust = Math.max(0, Math.min(100, trust + trustShift));
   const trustMsg = trustShift >= 2 ? 'public sees rescue (+' + trustShift + ' trust)' :
                    trustShift <= -2 ? 'public sees failure (' + trustShift + ' trust)' :
                    'public reaction mixed';
-  const overlay = document.getElementById('federal-aid-overlay');
-  if (overlay) overlay.style.display = 'none';
-  showToast('🇺🇸 Federal aid received: $' + amount + 'M | Treasury: ' + fmtB(treasuryBefore) + ' → ' + fmtB(cityBudget) + ' | Gov −3, ' + trustMsg);
+  showToast('🇺🇸 Council approved (' + yesVotes + '/4). Federal aid: $' + amount + 'M | Treasury: ' + fmtB(treasuryBefore) + ' → ' + fmtB(cityBudget) + ' | Gov −3, ' + trustMsg);
   renderGovTrust();
   window._pendingFederalAid = null;
   nav('so');
 }
 
 function declineFederalAid() {
+  // City council vote required — refusing federal aid is also a city-level decision
+  let yesVotes = 1; // your vote
+  for (let v = 0; v < 3; v++) {
+    if (Math.random() < 0.55) yesVotes++; // slightly harder to convince council to refuse free money
+  }
+  const approved = yesVotes >= 3;
+
   const overlay = document.getElementById('federal-aid-overlay');
   if (overlay) overlay.style.display = 'none';
-  // Self-funded recovery — city pays the SAME cost the federal aid would have covered
+
+  if (!approved) {
+    // Vote failed — council overrules you and accepts the aid anyway
+    showToast('🏛 Council voted to accept anyway (' + (4 - yesVotes) + '/4 against your decline). Federal aid accepted.');
+    setTimeout(function(){ executeAccept(); }, 1500);
+    return;
+  }
+
+  // Vote passed — decline accepted by council
+  executeDecline();
+}
+
+function executeAccept() {
+  const amount = window._pendingFederalAid || 25;
+  const treasuryBefore = cityBudget;
+  cityBudget = Math.min(200, cityBudget + amount);
+  governance = Math.max(0, governance - 3);
+  const trustShift = Math.floor(Math.random() * 11) - 5;
+  trust = Math.max(0, Math.min(100, trust + trustShift));
+  showToast('🇺🇸 Federal aid received: $' + amount + 'M | Gov −3');
+  renderGovTrust();
+  window._pendingFederalAid = null;
+  nav('so');
+}
+
+function executeDecline() {
   const recoveryCost = window._pendingFederalAid || 30;
   const treasuryBefore = cityBudget;
   cityBudget = Math.max(0, cityBudget - recoveryCost);
-  // Governance preserved (institutional autonomy)
   governance = Math.min(100, governance + 1);
-  // Trust shifts based on public perception of self-reliance
-  const trustShift = Math.floor(Math.random() * 9) - 3; // -3 to +5 (slight positive bias for independence)
+  const trustShift = Math.floor(Math.random() * 9) - 3;
   trust = Math.max(0, Math.min(100, trust + trustShift));
-  // Recovery is incomplete — affected domains take additional damage
   const domKeys = ['transport','housing','energy','health','economy','education'];
   let weakest = null;
   let lowestHealth = 100;
@@ -6945,7 +6990,7 @@ function declineFederalAid() {
   const trustMsg = trustShift >= 2 ? 'public admires independence (+' + trustShift + ' trust)' :
                    trustShift <= -1 ? 'public resents the refusal (' + trustShift + ' trust)' :
                    'public reaction mixed';
-  showToast('🇺🇸 Aid declined. Self-funded recovery: −' + fmtB(recoveryCost) + ' | Gov +1, ' + trustMsg + (weakest ? ' | ' + (domains[weakest].name.split(' ')[0] || weakest) + ' −3 (incomplete recovery)' : ''));
+  showToast('🇺🇸 Self-funded recovery: −' + fmtB(recoveryCost) + ' | Gov +1, ' + trustMsg + (weakest ? ' | ' + (domains[weakest].name.split(' ')[0] || weakest) + ' −3 (incomplete recovery)' : ''));
   renderGovTrust();
   renderDomainGrid();
   renderDSB();
