@@ -1209,7 +1209,8 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
         </div>
         <!-- State options — shown when Host Chooses is selected -->
         <div id="cs-state-options" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:none;">
-          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:12px;">SELECT STARTING CONDITION</div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">SELECT STARTING CONDITION</div>
+          <div style="font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;font-style:italic;">Budgets shown are suburban baseline. Urban cities start with 30% more (bigger budgets, bigger problems). Rural cities start with 30% less (smaller scale, tighter margins).</div>
           <div style="display:flex;flex-direction:column;gap:10px;">
 
             <!-- Stable -->
@@ -1219,6 +1220,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">Steady</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 75. City functional but every domain needs investment. A strategic buildup.</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $50M | Treasury $120M</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);">75</div>
               </div>
@@ -1231,6 +1233,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--amber);margin-bottom:2px;">Volatile</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 55. Systems under real pressure. Mistakes cost more. Recommended for most groups.</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $35M | Treasury $80M</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:1px;margin-top:4px;">RECOMMENDED</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--amber);">55</div>
@@ -1244,6 +1247,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--red);margin-bottom:2px;">Crisis</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 35. The city is breaking. Every turn counts from the start. For experienced players only.</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $20M | Treasury $40M</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:1px;margin-top:4px;">EXPERIENCED PLAYERS</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--red);">35</div>
@@ -1476,28 +1480,6 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
   </div>
 </div>
 
-<!-- OFF-THE-RECORD (private channel — looks like normal decisions) -->
-<div id="sc2" class="screen">
-  <div class="tb">
-    <button class="bk" onclick="nav('sd')">← DOMAIN</button>
-    <div class="tbm">OFF-THE-RECORD</div>
-  <div class="dsb" id="dsb-sc2"></div>
-  </div>
-  <div class="scroll">
-    <div style="padding:20px 20px 14px;border-bottom:1px solid var(--border);">
-      <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:3px;margin-bottom:6px;">YOUR DOMAIN — TURN 4</div>
-      <div id="sc2-title" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--text);">Off-the-Record Options</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.6;">These options are available to you privately this turn. Other players will see the system outcome — not how you produced it.</div>
-    </div>
-    <div class="sl">AVAILABLE THIS TURN</div>
-    <div id="sc2-options" style="padding:0 20px 20px;"></div>
-  </div>
-  <div class="ab">
-    <button class="btn btn-s" onclick="nav('sd')">← GO BACK</button>
-    <button class="btn btn-p" onclick="commitStrategic()">COMMIT ACTION</button>
-  </div>
-</div>
-
 <!-- AUDIT -->
 <div id="sa" class="screen">
   <div class="tb">
@@ -1695,7 +1677,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
     <!-- Final stats -->
     <div style="background:var(--panel);border:1px solid var(--border);padding:14px;max-width:320px;width:100%;text-align:left;">
       <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">YOUR FINAL STATS</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div style="text-align:center;padding:8px;background:var(--bg3);">
           <div id="vic-health" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);"></div>
           <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">DOMAIN HEALTH</div>
@@ -1705,7 +1687,11 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
           <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">HEART CORE</div>
         </div>
         <div style="text-align:center;padding:8px;background:var(--bg3);">
-          <div id="vic-turn" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--cyan);"></div>
+          <div id="vic-budget" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--cyan);"></div>
+          <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">FINAL BUDGET</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:var(--bg3);">
+          <div id="vic-turn" style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--purple);"></div>
           <div style="font-family:var(--fm);font-size:7px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;">WON ON TURN</div>
         </div>
       </div>
@@ -1868,6 +1854,30 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 </div>
 
 <!-- STRATEGIC CHANNEL OVERLAY -->
+
+<!-- FEDERAL DISASTER RELIEF OVERLAY -->
+<div id="federal-aid-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;">
+  <div style="max-width:380px;width:90%;padding:24px;background:var(--panel2);border:2px solid rgba(59,130,246,.4);">
+    <div style="font-family:var(--fm);font-size:10px;color:#3b82f6;letter-spacing:3px;margin-bottom:6px;">🇺🇸 FEDERAL DISASTER RELIEF</div>
+    <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;">Aid Available</div>
+    <div style="font-size:11px;color:var(--text);line-height:1.6;margin-bottom:14px;">The federal government has approved emergency relief for the recent crisis. Accepting aid brings <strong style="color:#3b82f6;"><span id="federal-aid-amount">$30M</span></strong> to the city treasury, but the city loses some autonomy.</div>
+    <div style="background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.2);padding:10px;margin-bottom:14px;font-size:10px;color:var(--text-dim);line-height:1.6;">
+      <div style="color:#3b82f6;font-family:var(--fm);font-size:8px;letter-spacing:1px;margin-bottom:6px;">ACCEPT</div>
+      <div style="color:var(--green);">✓ Treasury increases immediately</div>
+      <div style="color:var(--red);">✗ Governance −3 (federal oversight strings)</div>
+      <div style="color:var(--amber);margin-bottom:8px;">? Trust shifts unpredictably</div>
+      <div style="color:var(--text-muted);font-family:var(--fm);font-size:8px;letter-spacing:1px;margin-bottom:6px;border-top:1px solid rgba(255,255,255,.05);padding-top:8px;">DECLINE</div>
+      <div style="color:var(--red);">✗ Self-funded recovery: same <span id="federal-aid-amount-2">$30M</span> from treasury</div>
+      <div style="color:var(--red);">✗ Weakest domain takes additional damage</div>
+      <div style="color:var(--green);">✓ Governance +1 (institutional autonomy)</div>
+      <div style="color:var(--amber);">? Trust shifts (independence vs. stubbornness)</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="acceptFederalAid()" style="flex:1;padding:12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#3b82f6;font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">🇺🇸 ACCEPT AID</button>
+      <button onclick="declineFederalAid()" style="flex:1;padding:12px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;">DECLINE</button>
+    </div>
+  </div>
+</div>
 
 <!-- COUNCIL VOTE OVERLAY -->
 <div id="council-vote-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;">
@@ -2145,6 +2155,20 @@ let govBeforeTurn = 72, trustBeforeTurn = 64; // snapshot at turn start for turn
 let hasShockInsurance = false; // crisis insurance active this turn
 let insurancePurchased = false; // once bought, never offered again
 let insuranceOfferCount = 0; // max 2 offers per game
+let seenTips = new Set(); // track first-time mechanic explanations
+
+function showFirstTimeTip(key, message) {
+  if (seenTips.has(key)) return false;
+  seenTips.add(key);
+  // Use a longer-lasting toast for tips
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = '💡 ' + message;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 5500);
+  }
+  return true;
+}
 let activeLoan = null; // {amount, repayTurn, originalAmount} — null if no loan
 let lastBribeDecision = null; // tracks what the bribe funded for audit reversal
 let turnEventResults = []; // tracks event vote outcomes for turn-end display
@@ -2315,7 +2339,8 @@ function beginNextTurn(){
   recalcMaxTurns();
   startTurnTimer();
 
-  // City budget revenue from Economy health
+  // City budget revenue from Economy health, scaled by region
+  const regionRevMult = cityRegion === 'urban' ? 1.3 : cityRegion === 'rural' ? 0.7 : 1.0;
   const ecoHealth = domains.economy ? domains.economy.health : 50;
   let cityRevenue = 0;
   if (ecoHealth >= 90) cityRevenue = 20 + Math.floor(Math.random() * 6);
@@ -2323,6 +2348,7 @@ function beginNextTurn(){
   else if (ecoHealth >= 50) cityRevenue = 8 + Math.floor(Math.random() * 8);
   else if (ecoHealth >= 25) cityRevenue = 3 + Math.floor(Math.random() * 6);
   else cityRevenue = Math.floor(Math.random() * 4);
+  cityRevenue = Math.round(cityRevenue * regionRevMult);
   cityBudget = Math.min(200, cityBudget + cityRevenue);
 
   // Domain budget revenue — each domain generates operating revenue based on its own health
@@ -2335,6 +2361,7 @@ function beginNextTurn(){
     else if (dh >= 50) domRev = 6 + Math.floor(Math.random() * 5);
     else if (dh >= 25) domRev = 3 + Math.floor(Math.random() * 4);
     else domRev = 1 + Math.floor(Math.random() * 2);
+    domRev = Math.round(domRev * regionRevMult);
     domainBudgets[dk] = Math.min(100, (domainBudgets[dk] || 0) + domRev);
   });
 
@@ -2343,10 +2370,10 @@ function beginNextTurn(){
   allDomKeys.forEach(function(dk) {
     if (myDoms.includes(dk)) return; // skip player domains
     const dh = domains[dk] ? domains[dk].health : 50;
-    // Revenue based on health
     let aiRev = dh >= 75 ? 6 + Math.floor(Math.random() * 5) : dh >= 50 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 3);
-    // Spending — AI makes decisions too
     let aiSpend = 6 + Math.floor(Math.random() * 7);
+    aiRev = Math.round(aiRev * regionRevMult);
+    aiSpend = Math.round(aiSpend * regionRevMult);
     domainBudgets[dk] = Math.max(0, Math.min(100, (domainBudgets[dk] || 0) + aiRev - aiSpend));
   });
 
@@ -2357,14 +2384,21 @@ function beginNextTurn(){
     if (net !== 0) {
       domainBudgets[dk] = Math.max(0, Math.min(100, (domainBudgets[dk] || 0) + net));
       const domName = domains[dk] ? domains[dk].name.split(' ')[0] : dk;
-      spilloverBudgetMsg += domName + ' budget ' + (net > 0 ? 'increased' : 'decreased') + ' by ' + fmtB(Math.abs(net)) + ' from city activity last turn. ';
+      spilloverBudgetMsg += domName + ' budget ' + (net > 0 ? 'increased' : 'decreased') + ' by ' + fmtB(Math.abs(net)) + ' from spillovers (other domains affected yours). ';
     }
   });
   pendingBudgetChanges = {}; // reset for new turn
 
   // Show budget notifications
   if (spilloverBudgetMsg) {
-    setTimeout(function(){ showToast('\uD83D\uDCCA ' + spilloverBudgetMsg.trim()); }, 800);
+    setTimeout(function(){
+      // First-time tip explains the mechanic before showing the data
+      if (showFirstTimeTip('spillover-budget', 'Other players\u2019 decisions ripple through the city — and through your budget. Watch the BUDGET SUMMARY at turn-end to see who helped or hurt you.')) {
+        setTimeout(function(){ showToast('\uD83D\uDCCA ' + spilloverBudgetMsg.trim()); }, 5800);
+      } else {
+        showToast('\uD83D\uDCCA ' + spilloverBudgetMsg.trim());
+      }
+    }, 800);
   }
   setTimeout(function(){
     showToast('\uD83D\uDCB0 City revenue: +' + fmtB(cityRevenue) + ' (Economy ' + (ecoHealth >= 75 ? 'strong' : ecoHealth >= 50 ? 'moderate' : 'weak') + ')');
@@ -2496,6 +2530,12 @@ function quickDemo() {
   // Start the game
   startGame();
 
+  // Demo seeding: lower HC slightly so council vote can trigger from one bad turn,
+  // and offer insurance immediately so the demo player sees it
+  setTimeout(function(){
+    showFirstTimeTip('demo-intro', 'Welcome to the demo! You\u2019ll experience all systems: budget pressure, events, shocks, and the off-the-record channel.');
+  }, 800);
+
   // Turn sound on after a short delay (needs user gesture context)
   setTimeout(() => {
     initAudio();
@@ -2617,8 +2657,6 @@ function selectProfileColor(el) {
   updateProfilePreview();
 }
 
-function previewCustomColor() {}
-function applyCustomColor() {}
 
 function isColorDark(hex) {
   const c = hex.replace('#','');
@@ -3819,8 +3857,16 @@ function startGame(){
   // Set heartCore from selected state
   heartCore=cfg.hcVal;
   turnNumber=1;
-  cityBudget = cityStart === 'steady' ? 120 : cityStart === 'crisis' ? 40 : 80;
-  const domBudgetBase = cityStart === 'steady' ? 50 : cityStart === 'crisis' ? 20 : 35;
+
+  // Base budgets by city state, scaled by region
+  // Urban x1.3 (more money, more problems)
+  // Suburban x1.0 (baseline)
+  // Rural x0.7 (less money, smaller per-decision costs)
+  const regionMult = cityRegion === 'urban' ? 1.3 : cityRegion === 'rural' ? 0.7 : 1.0;
+  const cityBaseTreasury = cityStart === 'steady' ? 120 : cityStart === 'crisis' ? 40 : 80;
+  const domBaseBudget = cityStart === 'steady' ? 50 : cityStart === 'crisis' ? 20 : 35;
+  cityBudget = Math.round(cityBaseTreasury * regionMult);
+  const domBudgetBase = Math.round(domBaseBudget * regionMult);
   domainBudgets = {transport:domBudgetBase,housing:domBudgetBase,energy:domBudgetBase,health:domBudgetBase,economy:domBudgetBase,education:domBudgetBase};
   pendingBudgetChanges = {};
   committedDomains = new Set();
@@ -4289,7 +4335,9 @@ function openDomain(key){
     // Cost scales with impact — crisis gets a discount, stable pays premium
     const tierBase = tier === 'critical' ? 6 : tier === 'strained' ? 8 : tier === 'moderate' ? 6 : tier === 'stable' ? 8 : 2;
     const tierScale = tier === 'critical' ? 0.5 : tier === 'strained' ? 0.6 : tier === 'moderate' ? 0.55 : tier === 'stable' ? 0.5 : 0.2;
-    return Math.max(3, Math.round(tierBase + delta * tierScale));
+    // Region multiplier: urban infrastructure costs more, rural less
+    const regionCostMult = cityRegion === 'urban' ? 1.3 : cityRegion === 'rural' ? 0.7 : 1.0;
+    return Math.max(3, Math.round((tierBase + delta * tierScale) * regionCostMult));
   }
   const baseDecs=(tieredDecisions[key]&&tieredDecisions[key][tier])||d.decisions;
   // Merge extra decisions from expanded pool
@@ -4817,7 +4865,8 @@ function confirmDecision(){
       const t = getTier(d.health);
       const tBase = t === 'critical' ? 6 : t === 'strained' ? 8 : t === 'moderate' ? 6 : t === 'stable' ? 8 : 2;
       const tScale = t === 'critical' ? 0.5 : t === 'strained' ? 0.6 : t === 'moderate' ? 0.55 : t === 'stable' ? 0.5 : 0.2;
-      return Math.max(3, Math.round(tBase + dd * tScale));
+      const regionCostMult = cityRegion === 'urban' ? 1.3 : cityRegion === 'rural' ? 0.7 : 1.0;
+      return Math.max(3, Math.round((tBase + dd * tScale) * regionCostMult));
     })();
     if (decCost > (domainBudgets[curDomain] || 0)) {
       showToast('Not enough funds — need ' + fmtB(decCost) + ', have ' + fmtB(domainBudgets[curDomain] || 0));
@@ -5080,7 +5129,7 @@ function revealHeartCore() {
       const net = pendingBudgetChanges[dk] || 0;
       if (net !== 0) {
         const domName = domains[dk] ? domains[dk].name.split(' ')[0] : dk;
-        budgetHtml += '<div style="padding:6px 0;font-size:11px;color:' + (net > 0 ? 'var(--green)' : 'var(--red)') + ';">' + domName + ' budget ' + (net > 0 ? 'increased' : 'decreased') + ' by ' + fmtB(Math.abs(net)) + ' from city activity this turn</div>';
+        budgetHtml += '<div style="padding:6px 0;font-size:11px;color:' + (net > 0 ? 'var(--green)' : 'var(--red)') + ';">' + domName + ' budget ' + (net > 0 ? 'increased' : 'decreased') + ' by ' + fmtB(Math.abs(net)) + ' from cross-domain spillovers</div>';
       }
     });
 
@@ -5908,6 +5957,8 @@ function simulateVictoryWinner() {
   if (health) health.textContent = '100';
   if (hc) hc.textContent = heartCore;
   if (turn) turn.textContent = turnNumber;
+  const budgetEl = document.getElementById('vic-budget');
+  if (budgetEl) budgetEl.textContent = fmtB(domainBudgets[myDomain || 'energy'] || 0);
   if (sub) sub.textContent = cityName + ' endures — because of you.';
 
   nav('s-victory-winner');
@@ -6441,7 +6492,8 @@ function dismissBriefing() {
 function triggerCouncilVote() {
   const overlay = document.getElementById('council-vote-overlay');
   if (!overlay) return;
-  overlay.style.display = 'flex';
+  showFirstTimeTip('council', 'Heart Core critical! The council must drain $10M from one domain to stabilize it. You can\u2019t vote for yourself.');
+  setTimeout(function(){ overlay.style.display = 'flex'; }, 1500);
   const domKeys = ['transport','housing','energy','health','economy','education'];
   const domIcons = {transport:'\uD83D\uDE87',housing:'\uD83C\uDFD8',energy:'\u26A1',health:'\uD83C\uDFE5',economy:'\uD83D\uDCCA',education:'\uD83C\uDF93'};
   const myDk = myDomain || 'energy';
@@ -6492,6 +6544,7 @@ function castCouncilVote(targetDomain) {
 
 // ── FEATURE 4: CRISIS INSURANCE ──────────────────────────────────────
 function offerShockInsurance() {
+  if (turnNumber < 3) return; // not until turn 3 — no insurance pitches before the city is in motion
   if (insurancePurchased) return; // already bought this game
   if (insuranceOfferCount >= 2) return; // max 2 offers
   const myDk = myDomain || 'energy';
@@ -6499,7 +6552,8 @@ function offerShockInsurance() {
   if (myBud < 5) return; // can't afford
   const overlay = document.getElementById('insurance-overlay');
   if (!overlay) return;
-  overlay.style.display = 'flex';
+  showFirstTimeTip('insurance', 'Crisis insurance reduces shock damage by 40%. You\u2019ll only see this offer twice per game.');
+  setTimeout(function(){ overlay.style.display = 'flex'; }, 1500);
 }
 
 function buyInsurance() {
@@ -6750,6 +6804,7 @@ function renderTurnEndRows() {
   window._privateActionThisTurn = false; // reset for next turn
   if (humanUsedPrivate || aiUsedPrivate) {
     html += '<div class="teci" style="background:rgba(245,158,11,.05);border-color:var(--amber-dim);"><div class="teco">\uD83D\uDD75\uFE0F</div><div><div class="tecd" style="color:var(--amber)">Private Action Detected</div><div class="teca">At least one player used the private channel this turn. Audit rights now active.</div></div><div class="tecd2" style="color:var(--amber)">\u2753</div></div>';
+    setTimeout(function(){ showFirstTimeTip('audit', 'Spend 15 influence tokens to audit. If exposed, the bribe-funded decision is reversed and trust drops sharply.'); }, 1200);
   }
 
   container.innerHTML = html;
@@ -6824,6 +6879,77 @@ function dismissShock() {
   if (checkCollapse()) { populateCollapseScreen(); nav('scol'); return; }
   renderDomainContext();
   updateManageButton();
+  // Offer federal disaster relief after the shock
+  setTimeout(function(){ offerFederalAid(); }, 600);
+}
+
+// ── FEDERAL DISASTER RELIEF ─────────────────────────────────────────
+function offerFederalAid() {
+  const overlay = document.getElementById('federal-aid-overlay');
+  if (!overlay) { nav('so'); return; }
+  // Calculate aid amount based on shock severity (proportional to damage)
+  const aidAmount = 25 + Math.floor(Math.random() * 16); // $25-40M
+  window._pendingFederalAid = aidAmount;
+  const amountEl = document.getElementById('federal-aid-amount');
+  if (amountEl) amountEl.textContent = '$' + aidAmount + 'M';
+  const amountEl2 = document.getElementById('federal-aid-amount-2');
+  if (amountEl2) amountEl2.textContent = '$' + aidAmount + 'M';
+  overlay.style.display = 'flex';
+}
+
+function acceptFederalAid() {
+  const amount = window._pendingFederalAid || 25;
+  const treasuryBefore = cityBudget;
+  cityBudget = Math.min(200, cityBudget + amount);
+  governance = Math.max(0, governance - 3); // federal oversight burden
+  // Trust shifts unpredictably — public sees rescue OR failure
+  const trustShift = Math.floor(Math.random() * 11) - 5; // -5 to +5
+  trust = Math.max(0, Math.min(100, trust + trustShift));
+  const trustMsg = trustShift >= 2 ? 'public sees rescue (+' + trustShift + ' trust)' :
+                   trustShift <= -2 ? 'public sees failure (' + trustShift + ' trust)' :
+                   'public reaction mixed';
+  const overlay = document.getElementById('federal-aid-overlay');
+  if (overlay) overlay.style.display = 'none';
+  showToast('🇺🇸 Federal aid received: $' + amount + 'M | Treasury: ' + fmtB(treasuryBefore) + ' → ' + fmtB(cityBudget) + ' | Gov −3, ' + trustMsg);
+  renderGovTrust();
+  window._pendingFederalAid = null;
+  nav('so');
+}
+
+function declineFederalAid() {
+  const overlay = document.getElementById('federal-aid-overlay');
+  if (overlay) overlay.style.display = 'none';
+  // Self-funded recovery — city pays the SAME cost the federal aid would have covered
+  const recoveryCost = window._pendingFederalAid || 30;
+  const treasuryBefore = cityBudget;
+  cityBudget = Math.max(0, cityBudget - recoveryCost);
+  // Governance preserved (institutional autonomy)
+  governance = Math.min(100, governance + 1);
+  // Trust shifts based on public perception of self-reliance
+  const trustShift = Math.floor(Math.random() * 9) - 3; // -3 to +5 (slight positive bias for independence)
+  trust = Math.max(0, Math.min(100, trust + trustShift));
+  // Recovery is incomplete — affected domains take additional damage
+  const domKeys = ['transport','housing','energy','health','economy','education'];
+  let weakest = null;
+  let lowestHealth = 100;
+  domKeys.forEach(function(k) {
+    if (domains[k] && domains[k].health < lowestHealth) {
+      lowestHealth = domains[k].health;
+      weakest = k;
+    }
+  });
+  if (weakest) {
+    domains[weakest].health = Math.max(0, domains[weakest].health - 3);
+    updateDomainStatus(weakest);
+  }
+  const trustMsg = trustShift >= 2 ? 'public admires independence (+' + trustShift + ' trust)' :
+                   trustShift <= -1 ? 'public resents the refusal (' + trustShift + ' trust)' :
+                   'public reaction mixed';
+  showToast('🇺🇸 Aid declined. Self-funded recovery: −' + fmtB(recoveryCost) + ' | Gov +1, ' + trustMsg + (weakest ? ' | ' + (domains[weakest].name.split(' ')[0] || weakest) + ' −3 (incomplete recovery)' : ''));
+  renderGovTrust();
+  renderDomainGrid();
+  renderDSB();
+  window._pendingFederalAid = null;
   nav('so');
 }
 
