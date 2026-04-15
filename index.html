@@ -542,8 +542,12 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
       </button>
     </div>
 
-    <!-- Quick Demo — skips setup -->
-    <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);">
+    <!-- Tutorial + Quick Demo — helper actions -->
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:12px;">
+      <button onclick="startTutorial()" style="width:100%;padding:14px 20px;background:none;border:1px solid rgba(6,182,212,.4);color:var(--cyan);font-family:var(--fm);font-size:12px;letter-spacing:3px;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(6,182,212,.08)';this.style.borderColor='var(--cyan)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(6,182,212,.4)'">
+        📖 TUTORIAL
+        <div style="font-size:8px;letter-spacing:1px;color:rgba(6,182,212,.6);margin-top:4px;font-weight:400;">New to GRIDLYNX? Learn the basics in 90 seconds</div>
+      </button>
       <button onclick="quickDemo()" style="width:100%;padding:14px 20px;background:none;border:1px solid rgba(139,92,246,.4);color:var(--purple);font-family:var(--fm);font-size:12px;letter-spacing:3px;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(139,92,246,.08)';this.style.borderColor='var(--purple)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(139,92,246,.4)'">
         ⚡ QUICK DEMO
         <div style="font-size:8px;letter-spacing:1px;color:rgba(139,92,246,.6);margin-top:4px;font-weight:400;">Skip setup — jump straight into gameplay</div>
@@ -1219,7 +1223,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">Steady</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 75. City functional but every domain needs investment. A strategic buildup.</div>
-                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $50M | Treasury $120M</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $75M | Treasury $120M</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--green);">75</div>
               </div>
@@ -1232,7 +1236,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--amber);margin-bottom:2px;">Volatile</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 55. Systems under real pressure. Mistakes cost more. Recommended for most groups.</div>
-                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $35M | Treasury $80M</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $55M | Treasury $80M</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--amber);letter-spacing:1px;margin-top:4px;">RECOMMENDED</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--amber);">55</div>
@@ -1246,7 +1250,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
                 <div style="flex:1;">
                   <div style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--red);margin-bottom:2px;">Crisis</div>
                   <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Heart Core at 35. The city is breaking. Every turn counts from the start. For experienced players only.</div>
-                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $20M | Treasury $40M</div>
+                  <div style="font-family:var(--fm);font-size:8px;color:var(--cyan);margin-top:6px;letter-spacing:1px;">💰 Domain $35M | Treasury $40M</div>
                   <div style="font-family:var(--fm);font-size:8px;color:var(--red);letter-spacing:1px;margin-top:4px;">EXPERIENCED PLAYERS</div>
                 </div>
                 <div style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--red);">35</div>
@@ -1287,6 +1291,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 <div id="so" class="screen">
   <div class="tb">
     <div class="tbl">GRID<span>LYNX</span></div>
+    <button onclick="openHelp()" title="Help" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:14px;width:32px;height:32px;cursor:pointer;border-radius:50%;margin-right:8px;" onmouseover="this.style.borderColor='var(--amber)';this.style.color='var(--amber)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">?</button>
   <div class="dsb" id="dsb-so"></div>
   </div>
   <div class="scroll">
@@ -1392,7 +1397,7 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
           <div style="font-size:22px;">💰</div>
           <div style="flex:1;">
             <div style="font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);">Your Domain Budget</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Funds your decisions — replenishes based on domain health</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Funds your decisions — doesn\u2019t auto-replenish</div>
             <div style="height:3px;background:var(--bg3);margin-top:8px;"><div id="domain-budget-bar" style="height:100%;width:35%;background:var(--cyan);transition:width .3s;"></div></div>
             <div style="display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:3px;"><span>DOMAIN BUDGET</span><span id="domain-budget-label" style="color:var(--cyan)">$35M</span></div>
           </div>
@@ -1854,12 +1859,49 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 
 <!-- STRATEGIC CHANNEL OVERLAY -->
 
+<!-- TUTORIAL OVERLAY -->
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column;padding:20px;">
+  <div style="max-width:440px;width:100%;background:var(--panel2);border:2px solid rgba(6,182,212,.4);max-height:90vh;overflow-y:auto;">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-family:var(--fm);font-size:10px;color:var(--cyan);letter-spacing:3px;">TUTORIAL</div>
+        <div id="tut-step-label" style="font-family:var(--fd);font-size:18px;font-weight:700;color:var(--text);margin-top:4px;">Step 1 of 5</div>
+      </div>
+      <button onclick="closeTutorial()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-size:18px;padding:4px 10px;cursor:pointer;">×</button>
+    </div>
+    <div id="tut-content" style="padding:24px;line-height:1.7;font-size:13px;color:var(--text-dim);"></div>
+    <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;">
+      <button id="tut-back" onclick="tutorialStep(-1)" style="padding:10px 16px;background:var(--panel);border:1px solid var(--border);color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:2px;cursor:pointer;">← BACK</button>
+      <div id="tut-dots" style="display:flex;gap:6px;align-items:center;"></div>
+      <button id="tut-next" onclick="tutorialStep(1)" style="padding:10px 20px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.4);color:var(--cyan);font-family:var(--fm);font-size:10px;letter-spacing:2px;cursor:pointer;">NEXT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div id="help-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:460px;width:100%;background:var(--panel2);border:2px solid var(--amber-dim);max-height:92vh;display:flex;flex-direction:column;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div style="font-family:var(--fm);font-size:11px;color:var(--amber);letter-spacing:3px;">❔ HELP</div>
+      <button onclick="closeHelp()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-size:18px;padding:4px 10px;cursor:pointer;">×</button>
+    </div>
+    <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;">
+      <button id="help-tab-quick" onclick="switchHelpTab('quick')" style="flex:1;padding:12px;background:rgba(245,158,11,.08);border:none;border-bottom:2px solid var(--amber);color:var(--amber);font-family:var(--fm);font-size:10px;letter-spacing:2px;cursor:pointer;">QUICK REFERENCE</button>
+      <button id="help-tab-manual" onclick="switchHelpTab('manual')" style="flex:1;padding:12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);font-family:var(--fm);font-size:10px;letter-spacing:2px;cursor:pointer;">FULL MANUAL</button>
+    </div>
+    <div id="help-search-wrap" style="display:none;padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
+      <input id="help-search" type="text" placeholder="Search the manual..." oninput="searchManual(this.value)" style="width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;outline:none;">
+    </div>
+    <div id="help-body" style="padding:20px 24px;overflow-y:auto;flex:1;font-size:12px;color:var(--text-dim);line-height:1.7;"></div>
+  </div>
+</div>
+
 <!-- FEDERAL DISASTER RELIEF OVERLAY -->
 <div id="federal-aid-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;">
   <div style="max-width:380px;width:90%;padding:24px;background:var(--panel2);border:2px solid rgba(59,130,246,.4);">
     <div style="font-family:var(--fm);font-size:10px;color:#3b82f6;letter-spacing:3px;margin-bottom:6px;">🇺🇸 FEDERAL DISASTER RELIEF</div>
     <div style="font-family:var(--fd);font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;">Council Vote Required</div>
-    <div style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">YOUR VOTE + 3 OTHER PLAYERS · NEED 3/4</div>
+    <div id="federal-vote-header" style="font-family:var(--fm);font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px;">COUNCIL VOTE REQUIRED · SIMPLE MAJORITY</div>
     <div style="font-size:11px;color:var(--text);line-height:1.6;margin-bottom:14px;">The federal government has approved emergency relief for the recent crisis. Accepting aid brings <strong style="color:#3b82f6;"><span id="federal-aid-amount">$30M</span></strong> to the city treasury, but the city loses some autonomy.</div>
     <div style="background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.2);padding:10px;margin-bottom:14px;font-size:10px;color:var(--text-dim);line-height:1.6;">
       <div style="color:#3b82f6;font-family:var(--fm);font-size:8px;letter-spacing:1px;margin-bottom:6px;">ACCEPT</div>
@@ -2149,6 +2191,18 @@ let cityBudget = 60; // shared city treasury for events/policies (displayed as $
 let domainBudgets = {transport:25,housing:25,energy:25,health:25,economy:25,education:25}; // per-domain operating budgets
 let pendingBudgetChanges = {}; // queued spillover budget impacts, revealed at turn start
 function fmtB(n){ return '$' + n + 'M'; }
+
+// Council vote helpers — simple majority, round up
+// Number of voters = number of players (or 4 default if not set)
+function voteCount() {
+  return playerCount > 0 ? playerCount : 4;
+}
+function voteThreshold() {
+  return Math.ceil(voteCount() / 2);
+}
+function voteLabel(yes) {
+  return yes + '/' + voteCount();
+}
 let pendingHCChanges = []; // queue HC changes during decision phase, apply at turn-end
 let hcRevealed = false; // HC display stays frozen until turn-end reveal
 let govBeforeTurn = 72, trustBeforeTurn = 64; // snapshot at turn start for turn-end delta
@@ -2351,30 +2405,21 @@ function beginNextTurn(){
   cityRevenue = Math.round(cityRevenue * regionRevMult);
   cityBudget = Math.min(200, cityBudget + cityRevenue);
 
-  // Domain budget revenue — each domain generates operating revenue based on its own health
+  // Domain budgets do NOT auto-replenish. Budgets only change from:
+  //   - decisions (spend)
+  //   - loans (borrow)
+  //   - bribes (off-the-record infusion)
+  //   - spillovers (other domains' decisions affecting yours)
   const myDoms = window.myDomains || (myDomain ? [myDomain] : []);
-  myDoms.forEach(function(dk) {
-    const dh = domains[dk] ? domains[dk].health : 50;
-    let domRev = 0;
-    if (dh >= 90) domRev = 12 + Math.floor(Math.random() * 4);
-    else if (dh >= 75) domRev = 9 + Math.floor(Math.random() * 4);
-    else if (dh >= 50) domRev = 6 + Math.floor(Math.random() * 5);
-    else if (dh >= 25) domRev = 3 + Math.floor(Math.random() * 4);
-    else domRev = 1 + Math.floor(Math.random() * 2);
-    domRev = Math.round(domRev * regionRevMult);
-    domainBudgets[dk] = Math.min(100, (domainBudgets[dk] || 0) + domRev);
-  });
 
-  // Simulate AI domain budgets — revenue and spending so status labels shift each turn
+  // Simulate AI domain budgets — AI domains spend money (decisions) but do NOT auto-replenish,
+  // just like player domains. This keeps budget status labels shifting realistically each turn.
   const allDomKeys = ['transport','housing','energy','health','economy','education'];
   allDomKeys.forEach(function(dk) {
     if (myDoms.includes(dk)) return; // skip player domains
-    const dh = domains[dk] ? domains[dk].health : 50;
-    let aiRev = dh >= 75 ? 6 + Math.floor(Math.random() * 5) : dh >= 50 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 3);
     let aiSpend = 6 + Math.floor(Math.random() * 7);
-    aiRev = Math.round(aiRev * regionRevMult);
     aiSpend = Math.round(aiSpend * regionRevMult);
-    domainBudgets[dk] = Math.max(0, Math.min(100, (domainBudgets[dk] || 0) + aiRev - aiSpend));
+    domainBudgets[dk] = Math.max(0, (domainBudgets[dk] || 0) - aiSpend);
   });
 
   // Apply pending spillover budget changes — reveal net impact privately
@@ -3864,7 +3909,7 @@ function startGame(){
   // Rural x0.7 (less money, smaller per-decision costs)
   const regionMult = cityRegion === 'urban' ? 1.3 : cityRegion === 'rural' ? 0.7 : 1.0;
   const cityBaseTreasury = cityStart === 'steady' ? 120 : cityStart === 'crisis' ? 40 : 80;
-  const domBaseBudget = cityStart === 'steady' ? 50 : cityStart === 'crisis' ? 20 : 35;
+  const domBaseBudget = cityStart === 'steady' ? 75 : cityStart === 'crisis' ? 35 : 55;
   cityBudget = Math.round(cityBaseTreasury * regionMult);
   const domBudgetBase = Math.round(domBaseBudget * regionMult);
   domainBudgets = {transport:domBudgetBase,housing:domBudgetBase,energy:domBudgetBase,health:domBudgetBase,economy:domBudgetBase,education:domBudgetBase};
@@ -5193,31 +5238,33 @@ function resolveEv(id,msg,type){
       showToast('City treasury cannot afford this (' + fmtB(cost) + ' needed, ' + fmtB(cityBudget) + ' available)');
       return;
     }
-    // Vote required — you vote yes, simulate 3 AI players
+    // Vote required — you vote yes, simulate other players
     const isCrisis = evType === 'crisis';
     const isPolicy = evType === 'policy';
     const approvalChance = isCrisis ? 0.75 : isPolicy ? 0.55 : 0.6;
+    const total = voteCount();
+    const threshold = voteThreshold();
     let yesVotes = 1;
-    for (let v = 0; v < 3; v++) { if (Math.random() < approvalChance) yesVotes++; }
-    const approved = yesVotes >= 3;
+    for (let v = 0; v < (total - 1); v++) { if (Math.random() < approvalChance) yesVotes++; }
+    const approved = yesVotes >= threshold;
 
     if (!approved) {
-      turnEventResults.push({ title: evTitle, type: evType, result: 'REJECTED', votes: yesVotes + '/4', cost: cost, spent: false });
+      turnEventResults.push({ title: evTitle, type: evType, result: 'REJECTED', votes: voteLabel(yesVotes), cost: cost, spent: false });
       card.classList.add('resolved');
       const vb = document.createElement('div');
       vb.className = 'evrb';
       vb.style.color = 'var(--red)';
-      vb.textContent = '\u274C VOTE FAILED (' + yesVotes + '/4) \u2014 ' + fmtB(cost) + ' not spent. Consequences carry forward.';
+      vb.textContent = '\u274C VOTE FAILED (' + voteLabel(yesVotes) + ') \u2014 ' + fmtB(cost) + ' not spent. Consequences carry forward.';
       card.appendChild(vb);
       if (isCrisis) { trust = Math.max(0, trust - 4); }
       governance = Math.max(0, governance - 1);
       renderGovTrust();
-      showToast('Council rejected (' + yesVotes + '/4). Event deferred.');
+      showToast('Council rejected (' + voteLabel(yesVotes) + '). Event deferred.');
       return;
     }
     const treasuryBefore = cityBudget;
     cityBudget = Math.max(0, cityBudget - cost);
-    turnEventResults.push({ title: evTitle, type: evType, result: 'APPROVED', votes: yesVotes + '/4', cost: cost, spent: true, treasuryBefore: treasuryBefore, treasuryAfter: cityBudget });
+    turnEventResults.push({ title: evTitle, type: evType, result: 'APPROVED', votes: voteLabel(yesVotes), cost: cost, spent: true, treasuryBefore: treasuryBefore, treasuryAfter: cityBudget });
     if (isCrisis) { trust = Math.min(100, trust + 3); }
     if (isPolicy) { governance = Math.min(100, governance + 2); }
     trust = Math.min(100, trust + 1);
@@ -5225,11 +5272,11 @@ function resolveEv(id,msg,type){
     card.classList.add('resolved');
     const rb = document.createElement('div');
     rb.className = 'evrb';
-    rb.textContent = '\u2713 APPROVED (' + yesVotes + '/4) \u2014 ' + fmtB(cost) + ' from treasury. ' + msg;
+    rb.textContent = '\u2713 APPROVED (' + voteLabel(yesVotes) + ') \u2014 ' + fmtB(cost) + ' from treasury. ' + msg;
     card.appendChild(rb);
-    showToast(msg + ' | Vote: ' + yesVotes + '/4 | Treasury: ' + fmtB(cityBudget));
+    showToast(msg + ' | Vote: ' + voteLabel(yesVotes) + ' | Treasury: ' + fmtB(cityBudget));
   } else {
-    turnEventResults.push({ title: evTitle, type: evType, result: 'DEFERRED', votes: '0/4', cost: 0, spent: false });
+    turnEventResults.push({ title: evTitle, type: evType, result: 'DEFERRED', votes: '0/' + voteCount(), cost: 0, spent: false });
     const isCrisis = evType === 'crisis';
     if (isCrisis) { trust = Math.max(0, trust - 4); }
     governance = Math.max(0, governance - 1);
@@ -6514,7 +6561,8 @@ function castCouncilVote(targetDomain) {
   domKeys.forEach(function(k){ votes[k] = 0; });
   votes[targetDomain] = 1; // your vote
   // AI players vote (biased toward domains with more budget)
-  for (let i = 0; i < 3; i++) {
+  const otherPlayers = voteCount() - 1;
+  for (let i = 0; i < otherPlayers; i++) {
     const votable = domKeys.filter(function(k){ return k !== myDk; });
     const pick = votable[Math.floor(Math.random() * votable.length)];
     votes[pick] = (votes[pick] || 0) + 1;
@@ -6894,24 +6942,28 @@ function offerFederalAid() {
   if (amountEl) amountEl.textContent = '$' + aidAmount + 'M';
   const amountEl2 = document.getElementById('federal-aid-amount-2');
   if (amountEl2) amountEl2.textContent = '$' + aidAmount + 'M';
+  const headerEl = document.getElementById('federal-vote-header');
+  if (headerEl) headerEl.textContent = 'YOUR VOTE + ' + (voteCount() - 1) + ' OTHER PLAYERS \u00B7 NEED ' + voteThreshold() + '/' + voteCount();
   overlay.style.display = 'flex';
 }
 
 function acceptFederalAid() {
   // City council vote required — accepting federal aid is a city-level decision
   // Mixed political views: some want cash, some want autonomy
+  const total = voteCount();
+  const threshold = voteThreshold();
   let yesVotes = 1; // your vote
-  for (let v = 0; v < 3; v++) {
+  for (let v = 0; v < (total - 1); v++) {
     if (Math.random() < 0.6) yesVotes++; // ~60% approval baseline
   }
-  const approved = yesVotes >= 3;
+  const approved = yesVotes >= threshold;
 
   const overlay = document.getElementById('federal-aid-overlay');
   if (overlay) overlay.style.display = 'none';
 
   if (!approved) {
     // Vote failed — aid declined regardless of your choice
-    showToast('🏛 Council vote failed (' + yesVotes + '/4). Federal aid rejected. Self-funded recovery proceeds.');
+    showToast('🏛 Council vote failed (' + voteLabel(yesVotes) + '). Federal aid rejected. Self-funded recovery proceeds.');
     setTimeout(function(){ executeDecline(); }, 1500);
     return;
   }
@@ -6926,7 +6978,7 @@ function acceptFederalAid() {
   const trustMsg = trustShift >= 2 ? 'public sees rescue (+' + trustShift + ' trust)' :
                    trustShift <= -2 ? 'public sees failure (' + trustShift + ' trust)' :
                    'public reaction mixed';
-  showToast('🇺🇸 Council approved (' + yesVotes + '/4). Federal aid: $' + amount + 'M | Treasury: ' + fmtB(treasuryBefore) + ' → ' + fmtB(cityBudget) + ' | Gov −3, ' + trustMsg);
+  showToast('🇺🇸 Council approved (' + voteLabel(yesVotes) + '). Federal aid: $' + amount + 'M | Treasury: ' + fmtB(treasuryBefore) + ' → ' + fmtB(cityBudget) + ' | Gov −3, ' + trustMsg);
   renderGovTrust();
   window._pendingFederalAid = null;
   nav('so');
@@ -6934,18 +6986,20 @@ function acceptFederalAid() {
 
 function declineFederalAid() {
   // City council vote required — refusing federal aid is also a city-level decision
+  const total = voteCount();
+  const threshold = voteThreshold();
   let yesVotes = 1; // your vote
-  for (let v = 0; v < 3; v++) {
+  for (let v = 0; v < (total - 1); v++) {
     if (Math.random() < 0.55) yesVotes++; // slightly harder to convince council to refuse free money
   }
-  const approved = yesVotes >= 3;
+  const approved = yesVotes >= threshold;
 
   const overlay = document.getElementById('federal-aid-overlay');
   if (overlay) overlay.style.display = 'none';
 
   if (!approved) {
     // Vote failed — council overrules you and accepts the aid anyway
-    showToast('🏛 Council voted to accept anyway (' + (4 - yesVotes) + '/4 against your decline). Federal aid accepted.');
+    showToast('🏛 Council voted to accept anyway (' + voteLabel(total - yesVotes) + ' against your decline). Federal aid accepted.');
     setTimeout(function(){ executeAccept(); }, 1500);
     return;
   }
@@ -6996,6 +7050,167 @@ function executeDecline() {
   renderDSB();
   window._pendingFederalAid = null;
   nav('so');
+}
+
+// ── TUTORIAL SYSTEM ─────────────────────────────────────────────────
+const tutorialSteps = [
+  {
+    label: 'Welcome to GRIDLYNX',
+    content: '<p style="margin:0 0 12px;">You and 1\u20135 other players each control one sector of a city: Energy, Transport, Housing, Health, Economy, or Education.</p><p style="margin:0 0 12px;">Together, you keep the city alive. Individually, you compete to be the first to win your domain.</p><p style="margin:0;color:var(--amber);font-weight:600;">If the city collapses, everyone loses.</p>'
+  },
+  {
+    label: 'Your Turn',
+    content: '<p style="margin:0 0 12px;">Every turn you:</p><ol style="margin:0 0 12px;padding-left:20px;"><li style="margin-bottom:6px;">Read the dashboard \u2014 Heart Core, domain health, your budget, city treasury</li><li style="margin-bottom:6px;">Pick ONE decision for your domain</li><li style="margin-bottom:6px;">Vote on city events that use shared treasury money</li><li style="margin-bottom:6px;">End the turn and see what happened</li></ol><p style="margin:0 0 8px;"><strong style="color:var(--text);">To see what an action will do:</strong> tap any decision card to expand its briefing. You\u2019ll see four sections \u2014 DESCRIPTION (what it is), WHAT CHANGES (impact on your domain), WHAT IT COSTS (budget + side effects), and WHERE IT RIPPLES (other domains affected).</p><p style="margin:0;color:var(--cyan);font-weight:600;">Full results, including spillovers from other players, are revealed at turn-end on the Consequences screen.</p>'
+  },
+  {
+    label: 'Spillovers',
+    content: '<p style="margin:0 0 12px;">Your decisions don\u2019t stay in your domain \u2014 they ripple into other domains. A Transportation upgrade may help Economy but hurt Housing.</p><p style="margin:0 0 12px;">Spillovers affect both <strong style="color:var(--text);">health</strong> AND <strong style="color:var(--cyan);">budget</strong>, in both directions. Another player\u2019s decision can boost or damage your domain\u2019s health. It can also add money to your budget (they helped you) or take money away (they hurt you).</p><p style="margin:0;color:var(--cyan);font-weight:600;">All spillovers are revealed privately at turn-end \u2014 you see the impact, but never who caused it. That\u2019s the social deduction game.</p>'
+  },
+  {
+    label: 'The Two Budgets',
+    content: '<p style="margin:0 0 12px;"><strong style="color:var(--cyan);">Your domain budget</strong> is private \u2014 yours alone. Funds your decisions. Doesn\u2019t auto-replenish \u2014 what you start with is what you have to work with.</p><p style="margin:0 0 12px;"><strong style="color:var(--amber);">The city treasury</strong> is shared. Funds events and shocks. Spending requires a council vote (simple majority). Replenishes each turn based on Economy health.</p><p style="margin:0;">When your domain budget runs dry, you can take a public loan, use the OFF-THE-RECORD channel, or receive a spillover gain from another player\u2019s decision.</p>'
+  },
+  {
+    label: 'Winning',
+    content: '<p style="margin:0 0 12px;">Each domain has a unique winning threshold. Push your health to 80\u201385+ and keep Heart Core above 25.</p><p style="margin:0 0 12px;"><strong style="color:var(--text);">Domains move on a continuum.</strong> One decision could potentially move your health 8\u201320 points. Stabilizing a strained domain could take 2\u20133 turns. Reaching a winning state takes focused, strategic investment. Don\u2019t expect one move to fix everything or win the win.</p><p style="margin:0 0 12px;">The first player to hit their threshold wins. Only one player wins per game.</p><p style="margin:0;color:var(--amber);">Tap the <strong>?</strong> button at the top of any screen for quick reference or the full manual. Good luck.</p>'
+  }
+];
+let tutorialIndex = 0;
+
+function startTutorial() {
+  tutorialIndex = 0;
+  renderTutorialStep();
+  const overlay = document.getElementById('tutorial-overlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function closeTutorial() {
+  const overlay = document.getElementById('tutorial-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function tutorialStep(dir) {
+  const next = tutorialIndex + dir;
+  if (next < 0) return;
+  if (next >= tutorialSteps.length) { closeTutorial(); return; }
+  tutorialIndex = next;
+  renderTutorialStep();
+}
+
+function renderTutorialStep() {
+  const step = tutorialSteps[tutorialIndex];
+  const label = document.getElementById('tut-step-label');
+  const content = document.getElementById('tut-content');
+  const nextBtn = document.getElementById('tut-next');
+  const backBtn = document.getElementById('tut-back');
+  const dots = document.getElementById('tut-dots');
+  if (label) label.textContent = step.label;
+  if (content) content.innerHTML = step.content;
+  if (nextBtn) nextBtn.textContent = tutorialIndex === tutorialSteps.length - 1 ? 'START PLAYING' : 'NEXT \u2192';
+  if (backBtn) backBtn.style.visibility = tutorialIndex === 0 ? 'hidden' : 'visible';
+  if (dots) {
+    let dotsHtml = '';
+    for (let i = 0; i < tutorialSteps.length; i++) {
+      const active = i === tutorialIndex;
+      dotsHtml += '<div style="width:6px;height:6px;border-radius:50%;background:' + (active ? 'var(--cyan)' : 'var(--border)') + ';"></div>';
+    }
+    dots.innerHTML = dotsHtml;
+  }
+}
+
+// ── HELP SYSTEM ─────────────────────────────────────────────────────
+const helpContent = {
+  quick: [
+    { h: 'Your Turn', b: '<strong>READ</strong> the dashboard \u2192 <strong>PICK</strong> your decision \u2192 <strong>VOTE</strong> on events \u2192 <strong>END TURN</strong> \u2192 <strong>REVEAL</strong> consequences.' },
+    { h: 'How to See Impact', b: 'Tap any decision to expand the briefing. You\u2019ll see DESCRIPTION, WHAT CHANGES, WHAT IT COSTS, and WHERE IT RIPPLES. After confirming, the full effect is shown on the turn-end Consequences Revealed screen.' },
+    { h: 'Two Budgets', b: '<strong style="color:var(--cyan);">Domain budget</strong> \u2014 yours alone, funds decisions. <strong style="color:var(--amber);">City treasury</strong> \u2014 shared, funds events, needs a vote to spend.' },
+    { h: 'Status Vocabulary', b: 'THRIVING (90\u2013100) \u2192 STABLE (75\u201389) \u2192 PRESSURED (50\u201374) \u2192 STRAINED (25\u201349) \u2192 CRITICAL (0\u201324). Push to THRIVING to win.' },
+    { h: 'How to Win', b: 'Push your domain health to 80\u201385+. Heart Core must stay above 25. First player to hit threshold wins.' },
+    { h: 'How Everyone Loses', b: 'City collapses if any domain reaches 0 OR two domains drop below 15 at the same time. Nobody wins.' },
+    { h: 'Out of Money?', b: 'Take a public loan ($10\u201320M at 40% interest), use OFF-THE-RECORD for private actions, or hope for a positive spillover from another player. Domain budgets don\u2019t auto-replenish \u2014 every dollar matters. The OFF-THE-RECORD button pulses when budget &lt; $5M.' },
+    { h: 'Crisis Insurance', b: 'Offered Turn 3 for $5M. Reduces shock damage by 40%. Offered twice max per game.' },
+    { h: 'Federal Aid', b: 'Offered after every shock. Council votes ACCEPT (cash, gov \u22123) or DECLINE (self-fund same amount, gov +1).' },
+    { h: 'Audits', b: 'Spend 15 influence tokens. 35% chance to expose a bribe. If exposed, the dirty decision is reversed, trust drops sharply.' },
+    { h: 'Heart Core Below 30', b: 'Emergency council vote triggers. Players vote on which domain loses $10M to stabilize. Heart Core +8. The loser may not be the one who caused the problem \u2014 it\u2019s political.' },
+    { h: 'Continuous Play', b: 'Domains are continuums. Taking a domain from STRAINED to STABLE could take 2\u20133 turns. Reaching THRIVING takes focused, strategic investment \u2014 not one bold move.' },
+    { h: 'Spillovers', b: 'Every decision affects other domains. Some positive, some negative. They can shift your domain\u2019s HEALTH (up or down) AND your BUDGET (gains or losses). Revealed privately at turn-end \u2014 you see the impact, never who caused it.' }
+  ],
+  manual: [
+    { h: 'What is GRIDLYNX?', b: 'A city management strategy game with social deduction elements. 2\u20136 players each take control of one domain: Energy, Transport, Housing, Health, Economy, or Education. Together you keep the city alive; individually you compete to win your domain.' },
+    { h: 'Setup', b: 'One player creates the game and shares the join code. Everyone joins on their phone, picks a name and avatar. Players are randomly assigned a domain. Host picks the region (Urban/Suburban/Rural) and starting state (Steady/Volatile/Crisis). Volatile is recommended for first games.' },
+    { h: 'Heart Core', b: 'The city\u2019s overall health. Starts at 75 (Steady), 55 (Volatile), or 35 (Crisis). Drops when decisions are deferred or crises go unresolved. If it hits 30, an emergency council vote triggers. If domains collapse, the city collapses and everyone loses.' },
+    { h: 'Domain Budget', b: 'Your private money pool. Starts at $75M (Steady), $55M (Volatile), or $35M (Crisis), scaled by region (Urban x1.3, Suburban x1.0, Rural x0.7). Does NOT auto-replenish. Your budget only changes through: your own decisions (spend), loans (borrow), bribes (off-the-record), and spillovers. Spillover impacts go both ways \u2014 other players\u2019 decisions can grow your budget if they help your domain, or shrink it if they hurt your domain. Revealed privately at turn-end. Budget management is your core strategic problem.' },
+    { h: 'City Treasury', b: 'Shared pool funded by Economy domain health. Starts at $120M (Steady), $80M (Volatile), or $40M (Crisis). Used for events and shocks. Spending requires a simple majority council vote. Caps at $200M.' },
+    { h: 'Decisions', b: 'Every turn, pick ONE decision for your domain. The app shows you a tiered list based on your current health status. Each decision shows name, tags (impact summary), and a cost. Tap to expand the briefing with DESCRIPTION, WHAT CHANGES, WHAT IT COSTS, and WHERE IT RIPPLES.' },
+    { h: 'Events', b: 'City-wide situations drawn each turn. Three types: CRISIS (bad things happening \u2014 if ignored, Trust drops), POLICY (long-term governance choices), OPPORTUNITY (strategic chances). All funded from city treasury. Require simple majority council vote.' },
+    { h: 'Shocks', b: 'Rare major crises (1\u20132 per game) that damage multiple domains at once. Crisis Insurance ($5M, Turn 3+) reduces shock damage by 40%. After a shock, federal aid is offered.' },
+    { h: 'Federal Disaster Relief', b: 'Offered after every shock. Amount: $25\u201340M. Council votes. ACCEPT: treasury increases, governance \u22123 (federal strings), trust shifts \u00b15. DECLINE: self-fund the SAME amount from treasury, governance +1 (autonomy), trust shifts, weakest domain takes additional damage.' },
+    { h: 'Spillovers', b: 'Decisions ripple across domains. A Transportation upgrade improves Economy but may hurt Housing. Spillovers affect two things: your domain\u2019s HEALTH (up or down) and your BUDGET (gains or losses). If another player\u2019s decision helps your domain, your budget may grow. If their decision hurts yours, your budget may shrink. All spillovers are calculated automatically and revealed privately at turn-end \u2014 you see the net impact on your domain and budget, but never which player caused it. If your budget keeps shrinking, someone is consistently hurting you \u2014 time to audit.' },
+    { h: 'Cascades', b: 'When a domain hits CRITICAL, it pulls related domains down with it. Shown as cascade warnings on the turn-end screen. This is how city collapse starts \u2014 one failing domain can drag others below 15, triggering game-over.' },
+    { h: 'Off-the-Record Channel', b: 'Private actions available when budget is low. Bribes, hidden investments, leveraged influence. Triggers "Private Action Detected" warning on turn-end for everyone \u2014 someone used the channel, but no names. Can be exposed by audits.' },
+    { h: 'Audits', b: 'Cost: 15 influence tokens. 35% chance of exposure. If exposed AND the target took a bribe: the bribe-funded decision is REVERSED, spillovers undo, trust \u221212, governance \u22125. Players who benefited from the dirty decision lose those gains too.' },
+    { h: 'Council Votes', b: 'Three situations require votes: (1) Funding city events. (2) Accepting/declining federal aid. (3) Emergency Heart Core stabilization. All require simple majority. You vote on your phone; results revealed when everyone has voted.' },
+    { h: 'Loans', b: 'Public instrument on the decision screen. Borrow $10\u201320M from city treasury at 40% interest. Due in 3 turns. If you can\u2019t repay: budget garnished, governance \u22125, trust \u22123, debt rolls over with 2-turn extension. Only one active loan at a time.' },
+    { h: 'Winning Your Domain', b: 'Each domain has a unique winning condition shown at game start. Generally: push your health to 80\u201385+, Heart Core must be above 25. First player to hit their threshold wins. Only one winner per game. Note: wins do not count before turn 4 \u2014 the early game is for establishing position, not racing.' },
+    { h: 'City Collapse', b: 'The game ends with everyone losing if: any single domain reaches 0 health, OR two domains drop below 15 at the same time. The city is gone. No one wins.' },
+    { h: 'Trust and Governance', b: 'Two 0\u2013100 metrics tracking public confidence (Trust) and institutional capacity (Governance). Affected by decisions, events, and votes. Low Trust makes events harder to pass. Low Governance makes every decision less effective.' },
+    { h: 'Influence Tokens', b: 'Currency for political actions. Earned passively each turn and from specific decision outcomes. Spent on audits (15 tokens per audit) and some event responses. Visible on the dashboard utility bar.' }
+  ]
+};
+
+let helpTab = 'quick';
+
+function openHelp() {
+  const overlay = document.getElementById('help-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  switchHelpTab('quick');
+}
+
+function closeHelp() {
+  const overlay = document.getElementById('help-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function switchHelpTab(tab) {
+  helpTab = tab;
+  const quickTab = document.getElementById('help-tab-quick');
+  const manualTab = document.getElementById('help-tab-manual');
+  const searchWrap = document.getElementById('help-search-wrap');
+  const searchInput = document.getElementById('help-search');
+  if (tab === 'quick') {
+    if (quickTab) { quickTab.style.background = 'rgba(245,158,11,.08)'; quickTab.style.borderBottomColor = 'var(--amber)'; quickTab.style.color = 'var(--amber)'; }
+    if (manualTab) { manualTab.style.background = 'none'; manualTab.style.borderBottomColor = 'transparent'; manualTab.style.color = 'var(--text-muted)'; }
+    if (searchWrap) searchWrap.style.display = 'none';
+    renderHelpBody(helpContent.quick);
+  } else {
+    if (manualTab) { manualTab.style.background = 'rgba(245,158,11,.08)'; manualTab.style.borderBottomColor = 'var(--amber)'; manualTab.style.color = 'var(--amber)'; }
+    if (quickTab) { quickTab.style.background = 'none'; quickTab.style.borderBottomColor = 'transparent'; quickTab.style.color = 'var(--text-muted)'; }
+    if (searchWrap) searchWrap.style.display = 'block';
+    if (searchInput) searchInput.value = '';
+    renderHelpBody(helpContent.manual);
+  }
+}
+
+function renderHelpBody(items) {
+  const body = document.getElementById('help-body');
+  if (!body) return;
+  if (items.length === 0) {
+    body.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px 0;">No results found.</div>';
+    return;
+  }
+  body.innerHTML = items.map(function(item) {
+    return '<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);"><div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">' + item.h + '</div><div>' + item.b + '</div></div>';
+  }).join('');
+}
+
+function searchManual(query) {
+  const q = (query || '').toLowerCase().trim();
+  if (!q) { renderHelpBody(helpContent.manual); return; }
+  const filtered = helpContent.manual.filter(function(item) {
+    return item.h.toLowerCase().includes(q) || item.b.toLowerCase().includes(q);
+  });
+  renderHelpBody(filtered);
 }
 
 function confirmLeaveGame() {
