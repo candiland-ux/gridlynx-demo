@@ -1450,36 +1450,31 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
     <div class="isb">
       <div class="ic">💰</div>
       <div>
-        <div style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;">INFLUENCE TOKENS — TURN 4</div>
+        <div id="inf-turn-label" style="font-family:var(--fm);font-size:9px;color:var(--amber);letter-spacing:2px;">INFLUENCE TOKENS — TURN 1</div>
         <div style="font-family:var(--fd);font-size:32px;font-weight:700;color:var(--text);" id="infval">28</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:3px;">+8 earned this round · 3 spent</div>
+        <div id="inf-delta" style="font-size:11px;color:var(--text-dim);margin-top:3px;">No activity this turn yet</div>
       </div>
     </div>
     <div class="sl">SPEND INFLUENCE</div>
-    <div class="iuc" onclick="spendInf(8,'Emergency override applied — Energy domain acts first this turn')">
+    <div class="iuc" data-cost="8" onclick="spendInf(8,'Emergency override applied — Energy domain acts first this turn')">
       <div class="iui">⚡</div>
       <div><div class="iun">Emergency Override</div><div class="iue">Force your domain to act before other players this turn. Critical when cascade risk is imminent.</div><div class="iuco">COST: 8 tokens</div></div>
     </div>
-    <div class="iuc" onclick="spendInf(12,'Audit shield active — you cannot be audited this round')">
+    <div class="iuc" data-cost="12" onclick="spendInf(12,'Audit shield active — you cannot be audited this round')">
       <div class="iui">🛡</div>
       <div><div class="iun">Audit Shield</div><div class="iue">Protect your private actions from audit this turn. Other players see no evidence of irregular activity.</div><div class="iuco">COST: 12 tokens</div></div>
     </div>
-    <div class="iuc" onclick="spendInf(6,'Intel purchased — a hidden action partially revealed')">
+    <div class="iuc" data-cost="6" onclick="spendInf(6,'Intel purchased — a hidden action partially revealed')">
       <div class="iui">🔍</div>
       <div><div class="iun">Purchase Intel</div><div class="iue">Reveal a partial view of another player's private action from last turn.</div><div class="iuco">COST: 6 tokens</div></div>
     </div>
-    <div class="iuc" onclick="nav('sa')">
+    <div class="iuc" data-cost="15" onclick="nav('sa')">
       <div class="iui">🔎</div>
       <div><div class="iun">Call Audit — Player 3</div><div class="iue">Trigger a formal audit of Housing &amp; Living. If corruption found, domain control transfers. If clean, you lose credibility.</div><div class="iuco">COST: 15 tokens · TAP TO PROCEED →</div></div>
     </div>
     <div class="sl">INFLUENCE LOG</div>
-    <div style="padding:0 20px 20px;">
-      <div class="ili"><div><div class="ild">Emergency Load Balancing committed</div><div class="ilt">Turn 4 · Energy</div></div><div class="ilv pos">+14</div></div>
-      <div class="ili"><div><div class="ild">Audit shield purchased</div><div class="ilt">Turn 3</div></div><div class="ilv neg">−12</div></div>
-      <div class="ili"><div><div class="ild">Domain stability bonus (health &gt;40)</div><div class="ilt">Turn 3 · End of round</div></div><div class="ilv pos">+10</div></div>
-      <div class="ili"><div><div class="ild">Deferred Maintenance Redirect (private)</div><div class="ilt">Turn 2</div></div><div class="ilv pos">+14</div></div>
-      <div class="ili"><div><div class="ild">Intel purchased on Player 2</div><div class="ilt">Turn 2</div></div><div class="ilv neg">−6</div></div>
-      <div class="ili"><div><div class="ild">Starting allocation</div><div class="ilt">Turn 1</div></div><div class="ilv pos">+8</div></div>
+    <div id="inf-log" style="padding:0 20px 20px;">
+      <div style="padding:12px 0;font-size:11px;color:var(--text-muted);text-align:center;">No influence activity yet this game.</div>
     </div>
   </div>
 </div>
@@ -2186,6 +2181,9 @@ const domains={
 };
 
 let curDomain='energy',selDec=null,chosenStrategic=null,infBal=28,cityStart='volatile',selectedMode='hybrid',myDomain=null;
+let infEarnedThisTurn = 0;
+let infSpentThisTurn = 0;
+let influenceLog = []; // {desc, turn, delta, type:'pos'|'neg'}
 let heartCore=65,turnNumber=1;
 let cityBudget = 60; // shared city treasury for events/policies (displayed as $M)
 let domainBudgets = {transport:25,housing:25,energy:25,health:25,economy:25,education:25}; // per-domain operating budgets
@@ -2460,6 +2458,8 @@ function beginNextTurn(){
   committedDomains = new Set();
   turnSpillovers = [];  // reset for new turn
   turnEventResults = []; // reset event vote tracking
+  infEarnedThisTurn = 0;
+  infSpentThisTurn = 0;
 
   // HC is already decayed from revealHeartCore — just snapshot for next turn
   hcBeforeTurn = heartCore;
@@ -2526,6 +2526,7 @@ function nav(id){
   if(id==='so') { renderConditionsBar(); refreshAlertPill(); renderGovTrust(); const ib=document.getElementById('inf-balance-display'); if(ib) ib.textContent=infBal; const bb=document.getElementById('budget-display'); if(bb) bb.textContent=fmtB(domainBudgets[myDomain||'energy']||0); }
   if(id==='str') renderGovTrust();
   if(id==='sgov') renderGovTrust();
+  if(id==='si') renderInfluenceScreen();
   if(myDomain) renderDSB();
   if(id==='s-profile') setTimeout(initProfileScreen, 0);
   // Reveal Heart Core changes when entering events or turn-end
@@ -5187,11 +5188,78 @@ function revealHeartCore() {
 }
 
 
-function spendInf(cost,msg){if(infBal<cost){showToast('Insufficient influence tokens');return;}infBal-=cost;document.getElementById('infval').textContent=infBal;showToast(msg);}
+function spendInf(cost,msg){
+  if(infBal<cost){showToast('Insufficient influence tokens');return false;}
+  infBal-=cost;
+  infSpentThisTurn += cost;
+  influenceLog.unshift({desc: msg.split(' \u2014 ')[0] || msg.substring(0, 40), turn: turnNumber, delta: -cost, type: 'neg'});
+  if (influenceLog.length > 8) influenceLog.length = 8;
+  document.getElementById('infval').textContent=infBal;
+  const ib = document.getElementById('inf-balance-display'); if (ib) ib.textContent = infBal;
+  renderInfluenceScreen();
+  showToast(msg);
+  return true;
+}
+
+function earnInf(amount, desc) {
+  infBal += amount;
+  infEarnedThisTurn += amount;
+  influenceLog.unshift({desc: desc || 'Token earned', turn: turnNumber, delta: amount, type: 'pos'});
+  if (influenceLog.length > 8) influenceLog.length = 8;
+  const ib = document.getElementById('inf-balance-display'); if (ib) ib.textContent = infBal;
+  const iv = document.getElementById('infval'); if (iv) iv.textContent = infBal;
+}
+
+function renderInfluenceScreen() {
+  // Update header values (turn, balance, earned/spent)
+  const turnLabel = document.getElementById('inf-turn-label');
+  if (turnLabel) turnLabel.textContent = 'INFLUENCE TOKENS \u2014 TURN ' + turnNumber;
+  const infvalEl = document.getElementById('infval');
+  if (infvalEl) infvalEl.textContent = infBal;
+  const deltaEl = document.getElementById('inf-delta');
+  if (deltaEl) {
+    if (infEarnedThisTurn === 0 && infSpentThisTurn === 0) {
+      deltaEl.textContent = 'No activity this turn yet';
+    } else {
+      const parts = [];
+      if (infEarnedThisTurn > 0) parts.push('+' + infEarnedThisTurn + ' earned this turn');
+      if (infSpentThisTurn > 0) parts.push(infSpentThisTurn + ' spent');
+      deltaEl.textContent = parts.join(' \u00B7 ');
+    }
+  }
+  // Disable spend cards the player can\u2019t afford
+  document.querySelectorAll('.iuc[data-cost]').forEach(function(card) {
+    const cost = parseInt(card.getAttribute('data-cost')) || 0;
+    if (cost > infBal) {
+      card.style.opacity = '0.4';
+      card.style.pointerEvents = 'none';
+      card.setAttribute('title', 'Need ' + cost + ' tokens, have ' + infBal);
+    } else {
+      card.style.opacity = '1';
+      card.style.pointerEvents = 'auto';
+      card.removeAttribute('title');
+    }
+  });
+  // Render influence log
+  const logEl = document.getElementById('inf-log');
+  if (logEl) {
+    if (influenceLog.length === 0) {
+      logEl.innerHTML = '<div style="padding:12px 0;font-size:11px;color:var(--text-muted);text-align:center;">No influence activity yet this game.</div>';
+    } else {
+      logEl.innerHTML = influenceLog.map(function(entry) {
+        const sign = entry.delta > 0 ? '+' : '';
+        return '<div class="ili"><div><div class="ild">' + entry.desc + '</div><div class="ilt">Turn ' + entry.turn + '</div></div><div class="ilv ' + entry.type + '">' + sign + entry.delta + '</div></div>';
+      }).join('');
+    }
+  }
+}
 
 function runAudit(){
   if (infBal < 15) { showToast('Need 15 influence tokens to audit'); return; }
   infBal -= 15;
+  infSpentThisTurn += 15;
+  influenceLog.unshift({desc: 'Audit called on Player 3', turn: turnNumber, delta: -15, type: 'neg'});
+  if (influenceLog.length > 8) influenceLog.length = 8;
   const exposed = Math.random() < 0.35;
   const ra = document.getElementById('auditresult');
   const ab = document.getElementById('auditbar');
