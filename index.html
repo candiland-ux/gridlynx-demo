@@ -2475,6 +2475,7 @@ function beginNextTurn(){
  committedDomains = new Set();
  turnSpillovers = []; // reset for new turn
  turnEventResults = []; // reset event vote tracking
+ pendingEventVotes = []; // reset pending votes
  infEarnedThisTurn = 0;
  infSpentThisTurn = 0;
 
@@ -4078,7 +4079,7 @@ const tieredDecisions={
  moderate:[
  {name:'Emergency Load Balancing',effect:'Redistribute load across the grid to prevent cascade this turn.',tags:[{l:'Energy +18',c:'p'},{l:'Prevents cascade',c:'p'}],delta:18,details:'Substations are overloaded. Without intervention, they trip offline and cascade failures spread to connected domains — Health loses backup power, Transport signals go dark, Economy’s digital systems trigger shutdowns. Rerouting power from lower-priority areas prevents this. High immediate impact, but the underlying structural weakness remains. Heavy investment from your domain budget.',intel:'<strong>Grid dependency map:</strong> Transport ({transport_status}) and Health ({health_status}) both rely on Energy for core operations. Transport signals, hospital backups, and Economy’s data centers all draw from your grid. If either is STRAINED or worse, a second energy dip while this option is unavailable (2 turns) could push them into crisis. <strong>Domino risk:</strong> Economy is {economy_status}. If Economy drops a tier during your 2-turn gap, city treasury revenue falls — currently {treasury}. That affects every player’s ability to fund event responses.'},
  {name:'Neighborhood Microgrid Deployment',effect:'Deploy distributed solar and battery storage in priority areas.',tags:[{l:'Energy +14',c:'p'},{l:'Resilience +12',c:'p'},{l:'3-turn payoff',c:'w'}],delta:14,details:'Priority areas get their own solar and battery storage, capable of operating independently from the main grid. Moderate immediate impact because installation takes time, but once live, these areas are shock-proof — they sustain power even if the central grid fails. Infrastructure that compounds over time. The risk: if the city collapses before construction finishes, the investment is wasted.',intel:'<strong>Survival math:</strong> This takes 2–3 turns to deliver. Heart Core is {hc}. At the current rate of decline, an emergency council vote (HC below 30) is roughly {hc_turns_left} turns away. This decision needs 2–3 turns to pay off — if the emergency hits first, someone loses $10M before your investment delivers. <strong>Housing unlock:</strong> Housing is {housing_status}. Housing’s strongest recovery options require active grid coverage. If Housing is STRAINED or worse, this decision gives them access to actions they currently can’t take — a benefit they can’t create on their own.'},
- {name:'Temporary Power Purchase',effect:'Buy power from the regional grid to cover shortfall.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'}],delta:10,details:'The city doesn’t generate enough power right now. Purchasing electricity from neighboring utilities at emergency rates keeps the lights on immediately but creates external dependency. The budget hit is the heaviest of any option, which means other domains feel the squeeze. If you need another emergency purchase later, the city may not be able to afford it. Short-term survival at long-term cost.',intel:'<strong>What you can’t afford after:</strong> Your budget is {my_budget}. After this purchase, most decisions above $8M become unaffordable for 1–2 turns. If a shock hits during that window, your only options are a loan or the off-the-record channel. <strong>Treasury exposure:</strong> City treasury is {treasury}. If the treasury is below $50M, a shock plus your depleted budget means the city may not be able to fund both your recovery and the next event response.'}
+ {name:'Temporary Power Purchase',effect:'Buy power from the regional grid to cover shortfall.',tags:[{l:'Energy +10',c:'p'},{l:'Prevents collapse',c:'i'}],delta:10,details:'The city doesn’t generate enough power right now. Purchasing electricity from neighboring utilities at emergency rates keeps the lights on immediately but creates external dependency. The budget hit is the heaviest of any option, which means other domains feel the squeeze. If you need another emergency purchase later, the city may not be able to afford it. Short-term survival at long-term cost.',intel:'<strong>Repeat purchase risk:</strong> If you buy emergency power a second time, suppliers charge the same but deliver less. A third purchase is usually unaffordable. <strong>Who depends on you right now:</strong> Transport ({transport_status}), Health ({health_status}), and Economy ({economy_status}) all rely on grid stability. If any are STRAINED or worse, your purchase keeps them from getting worse — but it doesn’t fix the underlying grid problem.'}
  ],
  strained:[
  {name:'Crisis Stabilization Protocol',effect:'Lock down grid volatility before it cascades. All expansion paused.',tags:[{l:'Energy +22',c:'p'},{l:'Cascade stopped',c:'p'},{l:'Expansion frozen 1 turn',c:'m'}],delta:22,details:'Everything stops. All resources focus exclusively on stabilizing the grid — no new projects, no expansions, no support for other domains. Maximum stabilization but your domain is completely locked next turn. If a shock hits or conditions change while you’re frozen, you cannot respond. Other players may exploit your downtime. The cascade protection is real though: without this, connected domains start draining.',intel:'<strong>Who’s at risk right now:</strong> Transport is {transport_status}. Health is {health_status}. Economy is {economy_status}. This decision commits all your resources to Energy — if any of these domains worsen next turn, you have nothing to redirect. <strong>What other players see:</strong> Energy visibly stabilizes on the turn-end screen. Players with low budgets may take bigger risks knowing Energy is no longer dragging the city down. Watch for “Private Action Detected” on the next turn-end.'},
@@ -4107,7 +4108,7 @@ const tieredDecisions={
  {name:'Rapid Prefab Housing',effect:'Deploy pre-approved prefab housing units on city-owned land.',tags:[{l:'Housing +8',c:'p'},{l:'Fast deployment',c:'i'}],delta:8,details:'Pre-approved prefab housing units deployed on city-owned land. Ready for occupancy within weeks instead of months. No zoning battles because it’s city land. Lower impact than changing building rules but faster and no displacement risk. The units are basic — functional but not permanent. Residents may view them as a sign the city is failing rather than responding.'}
  ],
  strained:[
- {name:'Crisis Housing Intervention',effect:'Emergency acquisition and conversion of vacant commercial buildings.',tags:[{l:'Housing +20',c:'p'},{l:'Displacement stopped',c:'p'}],delta:20,details:'The city exercises emergency authority to acquire and convert vacant commercial buildings into housing. Maximum housing impact but the heaviest domain budget cost of any option. Legal challenges from property owners are likely. Conversions take time to make habitable. Stops the displacement cascade but the financial burden limits every other domain’s options.',intel:'<strong>Budget math:</strong> Your budget is {my_budget}. After this decision, most mid-tier and all high-tier decisions become unaffordable until you get a loan, bribe, or positive spillover. If a shock hits while you’re broke, your only paths are the off-the-record channel or passing. <strong>Governance cost:</strong> Governance is {governance}. Property acquisition generates legal challenges that drop governance further. If governance falls below 40, every decision across all domains delivers less impact.'},
+ {name:'Crisis Housing Intervention',effect:'Emergency acquisition and conversion of vacant commercial buildings.',tags:[{l:'Housing +20',c:'p'},{l:'Displacement stopped',c:'p'}],delta:20,details:'The city exercises emergency authority to acquire and convert vacant commercial buildings into housing. Maximum housing impact but the heaviest domain budget cost of any option. Legal challenges from property owners are likely. Conversions take time to make habitable. Stops the displacement cascade but the financial burden limits every other domain’s options.',intel:'<strong>Highest-cost decision available:</strong> This is the most expensive option in the game. Check your remaining budget before committing — you may not be able to afford another significant decision without a loan or bribe. <strong>Governance cost:</strong> Governance is {governance}. Property acquisition generates legal challenges that drop governance further. If governance falls below 40, every decision across all domains delivers less impact.'},
  {name:'Shelter-in-Place Directive',effect:'Mandate residents stay in current housing — prevents further displacement.',tags:[{l:'Housing +14',c:'p'},{l:'Freedom perception −8',c:'m'}],delta:14,details:'Legal order prevents evictions and restricts residential moves during the crisis. Stops displacement immediately — no one loses their home this turn. But landlords face defaults, small property owners go under, and the perception of government overreach drives trust down. Some residents feel protected; others feel trapped. No budget cost but significant trust and governance impact.'},
  {name:'Federal Housing Request',effect:'Apply for emergency federal housing funds. Two-turn delay before benefit lands.',tags:[{l:'Housing +16 (Turn+2)',c:'p'},{l:'Influence −10',c:'m'}],delta:8,details:'Application for federal emergency housing assistance. Resources are substantial but take time to arrive. In the meantime, housing conditions don’t improve. If the city collapses before funds land, the application is moot. Costs influence to navigate bureaucracy. The eventual payoff is significant but you’re betting the city survives long enough.'}
  ],
@@ -4202,7 +4203,7 @@ const tieredDecisions={
  ],
  stable:[
  {name:'AI & Digital Literacy Program',effect:'City-wide initiative to build AI literacy across all age groups.',tags:[{l:'Education +12',c:'p'},{l:'Economy prep',c:'i'},{l:'3-turn payoff',c:'w'}],delta:12,details:'City-wide curriculum overhaul adding AI literacy and data skills. Students gain future-ready skills aligned with the emerging economy. Teachers need retraining before full deployment. Schools in lower-resource areas may lack hardware. Long-term economic benefit is substantial but the education system absorbs significant disruption during transition. Takes time to produce graduates who enter the workforce.',intel:'<strong>Economy dependency:</strong> Economy is {economy_status}. The value of education investment depends on whether there are jobs waiting. If Economy is declining, trained graduates face no opportunities. If Economy is recovering, graduates fill real demand. <strong>Three-domain reach:</strong> This is the only decision that creates positive effects in Education, Economy, AND Energy (trained technicians) simultaneously. Current Energy: {energy_status}.'},
- {name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling programs for automation-displaced workers.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'}],delta:10,details:'Dedicated reskilling facilities for displaced workers. Intensive programs in healthcare, clean energy, and IT. Workers displaced by automation or closures have a pathway back. Domain budget cost for facilities and instructors. Centers need transit access — if Transport is under pressure, attendance drops. Effectiveness depends on whether there are jobs waiting on the other end.',intel:'<strong>Two conditions must hold:</strong> Economy ({economy_status}, {economy_status}) needs to have jobs for graduates. Transport ({transport_status}, {transport_status}) needs to get workers to the training centers. If either is STRAINED or worse, this investment fails — you spend the money but graduates either can’t find work or can’t reach training. <strong>Compared to AI Literacy:</strong> This is the faster option when both conditions are met, but it’s narrower — it only helps Education and Economy, not Energy. Current city treasury: {treasury}.'},
+ {name:'Rapid Reskilling Centers',effect:'Deploy 6-week reskilling programs for automation-displaced workers.',tags:[{l:'Education +10',c:'p'},{l:'Labor supply +8',c:'p'}],delta:10,details:'Dedicated reskilling facilities for displaced workers. Intensive programs in healthcare, clean energy, and IT. Workers displaced by automation or closures have a pathway back. Domain budget cost for facilities and instructors. Centers need transit access — if Transport is under pressure, attendance drops. Effectiveness depends on whether there are jobs waiting on the other end.',intel:'<strong>Two conditions must hold:</strong> Economy ({economy_status}) needs to have jobs for graduates. Transport ({transport_status}) needs to get workers to the training centers. If either is STRAINED or worse, this investment fails — you spend the money but graduates either can’t find work or can’t reach training. <strong>Compared to AI Literacy:</strong> This is the faster option when both conditions are met, but it’s narrower — it only helps Education and Economy, not Energy. Current city treasury: {treasury}.'},
  {name:'University Partnership Program',effect:'Partner with local universities on applied research for city challenges.',tags:[{l:'Education +8',c:'p'},{l:'Economy +6',c:'p'},{l:'2-turn payoff',c:'w'}],delta:8}
  ],
  moderate:[
@@ -4554,16 +4555,17 @@ function openDomain(key){
  if (rawDelta > 0) {
  let context = 'Moves your domain from <strong>' + d.health + '</strong> to <strong>' + healthAfter + '</strong>.';
  const condDetails = getConditionDetails(key);
+ let condContext = '';
  if (condDetails.length > 0) {
  condDetails.forEach(c => {
  const pts = Math.abs(Math.round(rawDelta * (governance/100) * c.mod));
- if (pts > 0) context += ' ' + c.icon + ' ' + c.name + ' is ' + (c.mod < 0 ? 'costing' : 'adding') + ' ' + pts + ' point' + (pts !== 1 ? 's' : '') + ' (' + c.turnsLeft + ' turn' + (c.turnsLeft !== 1 ? 's' : '') + ' left).';
+ if (pts > 0) condContext += '<div style="margin-top:8px;padding:6px 8px;background:rgba(245,158,11,.04);border-left:2px solid var(--amber);font-size:11px;color:var(--text-dim);">' + c.icon + ' <strong style="color:var(--amber);">Active condition: ' + c.name + '</strong> \u2014 ' + (c.mod < 0 ? 'reducing your gains by ' : 'boosting your gains by ') + pts + ' point' + (pts !== 1 ? 's' : '') + ' this turn. Expires in ' + c.turnsLeft + ' turn' + (c.turnsLeft !== 1 ? 's' : '') + '.</div>';
  });
  }
  if (healthAfter >= threshold) context += ' This crosses your win threshold \u2014 but other players\u2019 decisions and spillovers land before the check runs.';
  else if (threshold - healthAfter <= 10) context += ' You\u2019d be ' + (threshold - healthAfter) + ' points from your win condition \u2014 other players\u2019 actions can shift your domain before your next turn.';
  if (d.health < 15 && healthAfter >= 15) context += ' Prevents your domain from triggering city collapse.';
- lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">' + context + '</div></div>');
+ lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">' + context + '</div>' + condContext + '</div>');
  } else {
  lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">No direct improvement to your domain this turn. This action supports the city or builds influence for future turns.</div></div>');
  }
@@ -5004,6 +5006,9 @@ function confirmDecision(){
 
 
 function revealHeartCore() {
+ // Resolve all pending event votes — simulate council votes and apply outcomes
+ resolveAllEventVotes();
+
  // Apply all queued HC changes from this turn's decisions
  pendingHCChanges.forEach(change => {
  heartCore = Math.max(0, Math.min(100, heartCore + change.delta));
@@ -5338,66 +5343,79 @@ function runAudit(){
  window.scrollTo(0,9999);
 }
 
+// Pending event votes — resolved at turn-end, not immediately
+let pendingEventVotes = [];
+
 function resolveEv(id,msg,type){
  const card=document.getElementById(id);
  const evTitle = card.querySelector('.evti') ? card.querySelector('.evti').textContent : msg;
  const evType = card.classList.contains('cr') ? 'crisis' : card.classList.contains('po') ? 'policy' : 'opportunity';
- if (type !== 'd') {
  const cost = parseInt(card.getAttribute('data-cost') || '0');
+
+ if (type !== 'd') {
  if (cost > cityBudget) {
  showToast('City treasury cannot afford this (' + fmtB(cost) + ' needed, ' + fmtB(cityBudget) + ' available)');
  return;
  }
- // Vote required — you vote yes, simulate other players
- const isCrisis = evType === 'crisis';
- const isPolicy = evType === 'policy';
+ // Record vote — don't resolve yet
+ pendingEventVotes.push({ title: evTitle, type: evType, cost: cost, playerVote: 'yes', msg: msg });
+ card.classList.add('resolved');
+ const vb = document.createElement('div');
+ vb.className = 'evrb';
+ vb.style.color = 'var(--cyan)';
+ vb.textContent = '\u2705 YOUR VOTE CAST \u2014 results at turn-end';
+ card.appendChild(vb);
+ showToast('Vote cast \u2014 outcome revealed when all players finish');
+ } else {
+ // Defer — record and show confirmation
+ pendingEventVotes.push({ title: evTitle, type: evType, cost: 0, playerVote: 'defer', msg: msg });
+ card.classList.add('resolved');
+ const db = document.createElement('div');
+ db.className = 'evrb';
+ db.style.color = 'var(--text-muted)';
+ db.textContent = '\u23ED DEFERRED \u2014 results at turn-end';
+ card.appendChild(db);
+ showToast('Deferred \u2014 outcome revealed when all players finish');
+ }
+}
+
+// Called during turn-end to simulate all votes and apply outcomes
+function resolveAllEventVotes() {
+ turnEventResults = [];
+ pendingEventVotes.forEach(function(ev) {
+ const isCrisis = ev.type === 'crisis';
+ const isPolicy = ev.type === 'policy';
+
+ if (ev.playerVote === 'defer') {
+ turnEventResults.push({ title: ev.title, type: ev.type, result: 'DEFERRED', votes: '0/' + voteCount(), cost: 0, spent: false });
+ if (isCrisis) { trust = Math.max(0, trust - 4); }
+ governance = Math.max(0, governance - 1);
+ return;
+ }
+
+ // Simulate council vote
  const approvalChance = isCrisis ? 0.75 : isPolicy ? 0.55 : 0.6;
  const total = voteCount();
  const threshold = voteThreshold();
- let yesVotes = 1;
+ let yesVotes = 1; // player voted yes
  for (let v = 0; v < (total - 1); v++) { if (Math.random() < approvalChance) yesVotes++; }
  const approved = yesVotes >= threshold;
 
  if (!approved) {
- turnEventResults.push({ title: evTitle, type: evType, result: 'REJECTED', votes: voteLabel(yesVotes), cost: cost, spent: false });
- card.classList.add('resolved');
- const vb = document.createElement('div');
- vb.className = 'evrb';
- vb.style.color = 'var(--red)';
- vb.textContent = '\u274C VOTE FAILED (' + voteLabel(yesVotes) + ') \u2014 ' + fmtB(cost) + ' not spent. Consequences carry forward.';
- card.appendChild(vb);
+ turnEventResults.push({ title: ev.title, type: ev.type, result: 'REJECTED', votes: voteLabel(yesVotes), cost: ev.cost, spent: false });
  if (isCrisis) { trust = Math.max(0, trust - 4); }
  governance = Math.max(0, governance - 1);
- renderGovTrust();
- showToast('Council rejected (' + voteLabel(yesVotes) + '). Event deferred.');
- return;
- }
+ } else {
  const treasuryBefore = cityBudget;
- cityBudget = Math.max(0, cityBudget - cost);
- turnEventResults.push({ title: evTitle, type: evType, result: 'APPROVED', votes: voteLabel(yesVotes), cost: cost, spent: true, treasuryBefore: treasuryBefore, treasuryAfter: cityBudget });
+ cityBudget = Math.max(0, cityBudget - ev.cost);
+ turnEventResults.push({ title: ev.title, type: ev.type, result: 'APPROVED', votes: voteLabel(yesVotes), cost: ev.cost, spent: true, treasuryBefore: treasuryBefore, treasuryAfter: cityBudget });
  if (isCrisis) { trust = Math.min(100, trust + 3); }
  if (isPolicy) { governance = Math.min(100, governance + 2); }
  trust = Math.min(100, trust + 1);
- renderGovTrust();
- card.classList.add('resolved');
- const rb = document.createElement('div');
- rb.className = 'evrb';
- rb.textContent = '\u2713 APPROVED (' + voteLabel(yesVotes) + ') \u2014 ' + fmtB(cost) + ' from treasury. ' + msg;
- card.appendChild(rb);
- showToast(msg + ' | Vote: ' + voteLabel(yesVotes) + ' | Treasury: ' + fmtB(cityBudget));
- } else {
- turnEventResults.push({ title: evTitle, type: evType, result: 'DEFERRED', votes: '0/' + voteCount(), cost: 0, spent: false });
- const isCrisis = evType === 'crisis';
- if (isCrisis) { trust = Math.max(0, trust - 4); }
- governance = Math.max(0, governance - 1);
- renderGovTrust();
- card.classList.add('resolved');
- const db = document.createElement('div');
- db.className = 'evrb';
- db.textContent = '\u23ED DEFERRED \u2014 consequences carry forward';
- card.appendChild(db);
- showToast(msg + ' | Trust affected');
  }
+ });
+ pendingEventVotes = [];
+ renderGovTrust();
 }
 
 let pt;
