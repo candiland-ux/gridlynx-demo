@@ -5557,40 +5557,72 @@ function initAudio() {
 
 function playHeartbeat(hcVal) {
   if (!soundEnabled || !audioCtx) return;
-  // Determine pulse character from Heart Core value
   const isCritical = hcVal < 30;
   const isStrained = hcVal < 65;
-
-  // Create two beats for the lub-dub feel
   const now = audioCtx.currentTime;
-  playBeat(now, 0.28, isCritical ? 0.55 : isStrained ? 0.4 : 0.25);         // LUB
-  playBeat(now + 0.18, 0.18, isCritical ? 0.45 : isStrained ? 0.3 : 0.18); // DUB
+
+  // Gain scales with urgency
+  const lubGain = isCritical ? 0.7 : isStrained ? 0.5 : 0.35;
+  const dubGain = isCritical ? 0.55 : isStrained ? 0.4 : 0.25;
+
+  playBeat(now, 0.22, lubGain);          // LUB (heavier)
+  playBeat(now + 0.16, 0.14, dubGain);   // DUB (lighter, quicker)
 }
 
 function playBeat(time, duration, gain) {
   if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
 
-  // Low thump — like a heartbeat, not a click
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(55, time);
-  osc.frequency.exponentialRampToValueAtTime(38, time + duration * 0.6);
+  // Layer 1: Low body thump — raised to 80Hz so phones can reproduce it
+  const oscLow = audioCtx.createOscillator();
+  const gainLow = audioCtx.createGain();
+  oscLow.type = 'sine';
+  oscLow.frequency.setValueAtTime(80, time);
+  oscLow.frequency.exponentialRampToValueAtTime(50, time + duration * 0.7);
+  gainLow.gain.setValueAtTime(0, time);
+  gainLow.gain.linearRampToValueAtTime(gain * 0.8, time + 0.015);
+  gainLow.gain.exponentialRampToValueAtTime(0.001, time + duration);
+  oscLow.connect(gainLow);
+  gainLow.connect(audioCtx.destination);
+  oscLow.start(time);
+  oscLow.stop(time + duration + 0.05);
 
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(180, time);
+  // Layer 2: Mid punch — gives the "thump" its crispness on small speakers
+  const oscMid = audioCtx.createOscillator();
+  const gainMid = audioCtx.createGain();
+  const filterMid = audioCtx.createBiquadFilter();
+  oscMid.type = 'sine';
+  oscMid.frequency.setValueAtTime(150, time);
+  oscMid.frequency.exponentialRampToValueAtTime(90, time + duration * 0.5);
+  filterMid.type = 'lowpass';
+  filterMid.frequency.setValueAtTime(400, time);
+  filterMid.frequency.exponentialRampToValueAtTime(120, time + duration);
+  gainMid.gain.setValueAtTime(0, time);
+  gainMid.gain.linearRampToValueAtTime(gain * 0.5, time + 0.01);
+  gainMid.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.7);
+  oscMid.connect(filterMid);
+  filterMid.connect(gainMid);
+  gainMid.connect(audioCtx.destination);
+  oscMid.start(time);
+  oscMid.stop(time + duration + 0.05);
 
-  gainNode.gain.setValueAtTime(0, time);
-  gainNode.gain.linearRampToValueAtTime(gain, time + 0.02);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-  osc.connect(filter);
-  filter.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-
-  osc.start(time);
-  osc.stop(time + duration + 0.05);
+  // Layer 3: Transient click — the sharp attack that makes it feel percussive
+  const oscClick = audioCtx.createOscillator();
+  const gainClick = audioCtx.createGain();
+  const filterClick = audioCtx.createBiquadFilter();
+  oscClick.type = 'triangle';
+  oscClick.frequency.setValueAtTime(300, time);
+  oscClick.frequency.exponentialRampToValueAtTime(100, time + 0.04);
+  filterClick.type = 'bandpass';
+  filterClick.frequency.setValueAtTime(250, time);
+  filterClick.Q.setValueAtTime(2, time);
+  gainClick.gain.setValueAtTime(0, time);
+  gainClick.gain.linearRampToValueAtTime(gain * 0.35, time + 0.005);
+  gainClick.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+  oscClick.connect(filterClick);
+  filterClick.connect(gainClick);
+  gainClick.connect(audioCtx.destination);
+  oscClick.start(time);
+  oscClick.stop(time + 0.1);
 }
 
 function playVictorySound() {
