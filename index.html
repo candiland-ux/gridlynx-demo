@@ -187,8 +187,8 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 .dcard:hover{border-color:var(--border-bright);background:rgba(255,255,255,.02);}
 .dcard.sel{border-color:var(--cyan);background:var(--cyan-glow);}
 .drad{width:16px;height:16px;border-radius:50%;border:1px solid var(--border-bright);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all.15s;}
-.dcard.sel.drad{border-color:var(--cyan);background:var(--cyan);}
-.dcard.sel.drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+.dcard.sel .drad{border-color:var(--cyan);background:var(--cyan);}
+.dcard.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
 .dinf{flex:1;}
 .dname{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--text);}
 .deff{font-size:11px;color:var(--text-dim);margin-top:3px;line-height:1.4;}
@@ -201,11 +201,11 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 .pcard{background:transparent;border:1px dashed var(--border);padding:12px 14px;margin-bottom:14px;cursor:pointer;transition:all.2s;display:flex;gap:12px;align-items:flex-start;}
 .pcard:hover{border-color:var(--red);background:var(--red-glow);}
 .pcard.sel{border-color:var(--red);background:var(--red-glow);}
-.pcard.sel.drad{border-color:var(--red);background:var(--red);}
-.pcard.sel.drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+.pcard.sel .drad{border-color:var(--red);background:var(--red);}
+.pcard.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
 #decloan.sel{border-color:var(--purple) !important;background:rgba(139,92,246,.12) !important;}
-#decloan.sel.drad{border-color:var(--purple);background:var(--purple);}
-#decloan.sel.drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
+#decloan.sel .drad{border-color:var(--purple);background:var(--purple);}
+#decloan.sel .drad::after{content:'';width:6px;height:6px;border-radius:50%;background:white;}
 .plbl{font-family:var(--fd);font-size:13px;color:var(--text-muted);}
 .pcon{font-size:11px;color:var(--red);margin-top:2px;}
 .spp{background:var(--panel);border:1px solid var(--border);padding:13px 14px;margin-bottom:14px;}
