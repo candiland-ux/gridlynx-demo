@@ -1327,6 +1327,12 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
  <span style="font-size:12px;">💰</span> <span id="budget-display">$35M</span>
  </div>
  </div>
+ <!-- Second utility row -->
+ <div style="display:flex;gap:8px;margin-top:6px;">
+ <button onclick="openObjectives()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--panel);border:1px solid rgba(16,185,129,.25);color:var(--green);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:9px 12px;cursor:pointer;transition:all .2s;">
+ <span style="font-size:12px;">🎯</span> OBJECTIVES
+ </button>
+ </div>
  </div>
  <div class="hcp">
  <div class="hcr">
@@ -1853,6 +1859,17 @@ body::after{content:'';position:fixed;bottom:0;left:0;right:0;height:35vh;z-inde
 </div>
 
 <!-- STRATEGIC CHANNEL OVERLAY -->
+
+<!-- OBJECTIVES OVERLAY -->
+<div id="objectives-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:440px;width:100%;background:var(--panel2);border:2px solid rgba(16,185,129,.3);max-height:90vh;display:flex;flex-direction:column;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div style="font-family:var(--fm);font-size:11px;color:var(--green);letter-spacing:3px;">🎯 OBJECTIVES</div>
+      <button onclick="closeObjectives()" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-size:18px;padding:4px 10px;cursor:pointer;">×</button>
+    </div>
+    <div id="objectives-body" style="padding:20px;overflow-y:auto;flex:1;"></div>
+  </div>
+</div>
 
 <!-- TUTORIAL OVERLAY -->
 <div id="tutorial-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column;padding:20px;">
@@ -7175,6 +7192,72 @@ function executeDecline() {
  renderDSB();
  window._pendingFederalAid = null;
  nav('so');
+}
+
+// ── OBJECTIVES OVERLAY ──────────────────────────────────────────────
+function openObjectives() {
+  const overlay = document.getElementById('objectives-overlay');
+  if (!overlay) return;
+  const body = document.getElementById('objectives-body');
+  if (!body) return;
+
+  const winThresholds = { transport: 85, housing: 82, energy: 80, health: 82, economy: 80, education: 80 };
+  const domIcons = { transport:'\uD83D\uDE87', housing:'\uD83C\uDFD8', energy:'\u26A1', health:'\uD83C\uDFE5', economy:'\uD83D\uDCCA', education:'\uD83C\uDF93' };
+  const myDk = myDomain || 'energy';
+  const allDoms = ['energy','transport','housing','health','economy','education'];
+
+  let html = '';
+
+  // YOUR objective — highlighted
+  const myDom = domains[myDk];
+  if (myDom) {
+    const threshold = winThresholds[myDk] || 80;
+    const myStatus = myDom.health >= 90 ? 'THRIVING' : myDom.health >= 75 ? 'STABLE' : myDom.health >= 50 ? 'PRESSURED' : myDom.health >= 25 ? 'STRAINED' : 'CRITICAL';
+    const progress = Math.min(100, Math.round((myDom.health / threshold) * 100));
+    const barColor = myDom.health >= threshold ? 'var(--green)' : myDom.health >= threshold * 0.75 ? 'var(--cyan)' : myDom.health >= threshold * 0.5 ? 'var(--amber)' : 'var(--red)';
+    html += '<div style="padding:14px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.25);margin-bottom:16px;">';
+    html += '<div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--green);margin-bottom:8px;">YOUR OBJECTIVE</div>';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="font-size:20px;">' + (domIcons[myDk]||'') + '</span><span style="font-family:var(--fd);font-size:16px;font-weight:700;color:var(--text);">' + myDom.name + '</span></div>';
+    html += '<div style="font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:10px;">' + (myDom.win || 'Reach health threshold while Heart Core holds above 25.') + '</div>';
+    html += '<div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;"><div style="width:' + progress + '%;height:100%;background:' + barColor + ';border-radius:3px;transition:width .3s;"></div></div>';
+    html += '<span style="font-family:var(--fd);font-size:14px;font-weight:700;color:' + barColor + ';">' + myDom.health + '/' + threshold + '</span></div>';
+    html += '<div style="font-family:var(--fm);font-size:8px;color:var(--text-muted);margin-top:6px;">Status: ' + myStatus + ' | Heart Core: ' + heartCore + '/100</div>';
+    html += '</div>';
+  }
+
+  // OTHER domains — status labels only, no health numbers
+  html += '<div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;">ALL DOMAIN OBJECTIVES</div>';
+
+  allDoms.forEach(function(dk) {
+    const dom = domains[dk];
+    if (!dom) return;
+    const threshold = winThresholds[dk] || 80;
+    const isMe = dk === myDk;
+    const status = dom.health >= 90 ? 'THRIVING' : dom.health >= 75 ? 'STABLE' : dom.health >= 50 ? 'PRESSURED' : dom.health >= 25 ? 'STRAINED' : 'CRITICAL';
+    const statusColor = dom.health >= 75 ? 'var(--green)' : dom.health >= 50 ? 'var(--cyan)' : dom.health >= 25 ? 'var(--amber)' : 'var(--red)';
+    const bg = isMe ? 'rgba(6,182,212,.04)' : 'transparent';
+    const border = isMe ? '1px solid rgba(6,182,212,.2)' : '1px solid var(--border)';
+
+    html += '<div style="padding:10px 12px;margin-bottom:6px;background:' + bg + ';border:' + border + ';display:flex;align-items:center;gap:10px;">';
+    html += '<span style="font-size:16px;">' + (domIcons[dk]||'') + '</span>';
+    html += '<div style="flex:1;"><div style="font-size:12px;color:var(--text);font-weight:600;">' + dom.name.split(' ')[0] + (isMe ? ' <span style="font-family:var(--fm);font-size:7px;color:var(--cyan);letter-spacing:1px;vertical-align:middle;">YOU</span>' : '') + '</div>';
+    html += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Win at ' + threshold + '+ health</div></div>';
+    html += '<div style="text-align:right;"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:' + statusColor + ';">' + status + '</div>';
+    if (isMe) {
+      html += '<div style="font-family:var(--fd);font-size:11px;color:var(--cyan);margin-top:2px;">' + dom.health + '/' + threshold + '</div>';
+    }
+    html += '</div></div>';
+  });
+
+  html += '<div style="margin-top:12px;padding:10px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);font-size:10px;color:var(--text-muted);line-height:1.6;">First player to hit their threshold wins. Heart Core must stay above 25. Only one winner per game. You can see other domains\u2019 status but not their exact health \u2014 watch the turn-end screen for clues.</div>';
+
+  body.innerHTML = html;
+  overlay.style.display = 'flex';
+}
+
+function closeObjectives() {
+  const overlay = document.getElementById('objectives-overlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 // ── TUTORIAL SYSTEM ─────────────────────────────────────────────────
