@@ -5595,10 +5595,16 @@ function initAudio() {
  if (!audioCtx) {
  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
  }
+ // Mobile browsers require resume() inside a user gesture to unlock audio
+ if (audioCtx.state === 'suspended') {
+ audioCtx.resume();
+ }
 }
 
 function playHeartbeat(hcVal) {
- if (!soundEnabled || !audioCtx) return;
+ if (!soundEnabled) return;
+ initAudio();
+ if (!audioCtx) return;
  const isCritical = hcVal < 30;
  const isStrained = hcVal < 65;
  const now = audioCtx.currentTime;
