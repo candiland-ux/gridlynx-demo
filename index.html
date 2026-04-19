@@ -4553,7 +4553,7 @@ function openDomain(key){
 
  // ── WHAT CHANGES ──
  if (rawDelta > 0) {
- let context = 'Moves your domain from <strong>' + d.health + '</strong> to <strong>' + healthAfter + '</strong>.';
+ let context = 'Moves your domain from <strong>' + d.health + '</strong> to <strong>' + healthAfter + '</strong>. <span style="color:var(--amber);font-size:10px;">Other players\u2019 decisions may shift this number before the turn resolves.</span>';
  const condDetails = getConditionDetails(key);
  let condContext = '';
  if (condDetails.length > 0) {
@@ -4567,7 +4567,7 @@ function openDomain(key){
  if (d.health < 15 && healthAfter >= 15) context += ' Prevents your domain from triggering city collapse.';
  lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">' + context + '</div>' + condContext + '</div>');
  } else {
- lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">No direct improvement to your domain this turn. This action supports the city or builds influence for future turns.</div></div>');
+ lines.push('<div style="margin-bottom:10px;"><div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;color:var(--green);margin-bottom:4px;">WHAT CHANGES</div><div style="color:var(--text-dim);line-height:1.7;">No direct improvement to your domain this turn. This action supports the city or builds influence for future turns. <span style="color:var(--text-muted);font-size:10px;">Other players\u2019 decisions may still shift your domain health before the turn resolves.</span></div></div>');
  }
 
  // ── WHAT IT COSTS ──
